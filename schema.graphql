@@ -1,0 +1,130 @@
+type TBTCDepositToken @entity {
+  id: ID!
+  deposit: Deposit!
+  tokenID: BigInt!
+  owner: Bytes!
+  mintedAt: BigInt!
+  isBurned: Boolean
+  burnedAt: BigInt
+}
+
+type TBTCToken @entity {
+  id: ID!
+  owner: Bytes!
+  amount: BigInt!
+  mintedAt: BigInt!
+  burnedAt: BigInt
+  isBurned: Boolean!
+}
+
+# type FeeRebateToken @entity {
+#   id: ID!
+#   name: String!
+#   symbol: String!
+#   address: Bytes!
+# }
+
+# from https://github.com/keep-network/tbtc/blob/master/solidity/contracts/deposit/DepositUtils.sol
+type Deposit @entity {
+  id: ID!
+  tbtcSystem: Bytes! # address of the system contract
+  owner: Bytes!
+  contractAddress: Bytes!
+  tbtcToken: TBTCToken
+  currentState: DepositState
+  createdAt: BigInt
+
+  # SET DURING CONSTRUCTION
+  keepAddress: Bytes # The address of our keep contract
+  lotSizeSatoshis: BigInt
+  initialCollateralizedPercent: Int
+  collateralizationPercent: Int
+  undercollateralizedThresholdPercent: Int
+  severelyUndercollateralizedThresholdPercent: Int
+  signerFee: BigInt
+  utxoSize: BigInt
+  remainingTerm: BigInt
+  auctionValue: BigInt
+  bondedECDSAKeep: BondedECDSAKeep
+
+  # SET ON FRAUD
+  depositLiquidation: DepositLiquidation
+
+  # INITIALLY WRITTEN BY REDEMPTION FLOW
+  depositRedemption: DepositRedemption
+}
+
+enum DepositState {
+  # DOES NOT EXIST YET
+  START
+
+  # FUNDING FLOW
+  AWAITING_SIGNER_SETUP
+  AWAITING_BTC_FUNDING_PROOF
+
+  # FAILED SETUP
+  FAILED_SETUP
+
+  # ACTIVE
+  ACTIVE # includes courtesy call
+  # REDEMPTION FLOW
+  AWAITING_WITHDRAWAL_SIGNATURE
+  AWAITING_WITHDRAWAL_PROOF
+  REDEEMED
+
+  # SIGNER LIQUIDATION FLOW
+  COURTESY_CALL
+  FRAUD_LIQUIDATION_IN_PROGRESS
+  LIQUIDATION_IN_PROGRESS
+  LIQUIDATED
+}
+
+type DepositLiquidation @entity {
+  id: ID!
+  deposit: Deposit!
+  initiateTxhash: Bytes
+  courtesyCallTxhash: Bytes
+  liquidationInitiated: BigInt # Timestamp of when liquidation starts
+  courtesyCallInitiated: BigInt # When the courtesy call is issued
+  isLiquidated: Boolean!
+  liquidatedAt: BigInt
+  liquidationInitiator: Bytes
+  wasFraud: Boolean
+}
+
+type DepositRedemption @entity {
+  id: ID!
+  deposit: Deposit!
+  redeemerOutputScript: Bytes # The redeemer output script
+  requestedFee: BigInt # the initial fee as requested
+  latestRedemptionFee: BigInt # the fee currently required by a redemption transaction
+  withdrawalRequestAt: BigInt # the most recent withdrawal request timestamp
+  redeemedAt: BigInt
+  lastRequestedDigest: Bytes # the digest most recently requested for signing
+  outpoint: Bytes
+  utxoSize: BigInt
+  txid: Bytes
+}
+
+type KeepMember @entity {
+  id: ID!
+  address: Bytes!
+  keeps: [BondedECDSAKeep!] @derivedFrom(field: "members")
+}
+
+type BondedECDSAKeep @entity {
+  id: ID!
+  keepAddress: Bytes!
+  deposit: Deposit!
+  totalBondAmount: BigInt
+  publicKey: Bytes
+  status: BondedECDSAKeepStatus
+  honestThreshold: Int
+  members: [KeepMember]!
+}
+
+enum BondedECDSAKeepStatus {
+  ACTIVE
+  CLOSED
+  TERMINATED
+}

@@ -1,0 +1,115 @@
+specVersion: 0.0.2
+description: Keep Network
+repository: https://github.com/juliankoh/keep-subgraph
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: TBTCDepositToken
+    network: mainnet
+    source:
+      startBlock: 10071374
+      address: "0xB98b83027D16f1Da8ab54564be4B6A713401cd53"
+      abi: TBTCDepositToken
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - TBTCDepositToken
+      abis:
+        - name: TBTCDepositToken
+          file: ./abis/TBTCDepositToken.json
+      file: ./src/mapping.ts
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleMintTBTCDepositToken
+  - kind: ethereum/contract
+    name: TBTCToken
+    network: mainnet
+    source:
+      startBlock: 10071373
+      address: "0x1bBE271d15Bb64dF0bc6CD28Df9Ff322F2eBD847"
+      abi: TBTCToken
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - TBTCToken
+      abis:
+        - name: TBTCToken
+          file: ./abis/TBTCToken.json
+      file: ./src/mapping.ts
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleMintTBTCToken
+  - kind: ethereum/contract
+    name: TBTCSystem
+    network: mainnet
+    source:
+      startBlock: 10071347
+      address: "0x41A1b40c1280883eA14C6a71e23bb66b83B3fB59"
+      abi: TBTCSystem
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - TBTCSystem
+      abis:
+        - name: TBTCSystem
+          file: ./abis/TBTCSystem.json
+        - name: DepositContract
+          file: ./abis/DepositContract.json
+        - name: BondedECDSAKeep
+          file: ./abis/BondedECDSAKeep.json
+      eventHandlers:
+        - event: Created(indexed address,indexed address,uint256)
+          handler: handleCreatedEvent
+        - event: SetupFailed(indexed address,uint256)
+          handler: handleSetupFailedEvent
+        - event: StartedLiquidation(indexed address,bool,uint256)
+          handler: handleStartedLiquidationEvent
+        - event: CourtesyCalled(indexed address,uint256)
+          handler: handleCourtesyCalledEvent
+        - event: Liquidated(indexed address,uint256)
+          handler: handleLiquidatedEvent
+        - event: RedemptionRequested(indexed address,indexed address,indexed bytes32,uint256,bytes,uint256,bytes)
+          handler: handleRedemptionRequestedEvent
+        - event: GotRedemptionSignature(indexed address,indexed bytes32,bytes32,bytes32,uint256)
+          handler: handleGotRedemptionSignatureEvent
+        - event: Redeemed(indexed address,indexed bytes32,uint256)
+          handler: handleRedeemedEvent
+      file: ./src/mapping.ts
+templates:
+  - name: DepositContract
+    kind: ethereum/contract
+    network: mainnet
+    source:
+      abi: DepositContract
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.1
+      language: wasm/assemblyscript
+      file: ./src/mapping.ts
+      entities:
+        - DepositContract
+      abis:
+        - name: DepositContract
+          file: ./abis/DepositContract.json
+  - name: BondedECDSAKeep
+    kind: ethereum/contract
+    network: mainnet
+    source:
+      abi: BondedECDSAKeep
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.1
+      language: wasm/assemblyscript
+      file: ./src/mapping.ts
+      entities:
+        - BondedECDSAKeep
+      abis:
+        - name: BondedECDSAKeep
+          file: ./abis/BondedECDSAKeep.json
