@@ -2,12 +2,12 @@
   "name": "keep_network_subgraph",
   "version": "0.1.0",
   "scripts": {
-    "create": "graph create juliankoh/keep-network --node https://api.thegraph.com/deploy/",
-    "create-local": "graph create juliankoh/keep-network --node http://127.0.0.1:8020",
+    "create": "graph create miracle2k/keep-network --node https://api.thegraph.com/deploy/",
+    "create-local": "graph create miracle2k/keep-network --node http://127.0.0.1:8020",
     "codegen": "graph codegen",
     "build": "graph build",
-    "deploy": "graph deploy juliankoh/keep-network --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
-    "deploy-local": "graph deploy juliankoh/keep-network --ipfs http://localhost:5001 --node http://127.0.0.1:8020",
+    "deploy": "graph deploy miracle2k/keep-network --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
+    "deploy-local": "graph deploy miracle2k/keep-network --ipfs http://localhost:5001 --node http://127.0.0.1:8020",
     "view-local": "cd graphiql && httpserver"
   },
   "devDependencies": {
