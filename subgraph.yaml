@@ -8,8 +8,8 @@ dataSources:
     name: TBTCDepositToken
     network: mainnet
     source:
-      startBlock: 10071374
-      address: "0xB98b83027D16f1Da8ab54564be4B6A713401cd53"
+      startBlock: 10867845
+      address: "0x10B66Bd1e3b5a936B7f8Dbc5976004311037Cdf0"
       abi: TBTCDepositToken
     mapping:
       kind: ethereum/events
@@ -28,8 +28,8 @@ dataSources:
     name: TBTCToken
     network: mainnet
     source:
-      startBlock: 10071373
-      address: "0x1bBE271d15Bb64dF0bc6CD28Df9Ff322F2eBD847"
+      startBlock: 10867840
+      address: "0x8dAEBADE922dF735c38C80C7eBD708Af50815fAa"
       abi: TBTCToken
     mapping:
       kind: ethereum/events
@@ -48,8 +48,8 @@ dataSources:
     name: TBTCSystem
     network: mainnet
     source:
-      startBlock: 10071347
-      address: "0x41A1b40c1280883eA14C6a71e23bb66b83B3fB59"
+      startBlock: 10867764
+      address: "0xe20A5C79b39bC8C363f0f49ADcFa82C2a01ab64a"
       abi: TBTCSystem
     mapping:
       kind: ethereum/events
