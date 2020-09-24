@@ -44,6 +44,14 @@ export class ERC20RewardDistributed__Params {
   constructor(event: ERC20RewardDistributed) {
     this._event = event;
   }
+
+  get token(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+
+  get amount(): BigInt {
+    return this._event.parameters[1].value.toBigInt();
+  }
 }
 
 export class ETHRewardDistributed extends ethereum.Event {
@@ -57,6 +65,10 @@ export class ETHRewardDistributed__Params {
 
   constructor(event: ETHRewardDistributed) {
     this._event = event;
+  }
+
+  get amount(): BigInt {
+    return this._event.parameters[0].value.toBigInt();
   }
 }
 
@@ -368,52 +380,6 @@ export class BondedECDSAKeep extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBytes());
   }
 
-  hasKeyGenerationTimedOut(): boolean {
-    let result = super.call(
-      "hasKeyGenerationTimedOut",
-      "hasKeyGenerationTimedOut():(bool)",
-      []
-    );
-
-    return result[0].toBoolean();
-  }
-
-  try_hasKeyGenerationTimedOut(): ethereum.CallResult<boolean> {
-    let result = super.tryCall(
-      "hasKeyGenerationTimedOut",
-      "hasKeyGenerationTimedOut():(bool)",
-      []
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBoolean());
-  }
-
-  hasSigningTimedOut(): boolean {
-    let result = super.call(
-      "hasSigningTimedOut",
-      "hasSigningTimedOut():(bool)",
-      []
-    );
-
-    return result[0].toBoolean();
-  }
-
-  try_hasSigningTimedOut(): ethereum.CallResult<boolean> {
-    let result = super.tryCall(
-      "hasSigningTimedOut",
-      "hasSigningTimedOut():(bool)",
-      []
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBoolean());
-  }
-
   honestThreshold(): BigInt {
     let result = super.call(
       "honestThreshold",
@@ -505,29 +471,6 @@ export class BondedECDSAKeep extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBoolean());
   }
 
-  keyGenerationTimeout(): BigInt {
-    let result = super.call(
-      "keyGenerationTimeout",
-      "keyGenerationTimeout():(uint256)",
-      []
-    );
-
-    return result[0].toBigInt();
-  }
-
-  try_keyGenerationTimeout(): ethereum.CallResult<BigInt> {
-    let result = super.tryCall(
-      "keyGenerationTimeout",
-      "keyGenerationTimeout():(uint256)",
-      []
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
-  }
-
   memberStake(): BigInt {
     let result = super.call("memberStake", "memberStake():(uint256)", []);
 
@@ -543,23 +486,53 @@ export class BondedECDSAKeep extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
-  signingTimeout(): BigInt {
-    let result = super.call("signingTimeout", "signingTimeout():(uint256)", []);
+  members(param0: BigInt): Address {
+    let result = super.call("members", "members(uint256):(address)", [
+      ethereum.Value.fromUnsignedBigInt(param0)
+    ]);
 
-    return result[0].toBigInt();
+    return result[0].toAddress();
   }
 
-  try_signingTimeout(): ethereum.CallResult<BigInt> {
-    let result = super.tryCall(
-      "signingTimeout",
-      "signingTimeout():(uint256)",
-      []
-    );
+  try_members(param0: BigInt): ethereum.CallResult<Address> {
+    let result = super.tryCall("members", "members(uint256):(address)", [
+      ethereum.Value.fromUnsignedBigInt(param0)
+    ]);
     if (result.reverted) {
       return new ethereum.CallResult();
     }
     let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
+    return ethereum.CallResult.fromValue(value[0].toAddress());
+  }
+
+  owner(): Address {
+    let result = super.call("owner", "owner():(address)", []);
+
+    return result[0].toAddress();
+  }
+
+  try_owner(): ethereum.CallResult<Address> {
+    let result = super.tryCall("owner", "owner():(address)", []);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddress());
+  }
+
+  publicKey(): Bytes {
+    let result = super.call("publicKey", "publicKey():(bytes)", []);
+
+    return result[0].toBytes();
+  }
+
+  try_publicKey(): ethereum.CallResult<Bytes> {
+    let result = super.tryCall("publicKey", "publicKey():(bytes)", []);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBytes());
   }
 
   submitSignatureFraud(

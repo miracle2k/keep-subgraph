@@ -10,6 +10,26 @@ import {
   BigInt
 } from "@graphprotocol/graph-ts";
 
+export class DepositContract__fundingInfoResult {
+  value0: Bytes;
+  value1: BigInt;
+  value2: Bytes;
+
+  constructor(value0: Bytes, value1: BigInt, value2: Bytes) {
+    this.value0 = value0;
+    this.value1 = value1;
+    this.value2 = value2;
+  }
+
+  toMap(): TypedMap<string, ethereum.Value> {
+    let map = new TypedMap<string, ethereum.Value>();
+    map.set("value0", ethereum.Value.fromFixedBytes(this.value0));
+    map.set("value1", ethereum.Value.fromUnsignedBigInt(this.value1));
+    map.set("value2", ethereum.Value.fromBytes(this.value2));
+    return map;
+  }
+}
+
 export class DepositContract extends ethereum.SmartContract {
   static bind(address: Address): DepositContract {
     return new DepositContract("DepositContract", address);
@@ -30,43 +50,20 @@ export class DepositContract extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
-  exitCourtesyCall(): boolean {
+  collateralizationPercentage(): BigInt {
     let result = super.call(
-      "exitCourtesyCall",
-      "exitCourtesyCall():(bool)",
-      []
-    );
-
-    return result[0].toBoolean();
-  }
-
-  try_exitCourtesyCall(): ethereum.CallResult<boolean> {
-    let result = super.tryCall(
-      "exitCourtesyCall",
-      "exitCourtesyCall():(bool)",
-      []
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBoolean());
-  }
-
-  getCollateralizationPercentage(): BigInt {
-    let result = super.call(
-      "getCollateralizationPercentage",
-      "getCollateralizationPercentage():(uint256)",
+      "collateralizationPercentage",
+      "collateralizationPercentage():(uint256)",
       []
     );
 
     return result[0].toBigInt();
   }
 
-  try_getCollateralizationPercentage(): ethereum.CallResult<BigInt> {
+  try_collateralizationPercentage(): ethereum.CallResult<BigInt> {
     let result = super.tryCall(
-      "getCollateralizationPercentage",
-      "getCollateralizationPercentage():(uint256)",
+      "collateralizationPercentage",
+      "collateralizationPercentage():(uint256)",
       []
     );
     if (result.reverted) {
@@ -76,22 +73,14 @@ export class DepositContract extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
-  getCurrentState(): BigInt {
-    let result = super.call(
-      "getCurrentState",
-      "getCurrentState():(uint256)",
-      []
-    );
+  currentState(): BigInt {
+    let result = super.call("currentState", "currentState():(uint256)", []);
 
     return result[0].toBigInt();
   }
 
-  try_getCurrentState(): ethereum.CallResult<BigInt> {
-    let result = super.tryCall(
-      "getCurrentState",
-      "getCurrentState():(uint256)",
-      []
-    );
+  try_currentState(): ethereum.CallResult<BigInt> {
+    let result = super.tryCall("currentState", "currentState():(uint256)", []);
     if (result.reverted) {
       return new ethereum.CallResult();
     }
@@ -99,46 +88,37 @@ export class DepositContract extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
-  getInitialCollateralizedPercent(): i32 {
+  fundingInfo(): DepositContract__fundingInfoResult {
     let result = super.call(
-      "getInitialCollateralizedPercent",
-      "getInitialCollateralizedPercent():(uint16)",
+      "fundingInfo",
+      "fundingInfo():(bytes8,uint256,bytes)",
       []
     );
 
-    return result[0].toI32();
+    return new DepositContract__fundingInfoResult(
+      result[0].toBytes(),
+      result[1].toBigInt(),
+      result[2].toBytes()
+    );
   }
 
-  try_getInitialCollateralizedPercent(): ethereum.CallResult<i32> {
+  try_fundingInfo(): ethereum.CallResult<DepositContract__fundingInfoResult> {
     let result = super.tryCall(
-      "getInitialCollateralizedPercent",
-      "getInitialCollateralizedPercent():(uint16)",
+      "fundingInfo",
+      "fundingInfo():(bytes8,uint256,bytes)",
       []
     );
     if (result.reverted) {
       return new ethereum.CallResult();
     }
     let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toI32());
-  }
-
-  getKeepAddress(): Address {
-    let result = super.call("getKeepAddress", "getKeepAddress():(address)", []);
-
-    return result[0].toAddress();
-  }
-
-  try_getKeepAddress(): ethereum.CallResult<Address> {
-    let result = super.tryCall(
-      "getKeepAddress",
-      "getKeepAddress():(address)",
-      []
+    return ethereum.CallResult.fromValue(
+      new DepositContract__fundingInfoResult(
+        value[0].toBytes(),
+        value[1].toBigInt(),
+        value[2].toBytes()
+      )
     );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toAddress());
   }
 
   getOwnerRedemptionTbtcRequirement(_redeemer: Address): BigInt {
@@ -191,77 +171,6 @@ export class DepositContract extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
-  getSeverelyUndercollateralizedThresholdPercent(): i32 {
-    let result = super.call(
-      "getSeverelyUndercollateralizedThresholdPercent",
-      "getSeverelyUndercollateralizedThresholdPercent():(uint16)",
-      []
-    );
-
-    return result[0].toI32();
-  }
-
-  try_getSeverelyUndercollateralizedThresholdPercent(): ethereum.CallResult<
-    i32
-  > {
-    let result = super.tryCall(
-      "getSeverelyUndercollateralizedThresholdPercent",
-      "getSeverelyUndercollateralizedThresholdPercent():(uint16)",
-      []
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toI32());
-  }
-
-  getUndercollateralizedThresholdPercent(): i32 {
-    let result = super.call(
-      "getUndercollateralizedThresholdPercent",
-      "getUndercollateralizedThresholdPercent():(uint16)",
-      []
-    );
-
-    return result[0].toI32();
-  }
-
-  try_getUndercollateralizedThresholdPercent(): ethereum.CallResult<i32> {
-    let result = super.tryCall(
-      "getUndercollateralizedThresholdPercent",
-      "getUndercollateralizedThresholdPercent():(uint16)",
-      []
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toI32());
-  }
-
-  getWithdrawAllowance(): BigInt {
-    let result = super.call(
-      "getWithdrawAllowance",
-      "getWithdrawAllowance():(uint256)",
-      []
-    );
-
-    return result[0].toBigInt();
-  }
-
-  try_getWithdrawAllowance(): ethereum.CallResult<BigInt> {
-    let result = super.tryCall(
-      "getWithdrawAllowance",
-      "getWithdrawAllowance():(uint256)",
-      []
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
-  }
-
   inActive(): boolean {
     let result = super.call("inActive", "inActive():(bool)", []);
 
@@ -277,39 +186,42 @@ export class DepositContract extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBoolean());
   }
 
-  increaseRedemptionFee(
-    _previousOutputValueBytes: Bytes,
-    _newOutputValueBytes: Bytes
-  ): boolean {
+  initialCollateralizedPercent(): i32 {
     let result = super.call(
-      "increaseRedemptionFee",
-      "increaseRedemptionFee(bytes8,bytes8):(bool)",
-      [
-        ethereum.Value.fromFixedBytes(_previousOutputValueBytes),
-        ethereum.Value.fromFixedBytes(_newOutputValueBytes)
-      ]
+      "initialCollateralizedPercent",
+      "initialCollateralizedPercent():(uint16)",
+      []
     );
 
-    return result[0].toBoolean();
+    return result[0].toI32();
   }
 
-  try_increaseRedemptionFee(
-    _previousOutputValueBytes: Bytes,
-    _newOutputValueBytes: Bytes
-  ): ethereum.CallResult<boolean> {
+  try_initialCollateralizedPercent(): ethereum.CallResult<i32> {
     let result = super.tryCall(
-      "increaseRedemptionFee",
-      "increaseRedemptionFee(bytes8,bytes8):(bool)",
-      [
-        ethereum.Value.fromFixedBytes(_previousOutputValueBytes),
-        ethereum.Value.fromFixedBytes(_newOutputValueBytes)
-      ]
+      "initialCollateralizedPercent",
+      "initialCollateralizedPercent():(uint16)",
+      []
     );
     if (result.reverted) {
       return new ethereum.CallResult();
     }
     let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBoolean());
+    return ethereum.CallResult.fromValue(value[0].toI32());
+  }
+
+  keepAddress(): Address {
+    let result = super.call("keepAddress", "keepAddress():(address)", []);
+
+    return result[0].toAddress();
+  }
+
+  try_keepAddress(): ethereum.CallResult<Address> {
+    let result = super.tryCall("keepAddress", "keepAddress():(address)", []);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddress());
   }
 
   lotSizeSatoshis(): BigInt {
@@ -350,433 +262,6 @@ export class DepositContract extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
-  notifyCourtesyCall(): boolean {
-    let result = super.call(
-      "notifyCourtesyCall",
-      "notifyCourtesyCall():(bool)",
-      []
-    );
-
-    return result[0].toBoolean();
-  }
-
-  try_notifyCourtesyCall(): ethereum.CallResult<boolean> {
-    let result = super.tryCall(
-      "notifyCourtesyCall",
-      "notifyCourtesyCall():(bool)",
-      []
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBoolean());
-  }
-
-  notifyCourtesyTimeout(): boolean {
-    let result = super.call(
-      "notifyCourtesyTimeout",
-      "notifyCourtesyTimeout():(bool)",
-      []
-    );
-
-    return result[0].toBoolean();
-  }
-
-  try_notifyCourtesyTimeout(): ethereum.CallResult<boolean> {
-    let result = super.tryCall(
-      "notifyCourtesyTimeout",
-      "notifyCourtesyTimeout():(bool)",
-      []
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBoolean());
-  }
-
-  notifyFundingTimeout(): boolean {
-    let result = super.call(
-      "notifyFundingTimeout",
-      "notifyFundingTimeout():(bool)",
-      []
-    );
-
-    return result[0].toBoolean();
-  }
-
-  try_notifyFundingTimeout(): ethereum.CallResult<boolean> {
-    let result = super.tryCall(
-      "notifyFundingTimeout",
-      "notifyFundingTimeout():(bool)",
-      []
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBoolean());
-  }
-
-  notifyRedemptionProofTimeout(): boolean {
-    let result = super.call(
-      "notifyRedemptionProofTimeout",
-      "notifyRedemptionProofTimeout():(bool)",
-      []
-    );
-
-    return result[0].toBoolean();
-  }
-
-  try_notifyRedemptionProofTimeout(): ethereum.CallResult<boolean> {
-    let result = super.tryCall(
-      "notifyRedemptionProofTimeout",
-      "notifyRedemptionProofTimeout():(bool)",
-      []
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBoolean());
-  }
-
-  notifySignatureTimeout(): boolean {
-    let result = super.call(
-      "notifySignatureTimeout",
-      "notifySignatureTimeout():(bool)",
-      []
-    );
-
-    return result[0].toBoolean();
-  }
-
-  try_notifySignatureTimeout(): ethereum.CallResult<boolean> {
-    let result = super.tryCall(
-      "notifySignatureTimeout",
-      "notifySignatureTimeout():(bool)",
-      []
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBoolean());
-  }
-
-  notifySignerSetupFailure(): boolean {
-    let result = super.call(
-      "notifySignerSetupFailure",
-      "notifySignerSetupFailure():(bool)",
-      []
-    );
-
-    return result[0].toBoolean();
-  }
-
-  try_notifySignerSetupFailure(): ethereum.CallResult<boolean> {
-    let result = super.tryCall(
-      "notifySignerSetupFailure",
-      "notifySignerSetupFailure():(bool)",
-      []
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBoolean());
-  }
-
-  notifyUndercollateralizedLiquidation(): boolean {
-    let result = super.call(
-      "notifyUndercollateralizedLiquidation",
-      "notifyUndercollateralizedLiquidation():(bool)",
-      []
-    );
-
-    return result[0].toBoolean();
-  }
-
-  try_notifyUndercollateralizedLiquidation(): ethereum.CallResult<boolean> {
-    let result = super.tryCall(
-      "notifyUndercollateralizedLiquidation",
-      "notifyUndercollateralizedLiquidation():(bool)",
-      []
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBoolean());
-  }
-
-  provideBTCFundingProof(
-    _txVersion: Bytes,
-    _txInputVector: Bytes,
-    _txOutputVector: Bytes,
-    _txLocktime: Bytes,
-    _fundingOutputIndex: i32,
-    _merkleProof: Bytes,
-    _txIndexInBlock: BigInt,
-    _bitcoinHeaders: Bytes
-  ): boolean {
-    let result = super.call(
-      "provideBTCFundingProof",
-      "provideBTCFundingProof(bytes4,bytes,bytes,bytes4,uint8,bytes,uint256,bytes):(bool)",
-      [
-        ethereum.Value.fromFixedBytes(_txVersion),
-        ethereum.Value.fromBytes(_txInputVector),
-        ethereum.Value.fromBytes(_txOutputVector),
-        ethereum.Value.fromFixedBytes(_txLocktime),
-        ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(_fundingOutputIndex)),
-        ethereum.Value.fromBytes(_merkleProof),
-        ethereum.Value.fromUnsignedBigInt(_txIndexInBlock),
-        ethereum.Value.fromBytes(_bitcoinHeaders)
-      ]
-    );
-
-    return result[0].toBoolean();
-  }
-
-  try_provideBTCFundingProof(
-    _txVersion: Bytes,
-    _txInputVector: Bytes,
-    _txOutputVector: Bytes,
-    _txLocktime: Bytes,
-    _fundingOutputIndex: i32,
-    _merkleProof: Bytes,
-    _txIndexInBlock: BigInt,
-    _bitcoinHeaders: Bytes
-  ): ethereum.CallResult<boolean> {
-    let result = super.tryCall(
-      "provideBTCFundingProof",
-      "provideBTCFundingProof(bytes4,bytes,bytes,bytes4,uint8,bytes,uint256,bytes):(bool)",
-      [
-        ethereum.Value.fromFixedBytes(_txVersion),
-        ethereum.Value.fromBytes(_txInputVector),
-        ethereum.Value.fromBytes(_txOutputVector),
-        ethereum.Value.fromFixedBytes(_txLocktime),
-        ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(_fundingOutputIndex)),
-        ethereum.Value.fromBytes(_merkleProof),
-        ethereum.Value.fromUnsignedBigInt(_txIndexInBlock),
-        ethereum.Value.fromBytes(_bitcoinHeaders)
-      ]
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBoolean());
-  }
-
-  provideECDSAFraudProof(
-    _v: i32,
-    _r: Bytes,
-    _s: Bytes,
-    _signedDigest: Bytes,
-    _preimage: Bytes
-  ): boolean {
-    let result = super.call(
-      "provideECDSAFraudProof",
-      "provideECDSAFraudProof(uint8,bytes32,bytes32,bytes32,bytes):(bool)",
-      [
-        ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(_v)),
-        ethereum.Value.fromFixedBytes(_r),
-        ethereum.Value.fromFixedBytes(_s),
-        ethereum.Value.fromFixedBytes(_signedDigest),
-        ethereum.Value.fromBytes(_preimage)
-      ]
-    );
-
-    return result[0].toBoolean();
-  }
-
-  try_provideECDSAFraudProof(
-    _v: i32,
-    _r: Bytes,
-    _s: Bytes,
-    _signedDigest: Bytes,
-    _preimage: Bytes
-  ): ethereum.CallResult<boolean> {
-    let result = super.tryCall(
-      "provideECDSAFraudProof",
-      "provideECDSAFraudProof(uint8,bytes32,bytes32,bytes32,bytes):(bool)",
-      [
-        ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(_v)),
-        ethereum.Value.fromFixedBytes(_r),
-        ethereum.Value.fromFixedBytes(_s),
-        ethereum.Value.fromFixedBytes(_signedDigest),
-        ethereum.Value.fromBytes(_preimage)
-      ]
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBoolean());
-  }
-
-  provideFundingECDSAFraudProof(
-    _v: i32,
-    _r: Bytes,
-    _s: Bytes,
-    _signedDigest: Bytes,
-    _preimage: Bytes
-  ): boolean {
-    let result = super.call(
-      "provideFundingECDSAFraudProof",
-      "provideFundingECDSAFraudProof(uint8,bytes32,bytes32,bytes32,bytes):(bool)",
-      [
-        ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(_v)),
-        ethereum.Value.fromFixedBytes(_r),
-        ethereum.Value.fromFixedBytes(_s),
-        ethereum.Value.fromFixedBytes(_signedDigest),
-        ethereum.Value.fromBytes(_preimage)
-      ]
-    );
-
-    return result[0].toBoolean();
-  }
-
-  try_provideFundingECDSAFraudProof(
-    _v: i32,
-    _r: Bytes,
-    _s: Bytes,
-    _signedDigest: Bytes,
-    _preimage: Bytes
-  ): ethereum.CallResult<boolean> {
-    let result = super.tryCall(
-      "provideFundingECDSAFraudProof",
-      "provideFundingECDSAFraudProof(uint8,bytes32,bytes32,bytes32,bytes):(bool)",
-      [
-        ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(_v)),
-        ethereum.Value.fromFixedBytes(_r),
-        ethereum.Value.fromFixedBytes(_s),
-        ethereum.Value.fromFixedBytes(_signedDigest),
-        ethereum.Value.fromBytes(_preimage)
-      ]
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBoolean());
-  }
-
-  provideRedemptionProof(
-    _txVersion: Bytes,
-    _txInputVector: Bytes,
-    _txOutputVector: Bytes,
-    _txLocktime: Bytes,
-    _merkleProof: Bytes,
-    _txIndexInBlock: BigInt,
-    _bitcoinHeaders: Bytes
-  ): boolean {
-    let result = super.call(
-      "provideRedemptionProof",
-      "provideRedemptionProof(bytes4,bytes,bytes,bytes4,bytes,uint256,bytes):(bool)",
-      [
-        ethereum.Value.fromFixedBytes(_txVersion),
-        ethereum.Value.fromBytes(_txInputVector),
-        ethereum.Value.fromBytes(_txOutputVector),
-        ethereum.Value.fromFixedBytes(_txLocktime),
-        ethereum.Value.fromBytes(_merkleProof),
-        ethereum.Value.fromUnsignedBigInt(_txIndexInBlock),
-        ethereum.Value.fromBytes(_bitcoinHeaders)
-      ]
-    );
-
-    return result[0].toBoolean();
-  }
-
-  try_provideRedemptionProof(
-    _txVersion: Bytes,
-    _txInputVector: Bytes,
-    _txOutputVector: Bytes,
-    _txLocktime: Bytes,
-    _merkleProof: Bytes,
-    _txIndexInBlock: BigInt,
-    _bitcoinHeaders: Bytes
-  ): ethereum.CallResult<boolean> {
-    let result = super.tryCall(
-      "provideRedemptionProof",
-      "provideRedemptionProof(bytes4,bytes,bytes,bytes4,bytes,uint256,bytes):(bool)",
-      [
-        ethereum.Value.fromFixedBytes(_txVersion),
-        ethereum.Value.fromBytes(_txInputVector),
-        ethereum.Value.fromBytes(_txOutputVector),
-        ethereum.Value.fromFixedBytes(_txLocktime),
-        ethereum.Value.fromBytes(_merkleProof),
-        ethereum.Value.fromUnsignedBigInt(_txIndexInBlock),
-        ethereum.Value.fromBytes(_bitcoinHeaders)
-      ]
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBoolean());
-  }
-
-  provideRedemptionSignature(_v: i32, _r: Bytes, _s: Bytes): boolean {
-    let result = super.call(
-      "provideRedemptionSignature",
-      "provideRedemptionSignature(uint8,bytes32,bytes32):(bool)",
-      [
-        ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(_v)),
-        ethereum.Value.fromFixedBytes(_r),
-        ethereum.Value.fromFixedBytes(_s)
-      ]
-    );
-
-    return result[0].toBoolean();
-  }
-
-  try_provideRedemptionSignature(
-    _v: i32,
-    _r: Bytes,
-    _s: Bytes
-  ): ethereum.CallResult<boolean> {
-    let result = super.tryCall(
-      "provideRedemptionSignature",
-      "provideRedemptionSignature(uint8,bytes32,bytes32):(bool)",
-      [
-        ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(_v)),
-        ethereum.Value.fromFixedBytes(_r),
-        ethereum.Value.fromFixedBytes(_s)
-      ]
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBoolean());
-  }
-
-  purchaseSignerBondsAtAuction(): boolean {
-    let result = super.call(
-      "purchaseSignerBondsAtAuction",
-      "purchaseSignerBondsAtAuction():(bool)",
-      []
-    );
-
-    return result[0].toBoolean();
-  }
-
-  try_purchaseSignerBondsAtAuction(): ethereum.CallResult<boolean> {
-    let result = super.tryCall(
-      "purchaseSignerBondsAtAuction",
-      "purchaseSignerBondsAtAuction():(bool)",
-      []
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBoolean());
-  }
-
   remainingTerm(): BigInt {
     let result = super.call("remainingTerm", "remainingTerm():(uint256)", []);
 
@@ -796,72 +281,41 @@ export class DepositContract extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
-  requestRedemption(
-    _outputValueBytes: Bytes,
-    _redeemerOutputScript: Bytes
-  ): boolean {
+  severelyUndercollateralizedThresholdPercent(): i32 {
     let result = super.call(
-      "requestRedemption",
-      "requestRedemption(bytes8,bytes):(bool)",
-      [
-        ethereum.Value.fromFixedBytes(_outputValueBytes),
-        ethereum.Value.fromBytes(_redeemerOutputScript)
-      ]
-    );
-
-    return result[0].toBoolean();
-  }
-
-  try_requestRedemption(
-    _outputValueBytes: Bytes,
-    _redeemerOutputScript: Bytes
-  ): ethereum.CallResult<boolean> {
-    let result = super.tryCall(
-      "requestRedemption",
-      "requestRedemption(bytes8,bytes):(bool)",
-      [
-        ethereum.Value.fromFixedBytes(_outputValueBytes),
-        ethereum.Value.fromBytes(_redeemerOutputScript)
-      ]
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBoolean());
-  }
-
-  retrieveSignerPubkey(): boolean {
-    let result = super.call(
-      "retrieveSignerPubkey",
-      "retrieveSignerPubkey():(bool)",
+      "severelyUndercollateralizedThresholdPercent",
+      "severelyUndercollateralizedThresholdPercent():(uint16)",
       []
     );
 
-    return result[0].toBoolean();
+    return result[0].toI32();
   }
 
-  try_retrieveSignerPubkey(): ethereum.CallResult<boolean> {
+  try_severelyUndercollateralizedThresholdPercent(): ethereum.CallResult<i32> {
     let result = super.tryCall(
-      "retrieveSignerPubkey",
-      "retrieveSignerPubkey():(bool)",
+      "severelyUndercollateralizedThresholdPercent",
+      "severelyUndercollateralizedThresholdPercent():(uint16)",
       []
     );
     if (result.reverted) {
       return new ethereum.CallResult();
     }
     let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBoolean());
+    return ethereum.CallResult.fromValue(value[0].toI32());
   }
 
-  signerFee(): BigInt {
-    let result = super.call("signerFee", "signerFee():(uint256)", []);
+  signerFeeTbtc(): BigInt {
+    let result = super.call("signerFeeTbtc", "signerFeeTbtc():(uint256)", []);
 
     return result[0].toBigInt();
   }
 
-  try_signerFee(): ethereum.CallResult<BigInt> {
-    let result = super.tryCall("signerFee", "signerFee():(uint256)", []);
+  try_signerFeeTbtc(): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "signerFeeTbtc",
+      "signerFeeTbtc():(uint256)",
+      []
+    );
     if (result.reverted) {
       return new ethereum.CallResult();
     }
@@ -869,53 +323,37 @@ export class DepositContract extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
-  transferAndRequestRedemption(
-    _outputValueBytes: Bytes,
-    _redeemerOutputScript: Bytes,
-    _finalRecipient: Address
-  ): boolean {
+  undercollateralizedThresholdPercent(): i32 {
     let result = super.call(
-      "transferAndRequestRedemption",
-      "transferAndRequestRedemption(bytes8,bytes,address):(bool)",
-      [
-        ethereum.Value.fromFixedBytes(_outputValueBytes),
-        ethereum.Value.fromBytes(_redeemerOutputScript),
-        ethereum.Value.fromAddress(_finalRecipient)
-      ]
+      "undercollateralizedThresholdPercent",
+      "undercollateralizedThresholdPercent():(uint16)",
+      []
     );
 
-    return result[0].toBoolean();
+    return result[0].toI32();
   }
 
-  try_transferAndRequestRedemption(
-    _outputValueBytes: Bytes,
-    _redeemerOutputScript: Bytes,
-    _finalRecipient: Address
-  ): ethereum.CallResult<boolean> {
+  try_undercollateralizedThresholdPercent(): ethereum.CallResult<i32> {
     let result = super.tryCall(
-      "transferAndRequestRedemption",
-      "transferAndRequestRedemption(bytes8,bytes,address):(bool)",
-      [
-        ethereum.Value.fromFixedBytes(_outputValueBytes),
-        ethereum.Value.fromBytes(_redeemerOutputScript),
-        ethereum.Value.fromAddress(_finalRecipient)
-      ]
+      "undercollateralizedThresholdPercent",
+      "undercollateralizedThresholdPercent():(uint16)",
+      []
     );
     if (result.reverted) {
       return new ethereum.CallResult();
     }
     let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBoolean());
+    return ethereum.CallResult.fromValue(value[0].toI32());
   }
 
-  utxoSize(): BigInt {
-    let result = super.call("utxoSize", "utxoSize():(uint256)", []);
+  utxoValue(): BigInt {
+    let result = super.call("utxoValue", "utxoValue():(uint256)", []);
 
     return result[0].toBigInt();
   }
 
-  try_utxoSize(): ethereum.CallResult<BigInt> {
-    let result = super.tryCall("utxoSize", "utxoSize():(uint256)", []);
+  try_utxoValue(): ethereum.CallResult<BigInt> {
+    let result = super.tryCall("utxoValue", "utxoValue():(uint256)", []);
     if (result.reverted) {
       return new ethereum.CallResult();
     }
@@ -923,19 +361,27 @@ export class DepositContract extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
-  withdrawFunds(): boolean {
-    let result = super.call("withdrawFunds", "withdrawFunds():(bool)", []);
+  withdrawableAmount(): BigInt {
+    let result = super.call(
+      "withdrawableAmount",
+      "withdrawableAmount():(uint256)",
+      []
+    );
 
-    return result[0].toBoolean();
+    return result[0].toBigInt();
   }
 
-  try_withdrawFunds(): ethereum.CallResult<boolean> {
-    let result = super.tryCall("withdrawFunds", "withdrawFunds():(bool)", []);
+  try_withdrawableAmount(): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "withdrawableAmount",
+      "withdrawableAmount():(uint256)",
+      []
+    );
     if (result.reverted) {
       return new ethereum.CallResult();
     }
     let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBoolean());
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 }
 
@@ -991,68 +437,6 @@ export class DefaultCall__Outputs {
   }
 }
 
-export class CreateNewDepositCall extends ethereum.Call {
-  get inputs(): CreateNewDepositCall__Inputs {
-    return new CreateNewDepositCall__Inputs(this);
-  }
-
-  get outputs(): CreateNewDepositCall__Outputs {
-    return new CreateNewDepositCall__Outputs(this);
-  }
-}
-
-export class CreateNewDepositCall__Inputs {
-  _call: CreateNewDepositCall;
-
-  constructor(call: CreateNewDepositCall) {
-    this._call = call;
-  }
-
-  get _tbtcSystem(): Address {
-    return this._call.inputValues[0].value.toAddress();
-  }
-
-  get _tbtcToken(): Address {
-    return this._call.inputValues[1].value.toAddress();
-  }
-
-  get _tbtcDepositToken(): Address {
-    return this._call.inputValues[2].value.toAddress();
-  }
-
-  get _feeRebateToken(): Address {
-    return this._call.inputValues[3].value.toAddress();
-  }
-
-  get _vendingMachineAddress(): Address {
-    return this._call.inputValues[4].value.toAddress();
-  }
-
-  get _m(): i32 {
-    return this._call.inputValues[5].value.toI32();
-  }
-
-  get _n(): i32 {
-    return this._call.inputValues[6].value.toI32();
-  }
-
-  get _lotSizeSatoshis(): BigInt {
-    return this._call.inputValues[7].value.toBigInt();
-  }
-}
-
-export class CreateNewDepositCall__Outputs {
-  _call: CreateNewDepositCall;
-
-  constructor(call: CreateNewDepositCall) {
-    this._call = call;
-  }
-
-  get value0(): boolean {
-    return this._call.outputValues[0].value.toBoolean();
-  }
-}
-
 export class ExitCourtesyCallCall extends ethereum.Call {
   get inputs(): ExitCourtesyCallCall__Inputs {
     return new ExitCourtesyCallCall__Inputs(this);
@@ -1076,10 +460,6 @@ export class ExitCourtesyCallCall__Outputs {
 
   constructor(call: ExitCourtesyCallCall) {
     this._call = call;
-  }
-
-  get value0(): boolean {
-    return this._call.outputValues[0].value.toBoolean();
   }
 }
 
@@ -1115,10 +495,6 @@ export class IncreaseRedemptionFeeCall__Outputs {
   constructor(call: IncreaseRedemptionFeeCall) {
     this._call = call;
   }
-
-  get value0(): boolean {
-    return this._call.outputValues[0].value.toBoolean();
-  }
 }
 
 export class InitializeCall extends ethereum.Call {
@@ -1151,6 +527,56 @@ export class InitializeCall__Outputs {
   }
 }
 
+export class InitializeDepositCall extends ethereum.Call {
+  get inputs(): InitializeDepositCall__Inputs {
+    return new InitializeDepositCall__Inputs(this);
+  }
+
+  get outputs(): InitializeDepositCall__Outputs {
+    return new InitializeDepositCall__Outputs(this);
+  }
+}
+
+export class InitializeDepositCall__Inputs {
+  _call: InitializeDepositCall;
+
+  constructor(call: InitializeDepositCall) {
+    this._call = call;
+  }
+
+  get _tbtcSystem(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+
+  get _tbtcToken(): Address {
+    return this._call.inputValues[1].value.toAddress();
+  }
+
+  get _tbtcDepositToken(): Address {
+    return this._call.inputValues[2].value.toAddress();
+  }
+
+  get _feeRebateToken(): Address {
+    return this._call.inputValues[3].value.toAddress();
+  }
+
+  get _vendingMachineAddress(): Address {
+    return this._call.inputValues[4].value.toAddress();
+  }
+
+  get _lotSizeSatoshis(): BigInt {
+    return this._call.inputValues[5].value.toBigInt();
+  }
+}
+
+export class InitializeDepositCall__Outputs {
+  _call: InitializeDepositCall;
+
+  constructor(call: InitializeDepositCall) {
+    this._call = call;
+  }
+}
+
 export class NotifyCourtesyCallCall extends ethereum.Call {
   get inputs(): NotifyCourtesyCallCall__Inputs {
     return new NotifyCourtesyCallCall__Inputs(this);
@@ -1175,159 +601,135 @@ export class NotifyCourtesyCallCall__Outputs {
   constructor(call: NotifyCourtesyCallCall) {
     this._call = call;
   }
+}
 
-  get value0(): boolean {
-    return this._call.outputValues[0].value.toBoolean();
+export class NotifyCourtesyCallExpiredCall extends ethereum.Call {
+  get inputs(): NotifyCourtesyCallExpiredCall__Inputs {
+    return new NotifyCourtesyCallExpiredCall__Inputs(this);
+  }
+
+  get outputs(): NotifyCourtesyCallExpiredCall__Outputs {
+    return new NotifyCourtesyCallExpiredCall__Outputs(this);
   }
 }
 
-export class NotifyCourtesyTimeoutCall extends ethereum.Call {
-  get inputs(): NotifyCourtesyTimeoutCall__Inputs {
-    return new NotifyCourtesyTimeoutCall__Inputs(this);
-  }
+export class NotifyCourtesyCallExpiredCall__Inputs {
+  _call: NotifyCourtesyCallExpiredCall;
 
-  get outputs(): NotifyCourtesyTimeoutCall__Outputs {
-    return new NotifyCourtesyTimeoutCall__Outputs(this);
-  }
-}
-
-export class NotifyCourtesyTimeoutCall__Inputs {
-  _call: NotifyCourtesyTimeoutCall;
-
-  constructor(call: NotifyCourtesyTimeoutCall) {
+  constructor(call: NotifyCourtesyCallExpiredCall) {
     this._call = call;
   }
 }
 
-export class NotifyCourtesyTimeoutCall__Outputs {
-  _call: NotifyCourtesyTimeoutCall;
+export class NotifyCourtesyCallExpiredCall__Outputs {
+  _call: NotifyCourtesyCallExpiredCall;
 
-  constructor(call: NotifyCourtesyTimeoutCall) {
-    this._call = call;
-  }
-
-  get value0(): boolean {
-    return this._call.outputValues[0].value.toBoolean();
-  }
-}
-
-export class NotifyFundingTimeoutCall extends ethereum.Call {
-  get inputs(): NotifyFundingTimeoutCall__Inputs {
-    return new NotifyFundingTimeoutCall__Inputs(this);
-  }
-
-  get outputs(): NotifyFundingTimeoutCall__Outputs {
-    return new NotifyFundingTimeoutCall__Outputs(this);
-  }
-}
-
-export class NotifyFundingTimeoutCall__Inputs {
-  _call: NotifyFundingTimeoutCall;
-
-  constructor(call: NotifyFundingTimeoutCall) {
+  constructor(call: NotifyCourtesyCallExpiredCall) {
     this._call = call;
   }
 }
 
-export class NotifyFundingTimeoutCall__Outputs {
-  _call: NotifyFundingTimeoutCall;
-
-  constructor(call: NotifyFundingTimeoutCall) {
-    this._call = call;
+export class NotifyFundingTimedOutCall extends ethereum.Call {
+  get inputs(): NotifyFundingTimedOutCall__Inputs {
+    return new NotifyFundingTimedOutCall__Inputs(this);
   }
 
-  get value0(): boolean {
-    return this._call.outputValues[0].value.toBoolean();
+  get outputs(): NotifyFundingTimedOutCall__Outputs {
+    return new NotifyFundingTimedOutCall__Outputs(this);
   }
 }
 
-export class NotifyRedemptionProofTimeoutCall extends ethereum.Call {
-  get inputs(): NotifyRedemptionProofTimeoutCall__Inputs {
-    return new NotifyRedemptionProofTimeoutCall__Inputs(this);
-  }
+export class NotifyFundingTimedOutCall__Inputs {
+  _call: NotifyFundingTimedOutCall;
 
-  get outputs(): NotifyRedemptionProofTimeoutCall__Outputs {
-    return new NotifyRedemptionProofTimeoutCall__Outputs(this);
-  }
-}
-
-export class NotifyRedemptionProofTimeoutCall__Inputs {
-  _call: NotifyRedemptionProofTimeoutCall;
-
-  constructor(call: NotifyRedemptionProofTimeoutCall) {
+  constructor(call: NotifyFundingTimedOutCall) {
     this._call = call;
   }
 }
 
-export class NotifyRedemptionProofTimeoutCall__Outputs {
-  _call: NotifyRedemptionProofTimeoutCall;
+export class NotifyFundingTimedOutCall__Outputs {
+  _call: NotifyFundingTimedOutCall;
 
-  constructor(call: NotifyRedemptionProofTimeoutCall) {
-    this._call = call;
-  }
-
-  get value0(): boolean {
-    return this._call.outputValues[0].value.toBoolean();
-  }
-}
-
-export class NotifySignatureTimeoutCall extends ethereum.Call {
-  get inputs(): NotifySignatureTimeoutCall__Inputs {
-    return new NotifySignatureTimeoutCall__Inputs(this);
-  }
-
-  get outputs(): NotifySignatureTimeoutCall__Outputs {
-    return new NotifySignatureTimeoutCall__Outputs(this);
-  }
-}
-
-export class NotifySignatureTimeoutCall__Inputs {
-  _call: NotifySignatureTimeoutCall;
-
-  constructor(call: NotifySignatureTimeoutCall) {
+  constructor(call: NotifyFundingTimedOutCall) {
     this._call = call;
   }
 }
 
-export class NotifySignatureTimeoutCall__Outputs {
-  _call: NotifySignatureTimeoutCall;
-
-  constructor(call: NotifySignatureTimeoutCall) {
-    this._call = call;
+export class NotifyRedemptionProofTimedOutCall extends ethereum.Call {
+  get inputs(): NotifyRedemptionProofTimedOutCall__Inputs {
+    return new NotifyRedemptionProofTimedOutCall__Inputs(this);
   }
 
-  get value0(): boolean {
-    return this._call.outputValues[0].value.toBoolean();
+  get outputs(): NotifyRedemptionProofTimedOutCall__Outputs {
+    return new NotifyRedemptionProofTimedOutCall__Outputs(this);
   }
 }
 
-export class NotifySignerSetupFailureCall extends ethereum.Call {
-  get inputs(): NotifySignerSetupFailureCall__Inputs {
-    return new NotifySignerSetupFailureCall__Inputs(this);
-  }
+export class NotifyRedemptionProofTimedOutCall__Inputs {
+  _call: NotifyRedemptionProofTimedOutCall;
 
-  get outputs(): NotifySignerSetupFailureCall__Outputs {
-    return new NotifySignerSetupFailureCall__Outputs(this);
-  }
-}
-
-export class NotifySignerSetupFailureCall__Inputs {
-  _call: NotifySignerSetupFailureCall;
-
-  constructor(call: NotifySignerSetupFailureCall) {
+  constructor(call: NotifyRedemptionProofTimedOutCall) {
     this._call = call;
   }
 }
 
-export class NotifySignerSetupFailureCall__Outputs {
-  _call: NotifySignerSetupFailureCall;
+export class NotifyRedemptionProofTimedOutCall__Outputs {
+  _call: NotifyRedemptionProofTimedOutCall;
 
-  constructor(call: NotifySignerSetupFailureCall) {
+  constructor(call: NotifyRedemptionProofTimedOutCall) {
     this._call = call;
   }
+}
 
-  get value0(): boolean {
-    return this._call.outputValues[0].value.toBoolean();
+export class NotifyRedemptionSignatureTimedOutCall extends ethereum.Call {
+  get inputs(): NotifyRedemptionSignatureTimedOutCall__Inputs {
+    return new NotifyRedemptionSignatureTimedOutCall__Inputs(this);
+  }
+
+  get outputs(): NotifyRedemptionSignatureTimedOutCall__Outputs {
+    return new NotifyRedemptionSignatureTimedOutCall__Outputs(this);
+  }
+}
+
+export class NotifyRedemptionSignatureTimedOutCall__Inputs {
+  _call: NotifyRedemptionSignatureTimedOutCall;
+
+  constructor(call: NotifyRedemptionSignatureTimedOutCall) {
+    this._call = call;
+  }
+}
+
+export class NotifyRedemptionSignatureTimedOutCall__Outputs {
+  _call: NotifyRedemptionSignatureTimedOutCall;
+
+  constructor(call: NotifyRedemptionSignatureTimedOutCall) {
+    this._call = call;
+  }
+}
+
+export class NotifySignerSetupFailedCall extends ethereum.Call {
+  get inputs(): NotifySignerSetupFailedCall__Inputs {
+    return new NotifySignerSetupFailedCall__Inputs(this);
+  }
+
+  get outputs(): NotifySignerSetupFailedCall__Outputs {
+    return new NotifySignerSetupFailedCall__Outputs(this);
+  }
+}
+
+export class NotifySignerSetupFailedCall__Inputs {
+  _call: NotifySignerSetupFailedCall;
+
+  constructor(call: NotifySignerSetupFailedCall) {
+    this._call = call;
+  }
+}
+
+export class NotifySignerSetupFailedCall__Outputs {
+  _call: NotifySignerSetupFailedCall;
+
+  constructor(call: NotifySignerSetupFailedCall) {
+    this._call = call;
   }
 }
 
@@ -1354,10 +756,6 @@ export class NotifyUndercollateralizedLiquidationCall__Outputs {
 
   constructor(call: NotifyUndercollateralizedLiquidationCall) {
     this._call = call;
-  }
-
-  get value0(): boolean {
-    return this._call.outputValues[0].value.toBoolean();
   }
 }
 
@@ -1417,10 +815,6 @@ export class ProvideBTCFundingProofCall__Outputs {
   constructor(call: ProvideBTCFundingProofCall) {
     this._call = call;
   }
-
-  get value0(): boolean {
-    return this._call.outputValues[0].value.toBoolean();
-  }
 }
 
 export class ProvideECDSAFraudProofCall extends ethereum.Call {
@@ -1467,10 +861,6 @@ export class ProvideECDSAFraudProofCall__Outputs {
   constructor(call: ProvideECDSAFraudProofCall) {
     this._call = call;
   }
-
-  get value0(): boolean {
-    return this._call.outputValues[0].value.toBoolean();
-  }
 }
 
 export class ProvideFundingECDSAFraudProofCall extends ethereum.Call {
@@ -1516,10 +906,6 @@ export class ProvideFundingECDSAFraudProofCall__Outputs {
 
   constructor(call: ProvideFundingECDSAFraudProofCall) {
     this._call = call;
-  }
-
-  get value0(): boolean {
-    return this._call.outputValues[0].value.toBoolean();
   }
 }
 
@@ -1575,10 +961,6 @@ export class ProvideRedemptionProofCall__Outputs {
   constructor(call: ProvideRedemptionProofCall) {
     this._call = call;
   }
-
-  get value0(): boolean {
-    return this._call.outputValues[0].value.toBoolean();
-  }
 }
 
 export class ProvideRedemptionSignatureCall extends ethereum.Call {
@@ -1617,10 +999,6 @@ export class ProvideRedemptionSignatureCall__Outputs {
   constructor(call: ProvideRedemptionSignatureCall) {
     this._call = call;
   }
-
-  get value0(): boolean {
-    return this._call.outputValues[0].value.toBoolean();
-  }
 }
 
 export class PurchaseSignerBondsAtAuctionCall extends ethereum.Call {
@@ -1646,10 +1024,6 @@ export class PurchaseSignerBondsAtAuctionCall__Outputs {
 
   constructor(call: PurchaseSignerBondsAtAuctionCall) {
     this._call = call;
-  }
-
-  get value0(): boolean {
-    return this._call.outputValues[0].value.toBoolean();
   }
 }
 
@@ -1715,10 +1089,6 @@ export class RequestRedemptionCall__Outputs {
   constructor(call: RequestRedemptionCall) {
     this._call = call;
   }
-
-  get value0(): boolean {
-    return this._call.outputValues[0].value.toBoolean();
-  }
 }
 
 export class RetrieveSignerPubkeyCall extends ethereum.Call {
@@ -1744,10 +1114,6 @@ export class RetrieveSignerPubkeyCall__Outputs {
 
   constructor(call: RetrieveSignerPubkeyCall) {
     this._call = call;
-  }
-
-  get value0(): boolean {
-    return this._call.outputValues[0].value.toBoolean();
   }
 }
 
@@ -1787,10 +1153,6 @@ export class TransferAndRequestRedemptionCall__Outputs {
   constructor(call: TransferAndRequestRedemptionCall) {
     this._call = call;
   }
-
-  get value0(): boolean {
-    return this._call.outputValues[0].value.toBoolean();
-  }
 }
 
 export class WithdrawFundsCall extends ethereum.Call {
@@ -1816,9 +1178,5 @@ export class WithdrawFundsCall__Outputs {
 
   constructor(call: WithdrawFundsCall) {
     this._call = call;
-  }
-
-  get value0(): boolean {
-    return this._call.outputValues[0].value.toBoolean();
   }
 }

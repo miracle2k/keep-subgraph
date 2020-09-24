@@ -233,8 +233,12 @@ export class Funded__Params {
     return this._event.parameters[0].value.toAddress();
   }
 
+  get _txid(): Bytes {
+    return this._event.parameters[1].value.toBytes();
+  }
+
   get _timestamp(): BigInt {
-    return this._event.parameters[1].value.toBigInt();
+    return this._event.parameters[2].value.toBigInt();
   }
 }
 
@@ -294,51 +298,59 @@ export class GotRedemptionSignature__Params {
   }
 }
 
-export class KeepFactorySingleShotUpdateStarted extends ethereum.Event {
-  get params(): KeepFactorySingleShotUpdateStarted__Params {
-    return new KeepFactorySingleShotUpdateStarted__Params(this);
+export class KeepFactoriesUpdateStarted extends ethereum.Event {
+  get params(): KeepFactoriesUpdateStarted__Params {
+    return new KeepFactoriesUpdateStarted__Params(this);
   }
 }
 
-export class KeepFactorySingleShotUpdateStarted__Params {
-  _event: KeepFactorySingleShotUpdateStarted;
+export class KeepFactoriesUpdateStarted__Params {
+  _event: KeepFactoriesUpdateStarted;
 
-  constructor(event: KeepFactorySingleShotUpdateStarted) {
+  constructor(event: KeepFactoriesUpdateStarted) {
     this._event = event;
   }
 
-  get _factorySelector(): Address {
+  get _keepStakedFactory(): Address {
     return this._event.parameters[0].value.toAddress();
   }
 
-  get _ethBackedFactory(): Address {
+  get _fullyBackedFactory(): Address {
     return this._event.parameters[1].value.toAddress();
+  }
+
+  get _factorySelector(): Address {
+    return this._event.parameters[2].value.toAddress();
   }
 
   get _timestamp(): BigInt {
-    return this._event.parameters[2].value.toBigInt();
+    return this._event.parameters[3].value.toBigInt();
   }
 }
 
-export class KeepFactorySingleShotUpdated extends ethereum.Event {
-  get params(): KeepFactorySingleShotUpdated__Params {
-    return new KeepFactorySingleShotUpdated__Params(this);
+export class KeepFactoriesUpdated extends ethereum.Event {
+  get params(): KeepFactoriesUpdated__Params {
+    return new KeepFactoriesUpdated__Params(this);
   }
 }
 
-export class KeepFactorySingleShotUpdated__Params {
-  _event: KeepFactorySingleShotUpdated;
+export class KeepFactoriesUpdated__Params {
+  _event: KeepFactoriesUpdated;
 
-  constructor(event: KeepFactorySingleShotUpdated) {
+  constructor(event: KeepFactoriesUpdated) {
     this._event = event;
   }
 
-  get _factorySelector(): Address {
+  get _keepStakedFactory(): Address {
     return this._event.parameters[0].value.toAddress();
   }
 
-  get _ethBackedFactory(): Address {
+  get _fullyBackedFactory(): Address {
     return this._event.parameters[1].value.toAddress();
+  }
+
+  get _factorySelector(): Address {
+    return this._event.parameters[2].value.toAddress();
   }
 }
 
@@ -477,7 +489,7 @@ export class RedemptionRequested__Params {
     return this._event.parameters[2].value.toBytes();
   }
 
-  get _utxoSize(): BigInt {
+  get _utxoValue(): BigInt {
     return this._event.parameters[3].value.toBigInt();
   }
 
@@ -630,29 +642,6 @@ export class TBTCSystem extends ethereum.SmartContract {
       "approvedToLog",
       "approvedToLog(address):(bool)",
       [ethereum.Value.fromAddress(_caller)]
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBoolean());
-  }
-
-  emergencyPauseNewDeposits(): boolean {
-    let result = super.call(
-      "emergencyPauseNewDeposits",
-      "emergencyPauseNewDeposits():(bool)",
-      []
-    );
-
-    return result[0].toBoolean();
-  }
-
-  try_emergencyPauseNewDeposits(): ethereum.CallResult<boolean> {
-    let result = super.tryCall(
-      "emergencyPauseNewDeposits",
-      "emergencyPauseNewDeposits():(bool)",
-      []
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -822,6 +811,75 @@ export class TBTCSystem extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toI32());
   }
 
+  getKeepFactoriesUpgradeabilityPeriod(): BigInt {
+    let result = super.call(
+      "getKeepFactoriesUpgradeabilityPeriod",
+      "getKeepFactoriesUpgradeabilityPeriod():(uint256)",
+      []
+    );
+
+    return result[0].toBigInt();
+  }
+
+  try_getKeepFactoriesUpgradeabilityPeriod(): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "getKeepFactoriesUpgradeabilityPeriod",
+      "getKeepFactoriesUpgradeabilityPeriod():(uint256)",
+      []
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
+  getMaximumLotSize(): BigInt {
+    let result = super.call(
+      "getMaximumLotSize",
+      "getMaximumLotSize():(uint256)",
+      []
+    );
+
+    return result[0].toBigInt();
+  }
+
+  try_getMaximumLotSize(): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "getMaximumLotSize",
+      "getMaximumLotSize():(uint256)",
+      []
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
+  getMinimumLotSize(): BigInt {
+    let result = super.call(
+      "getMinimumLotSize",
+      "getMinimumLotSize():(uint256)",
+      []
+    );
+
+    return result[0].toBigInt();
+  }
+
+  try_getMinimumLotSize(): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "getMinimumLotSize",
+      "getMinimumLotSize():(uint256)",
+      []
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
   getNewDepositFeeEstimate(): BigInt {
     let result = super.call(
       "getNewDepositFeeEstimate",
@@ -916,22 +974,45 @@ export class TBTCSystem extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
-  getRemainingKeepFactorySingleShotUpdateTime(): BigInt {
+  getRemainingKeepFactoriesUpdateTime(): BigInt {
     let result = super.call(
-      "getRemainingKeepFactorySingleShotUpdateTime",
-      "getRemainingKeepFactorySingleShotUpdateTime():(uint256)",
+      "getRemainingKeepFactoriesUpdateTime",
+      "getRemainingKeepFactoriesUpdateTime():(uint256)",
       []
     );
 
     return result[0].toBigInt();
   }
 
-  try_getRemainingKeepFactorySingleShotUpdateTime(): ethereum.CallResult<
+  try_getRemainingKeepFactoriesUpdateTime(): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "getRemainingKeepFactoriesUpdateTime",
+      "getRemainingKeepFactoriesUpdateTime():(uint256)",
+      []
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
+  getRemainingKeepFactoriesUpgradeabilityTime(): BigInt {
+    let result = super.call(
+      "getRemainingKeepFactoriesUpgradeabilityTime",
+      "getRemainingKeepFactoriesUpgradeabilityTime():(uint256)",
+      []
+    );
+
+    return result[0].toBigInt();
+  }
+
+  try_getRemainingKeepFactoriesUpgradeabilityTime(): ethereum.CallResult<
     BigInt
   > {
     let result = super.tryCall(
-      "getRemainingKeepFactorySingleShotUpdateTime",
-      "getRemainingKeepFactorySingleShotUpdateTime():(uint256)",
+      "getRemainingKeepFactoriesUpgradeabilityTime",
+      "getRemainingKeepFactoriesUpgradeabilityTime():(uint256)",
       []
     );
     if (result.reverted) {
@@ -1081,21 +1162,23 @@ export class TBTCSystem extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toI32());
   }
 
-  isAllowedLotSize(_lotSizeSatoshis: BigInt): boolean {
+  isAllowedLotSize(_requestedLotSizeSatoshis: BigInt): boolean {
     let result = super.call(
       "isAllowedLotSize",
       "isAllowedLotSize(uint64):(bool)",
-      [ethereum.Value.fromUnsignedBigInt(_lotSizeSatoshis)]
+      [ethereum.Value.fromUnsignedBigInt(_requestedLotSizeSatoshis)]
     );
 
     return result[0].toBoolean();
   }
 
-  try_isAllowedLotSize(_lotSizeSatoshis: BigInt): ethereum.CallResult<boolean> {
+  try_isAllowedLotSize(
+    _requestedLotSizeSatoshis: BigInt
+  ): ethereum.CallResult<boolean> {
     let result = super.tryCall(
       "isAllowedLotSize",
       "isAllowedLotSize(uint64):(bool)",
-      [ethereum.Value.fromUnsignedBigInt(_lotSizeSatoshis)]
+      [ethereum.Value.fromUnsignedBigInt(_requestedLotSizeSatoshis)]
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -1117,6 +1200,36 @@ export class TBTCSystem extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(value[0].toBoolean());
+  }
+
+  keepSize(): i32 {
+    let result = super.call("keepSize", "keepSize():(uint16)", []);
+
+    return result[0].toI32();
+  }
+
+  try_keepSize(): ethereum.CallResult<i32> {
+    let result = super.tryCall("keepSize", "keepSize():(uint16)", []);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toI32());
+  }
+
+  keepThreshold(): i32 {
+    let result = super.call("keepThreshold", "keepThreshold():(uint16)", []);
+
+    return result[0].toI32();
+  }
+
+  try_keepThreshold(): ethereum.CallResult<i32> {
+    let result = super.tryCall("keepThreshold", "keepThreshold():(uint16)", []);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toI32());
   }
 
   owner(): Address {
@@ -1267,36 +1380,40 @@ export class BeginEthBtcPriceFeedAdditionCall__Outputs {
   }
 }
 
-export class BeginKeepFactorySingleShotUpdateCall extends ethereum.Call {
-  get inputs(): BeginKeepFactorySingleShotUpdateCall__Inputs {
-    return new BeginKeepFactorySingleShotUpdateCall__Inputs(this);
+export class BeginKeepFactoriesUpdateCall extends ethereum.Call {
+  get inputs(): BeginKeepFactoriesUpdateCall__Inputs {
+    return new BeginKeepFactoriesUpdateCall__Inputs(this);
   }
 
-  get outputs(): BeginKeepFactorySingleShotUpdateCall__Outputs {
-    return new BeginKeepFactorySingleShotUpdateCall__Outputs(this);
+  get outputs(): BeginKeepFactoriesUpdateCall__Outputs {
+    return new BeginKeepFactoriesUpdateCall__Outputs(this);
   }
 }
 
-export class BeginKeepFactorySingleShotUpdateCall__Inputs {
-  _call: BeginKeepFactorySingleShotUpdateCall;
+export class BeginKeepFactoriesUpdateCall__Inputs {
+  _call: BeginKeepFactoriesUpdateCall;
 
-  constructor(call: BeginKeepFactorySingleShotUpdateCall) {
+  constructor(call: BeginKeepFactoriesUpdateCall) {
     this._call = call;
   }
 
-  get _factorySelector(): Address {
+  get _keepStakedFactory(): Address {
     return this._call.inputValues[0].value.toAddress();
   }
 
-  get _ethBackedFactory(): Address {
+  get _fullyBackedFactory(): Address {
     return this._call.inputValues[1].value.toAddress();
+  }
+
+  get _factorySelector(): Address {
+    return this._call.inputValues[2].value.toAddress();
   }
 }
 
-export class BeginKeepFactorySingleShotUpdateCall__Outputs {
-  _call: BeginKeepFactorySingleShotUpdateCall;
+export class BeginKeepFactoriesUpdateCall__Outputs {
+  _call: BeginKeepFactoriesUpdateCall;
 
-  constructor(call: BeginKeepFactorySingleShotUpdateCall) {
+  constructor(call: BeginKeepFactoriesUpdateCall) {
     this._call = call;
   }
 }
@@ -1385,10 +1502,6 @@ export class EmergencyPauseNewDepositsCall__Outputs {
   constructor(call: EmergencyPauseNewDepositsCall) {
     this._call = call;
   }
-
-  get value0(): boolean {
-    return this._call.outputValues[0].value.toBoolean();
-  }
 }
 
 export class FinalizeCollateralizationThresholdsUpdateCall extends ethereum.Call {
@@ -1443,28 +1556,28 @@ export class FinalizeEthBtcPriceFeedAdditionCall__Outputs {
   }
 }
 
-export class FinalizeKeepFactorySingleShotUpdateCall extends ethereum.Call {
-  get inputs(): FinalizeKeepFactorySingleShotUpdateCall__Inputs {
-    return new FinalizeKeepFactorySingleShotUpdateCall__Inputs(this);
+export class FinalizeKeepFactoriesUpdateCall extends ethereum.Call {
+  get inputs(): FinalizeKeepFactoriesUpdateCall__Inputs {
+    return new FinalizeKeepFactoriesUpdateCall__Inputs(this);
   }
 
-  get outputs(): FinalizeKeepFactorySingleShotUpdateCall__Outputs {
-    return new FinalizeKeepFactorySingleShotUpdateCall__Outputs(this);
+  get outputs(): FinalizeKeepFactoriesUpdateCall__Outputs {
+    return new FinalizeKeepFactoriesUpdateCall__Outputs(this);
   }
 }
 
-export class FinalizeKeepFactorySingleShotUpdateCall__Inputs {
-  _call: FinalizeKeepFactorySingleShotUpdateCall;
+export class FinalizeKeepFactoriesUpdateCall__Inputs {
+  _call: FinalizeKeepFactoriesUpdateCall;
 
-  constructor(call: FinalizeKeepFactorySingleShotUpdateCall) {
+  constructor(call: FinalizeKeepFactoriesUpdateCall) {
     this._call = call;
   }
 }
 
-export class FinalizeKeepFactorySingleShotUpdateCall__Outputs {
-  _call: FinalizeKeepFactorySingleShotUpdateCall;
+export class FinalizeKeepFactoriesUpdateCall__Outputs {
+  _call: FinalizeKeepFactoriesUpdateCall;
 
-  constructor(call: FinalizeKeepFactorySingleShotUpdateCall) {
+  constructor(call: FinalizeKeepFactoriesUpdateCall) {
     this._call = call;
   }
 }
@@ -1707,6 +1820,10 @@ export class LogFundedCall__Inputs {
   constructor(call: LogFundedCall) {
     this._call = call;
   }
+
+  get _txid(): Bytes {
+    return this._call.inputValues[0].value.toBytes();
+  }
 }
 
 export class LogFundedCall__Outputs {
@@ -1866,7 +1983,7 @@ export class LogRedemptionRequestedCall__Inputs {
     return this._call.inputValues[1].value.toBytes();
   }
 
-  get _utxoSize(): BigInt {
+  get _utxoValue(): BigInt {
     return this._call.inputValues[2].value.toBigInt();
   }
 
@@ -1981,6 +2098,32 @@ export class LogStartedLiquidationCall__Outputs {
   }
 }
 
+export class RefreshMinimumBondableValueCall extends ethereum.Call {
+  get inputs(): RefreshMinimumBondableValueCall__Inputs {
+    return new RefreshMinimumBondableValueCall__Inputs(this);
+  }
+
+  get outputs(): RefreshMinimumBondableValueCall__Outputs {
+    return new RefreshMinimumBondableValueCall__Outputs(this);
+  }
+}
+
+export class RefreshMinimumBondableValueCall__Inputs {
+  _call: RefreshMinimumBondableValueCall;
+
+  constructor(call: RefreshMinimumBondableValueCall) {
+    this._call = call;
+  }
+}
+
+export class RefreshMinimumBondableValueCall__Outputs {
+  _call: RefreshMinimumBondableValueCall;
+
+  constructor(call: RefreshMinimumBondableValueCall) {
+    this._call = call;
+  }
+}
+
 export class RenounceOwnershipCall extends ethereum.Call {
   get inputs(): RenounceOwnershipCall__Inputs {
     return new RenounceOwnershipCall__Inputs(this);
@@ -2024,20 +2167,12 @@ export class RequestNewKeepCall__Inputs {
     this._call = call;
   }
 
-  get _m(): BigInt {
+  get _requestedLotSizeSatoshis(): BigInt {
     return this._call.inputValues[0].value.toBigInt();
   }
 
-  get _n(): BigInt {
-    return this._call.inputValues[1].value.toBigInt();
-  }
-
-  get _bond(): BigInt {
-    return this._call.inputValues[2].value.toBigInt();
-  }
-
   get _maxSecuredLifetime(): BigInt {
-    return this._call.inputValues[3].value.toBigInt();
+    return this._call.inputValues[1].value.toBigInt();
   }
 }
 
