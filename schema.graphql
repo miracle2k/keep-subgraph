@@ -1,6 +1,6 @@
 type TBTCDepositToken @entity {
   id: ID!
-  deposit: Deposit!
+  deposit: Deposit
   tokenID: BigInt!
   owner: Bytes!
   mintedAt: BigInt!

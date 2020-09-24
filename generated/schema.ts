@@ -42,13 +42,21 @@ export class TBTCDepositToken extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get deposit(): string {
+  get deposit(): string | null {
     let value = this.get("deposit");
-    return value.toString();
+    if (value === null) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  set deposit(value: string) {
-    this.set("deposit", Value.fromString(value));
+  set deposit(value: string | null) {
+    if (value === null) {
+      this.unset("deposit");
+    } else {
+      this.set("deposit", Value.fromString(value as string));
+    }
   }
 
   get tokenID(): BigInt {
