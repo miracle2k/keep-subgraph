@@ -8,7 +8,7 @@ import {
   Redeemed,
   SetupFailed,
 } from "../generated/TBTCSystem/TBTCSystem";
-import { log } from "@graphprotocol/graph-ts";
+import { log, BigInt } from "@graphprotocol/graph-ts";
 import { Transfer as TDTTransfer } from "../generated/TBTCDepositToken/TBTCDepositToken";
 import { Transfer as TBTCTransfer } from "../generated/TBTCToken/TBTCToken";
 import { DepositContract as DepositSmartContract } from "../generated/templates/DepositContract/DepositContract";
@@ -26,6 +26,12 @@ import {
 
 import { Address } from "@graphprotocol/graph-ts";
 
+
+const DPL = 'dpl-';
+const DPR = 'dpr-';
+const DP = 'dp-'
+
+
 function getOrCreateDeposit(depositID: string): Deposit {
   let deposit = Deposit.load(depositID);
   if (deposit == null) {
@@ -38,7 +44,8 @@ export function handleCreatedEvent(event: Created): void {
   let contractAddress = event.params._depositContractAddress;
   let keepAddress = event.params._keepAddress;
 
-  let deposit = getOrCreateDeposit(contractAddress.toHexString());
+  log.debug('handleCreatedEvent for ' + contractAddress.toHexString(), [])
+  let deposit = getOrCreateDeposit(DP+contractAddress.toHexString());
   deposit.tbtcSystem = event.address;
   deposit.owner = event.transaction.from;
   deposit.contractAddress = contractAddress;
@@ -54,11 +61,12 @@ export function handleCreatedEvent(event: Created): void {
   let bondedECDSAKeep = newBondedECDSAKeep(deposit, keepAddress);
   deposit.bondedECDSAKeep = bondedECDSAKeep.id;
 
+  log.debug('handleCreatedEvent for ' + contractAddress.toHexString() + " is now saving deposit " + deposit.id, [])
   deposit.save();
 }
 
 function setDepositState(contractAddress: Address, newState: string): void {
-  let deposit = Deposit.load(contractAddress.toHexString());
+  let deposit = Deposit.load(DP+contractAddress.toHexString());
   deposit.currentState = newState;
   deposit.save();
 }
@@ -71,16 +79,18 @@ function updateDepositDetails(
   let depositSmartContract = DepositSmartContract.bind(contractAddress);
 
   deposit.lotSizeSatoshis = depositSmartContract.lotSizeSatoshis();
-  deposit.initialCollateralizedPercent = depositSmartContract.getInitialCollateralizedPercent();
-  deposit.undercollateralizedThresholdPercent = depositSmartContract.getUndercollateralizedThresholdPercent();
-  deposit.severelyUndercollateralizedThresholdPercent = depositSmartContract.getSeverelyUndercollateralizedThresholdPercent();
-  deposit.signerFee = depositSmartContract.signerFee();
+  deposit.initialCollateralizedPercent = depositSmartContract.initialCollateralizedPercent();
+  deposit.undercollateralizedThresholdPercent = depositSmartContract.undercollateralizedThresholdPercent();
+  deposit.severelyUndercollateralizedThresholdPercent = depositSmartContract.severelyUndercollateralizedThresholdPercent();
+  deposit.signerFee = depositSmartContract.signerFeeTbtc();
 
-  deposit.utxoSize = depositSmartContract.utxoSize();
+  let utxoValue = depositSmartContract.try_utxoValue();
+  deposit.utxoSize = utxoValue.reverted ? new BigInt(0) : utxoValue.value;
   deposit.remainingTerm = depositSmartContract.remainingTerm();
-  deposit.auctionValue = depositSmartContract.auctionValue();
+  let auctionValue = depositSmartContract.try_auctionValue();
+  deposit.auctionValue = auctionValue.reverted ? new BigInt(0) : auctionValue.value; 
   deposit.collateralizationPercent = depositSmartContract
-    .getCollateralizationPercentage()
+    .collateralizationPercentage()
     .toI32();
 
   return deposit;
@@ -123,13 +133,12 @@ function newBondedECDSAKeep(
   return bondedECDSAKeep;
 }
 
+
 export function handleStartedLiquidationEvent(event: StartedLiquidation): void {
   let contractAddress = event.params._depositContractAddress;
-  let depositLiquidation = new DepositLiquidation(
-    contractAddress.toHexString()
-  );
+  let depositLiquidation = new DepositLiquidation(DPL+contractAddress.toHexString());
 
-  let deposit = Deposit.load(contractAddress.toHexString());
+  let deposit = Deposit.load(DP+contractAddress.toHexString());
   depositLiquidation.deposit = deposit.id;
   depositLiquidation.isLiquidated = false;
   depositLiquidation.wasFraud = event.params._wasFraud;
@@ -150,9 +159,7 @@ export function handleStartedLiquidationEvent(event: StartedLiquidation): void {
 
 export function handleCourtesyCalledEvent(event: CourtesyCalled): void {
   let contractAddress = event.params._depositContractAddress;
-  let depositLiquidation = DepositLiquidation.load(
-    contractAddress.toHexString()
-  );
+  let depositLiquidation = DepositLiquidation.load(DPL+contractAddress.toHexString());
   depositLiquidation.courtesyCallInitiated = event.block.timestamp;
   depositLiquidation.save();
 
@@ -161,9 +168,7 @@ export function handleCourtesyCalledEvent(event: CourtesyCalled): void {
 
 export function handleLiquidatedEvent(event: Liquidated): void {
   let contractAddress = event.params._depositContractAddress;
-  let depositLiquidation = DepositLiquidation.load(
-    contractAddress.toHexString()
-  );
+  let depositLiquidation = DepositLiquidation.load(DPL+contractAddress.toHexString());
   depositLiquidation.liquidatedAt = event.block.timestamp;
   depositLiquidation.isLiquidated = true;
   depositLiquidation.save();
@@ -175,8 +180,8 @@ export function handleRedemptionRequestedEvent(
   event: RedemptionRequested
 ): void {
   let contractAddress = event.params._depositContractAddress;
-  let depositRedemption = new DepositRedemption(contractAddress.toHexString());
-  let deposit = Deposit.load(contractAddress.toHexString());
+  let depositRedemption = new DepositRedemption(DPR+contractAddress.toHexString());
+  let deposit = Deposit.load(DP+contractAddress.toHexString());
 
   depositRedemption.deposit = deposit.id;
   depositRedemption.redeemerOutputScript = event.params._redeemerOutputScript;
@@ -184,7 +189,7 @@ export function handleRedemptionRequestedEvent(
   depositRedemption.withdrawalRequestAt = event.block.timestamp;
   depositRedemption.lastRequestedDigest = event.params._digest;
   depositRedemption.outpoint = event.params._outpoint;
-  depositRedemption.utxoSize = event.params._utxoSize;
+  depositRedemption.utxoSize = event.params._utxoValue;
   depositRedemption.save();
 
   setDepositState(contractAddress, "AWAITING_WITHDRAWAL_SIGNATURE");
@@ -194,17 +199,17 @@ export function handleGotRedemptionSignatureEvent(
   event: GotRedemptionSignature
 ): void {
   let contractAddress = event.params._depositContractAddress;
-  let deposit = Deposit.load(contractAddress.toHexString());
+  let deposit = Deposit.load(DP+contractAddress.toHexString());
   deposit.currentState = "AWAITING_WITHDRAWAL_PROOF";
   deposit.save();
 }
 
 export function handleRedeemedEvent(event: Redeemed): void {
   let contractAddress = event.params._depositContractAddress;
-  let deposit = Deposit.load(contractAddress.toHexString());
+  let deposit = Deposit.load(DP+contractAddress.toHexString());
   setDepositState(contractAddress, "REDEEMED");
 
-  let depositRedemption = DepositRedemption.load(contractAddress.toHexString());
+  let depositRedemption = DepositRedemption.load(DPR+contractAddress.toHexString());
   depositRedemption.txid = event.params._txid;
   depositRedemption.redeemedAt = event.block.timestamp;
   depositRedemption.save();
@@ -223,11 +228,12 @@ export function handleSetupFailedEvent(event: SetupFailed): void {
  */
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
+// TODO: Owner has to be updated when there is a transfer...
 export function handleMintTBTCDepositToken(event: TDTTransfer): void {
   // handle the mint() call
   if (event.params.from.toHexString() == ZERO_ADDRESS) {
     let depositToken = new TBTCDepositToken(event.params.tokenId.toHexString());
-    depositToken.deposit = event.params.tokenId.toHexString();
+    depositToken.deposit = DP + event.params.tokenId.toHexString();
     depositToken.tokenID = event.params.tokenId;
     depositToken.owner = event.params.to;
     depositToken.mintedAt = event.block.timestamp;
