@@ -6,6 +6,7 @@ import {
   RedemptionRequested,
   GotRedemptionSignature,
   Redeemed,
+  Funded,
   SetupFailed,
 } from "../generated/TBTCSystem/TBTCSystem";
 import { log, BigInt } from "@graphprotocol/graph-ts";
@@ -218,6 +219,11 @@ export function handleRedeemedEvent(event: Redeemed): void {
   keep.status = "CLOSED";
   keep.save();
 }
+
+export function handleFundedEvent(event: Funded): void {
+  setDepositState(event.params._depositContractAddress, "ACTIVE");
+}
+
 
 export function handleSetupFailedEvent(event: SetupFailed): void {
   setDepositState(event.params._depositContractAddress, "FAILED_SETUP");

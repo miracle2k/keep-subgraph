@@ -69,6 +69,8 @@ dataSources:
           handler: handleCreatedEvent
         - event: SetupFailed(indexed address,uint256)
           handler: handleSetupFailedEvent
+        - event: Funded(indexed address,indexed bytes32,uint256)
+          handler: handleFundedEvent
         - event: StartedLiquidation(indexed address,bool,uint256)
           handler: handleStartedLiquidationEvent
         - event: CourtesyCalled(indexed address,uint256)
