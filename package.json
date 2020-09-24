@@ -13,6 +13,7 @@
   "devDependencies": {
     "@graphprotocol/graph-cli": "^0.18.0",
     "@graphprotocol/graph-ts": "^0.18.1",
+    "@keep-network/tbtc": "^1.1.0",
     "httpserver": "^0.3.0"
   },
   "dependencies": {
