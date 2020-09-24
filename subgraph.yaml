@@ -1,6 +1,6 @@
-specVersion: 0.0.2
+specVersion: 0.1.0
 description: Keep Network
-repository: https://github.com/juliankoh/keep-subgraph
+repository: https://github.com/miracle2k/keep-subgraph
 schema:
   file: ./schema.graphql
 dataSources:
