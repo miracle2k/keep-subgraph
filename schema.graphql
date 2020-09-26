@@ -225,10 +225,17 @@ type KeepMember @entity {
   id: ID!
   address: Bytes!
   keeps: [BondedECDSAKeep!] @derivedFrom(field: "members")
+
+  bonded: BigDecimal!
+  unboundAvailable: BigDecimal!
+
+  totalKeepCount: Int!
+  activeKeepCount: Int!
 }
 
 type BondedECDSAKeep @entity {
   id: ID!
+  createdAt: BigInt!
   keepAddress: Bytes!
   deposit: Deposit!
   totalBondAmount: BigInt

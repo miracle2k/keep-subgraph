@@ -126,6 +126,15 @@ export class CreatedEvent extends Entity {
     this.set("id", Value.fromString(value));
   }
 
+  get submitter(): Bytes {
+    let value = this.get("submitter");
+    return value.toBytes();
+  }
+
+  set submitter(value: Bytes) {
+    this.set("submitter", Value.fromBytes(value));
+  }
+
   get transactionHash(): string {
     let value = this.get("transactionHash");
     return value.toString();
@@ -190,6 +199,15 @@ export class FundedEvent extends Entity {
 
   set id(value: string) {
     this.set("id", Value.fromString(value));
+  }
+
+  get submitter(): Bytes {
+    let value = this.get("submitter");
+    return value.toBytes();
+  }
+
+  set submitter(value: Bytes) {
+    this.set("submitter", Value.fromBytes(value));
   }
 
   get transactionHash(): string {
@@ -271,6 +289,15 @@ export class RegisteredPubKeyEvent extends Entity {
 
   set id(value: string) {
     this.set("id", Value.fromString(value));
+  }
+
+  get submitter(): Bytes {
+    let value = this.get("submitter");
+    return value.toBytes();
+  }
+
+  set submitter(value: Bytes) {
+    this.set("submitter", Value.fromBytes(value));
   }
 
   get transactionHash(): string {
@@ -357,6 +384,15 @@ export class RedeemedEvent extends Entity {
     this.set("id", Value.fromString(value));
   }
 
+  get submitter(): Bytes {
+    let value = this.get("submitter");
+    return value.toBytes();
+  }
+
+  set submitter(value: Bytes) {
+    this.set("submitter", Value.fromBytes(value));
+  }
+
   get transactionHash(): string {
     let value = this.get("transactionHash");
     return value.toString();
@@ -438,6 +474,15 @@ export class GotRedemptionSignatureEvent extends Entity {
     this.set("id", Value.fromString(value));
   }
 
+  get submitter(): Bytes {
+    let value = this.get("submitter");
+    return value.toBytes();
+  }
+
+  set submitter(value: Bytes) {
+    this.set("submitter", Value.fromBytes(value));
+  }
+
   get transactionHash(): string {
     let value = this.get("transactionHash");
     return value.toString();
@@ -508,6 +553,15 @@ export class RedemptionRequestedEvent extends Entity {
 
   set id(value: string) {
     this.set("id", Value.fromString(value));
+  }
+
+  get submitter(): Bytes {
+    let value = this.get("submitter");
+    return value.toBytes();
+  }
+
+  set submitter(value: Bytes) {
+    this.set("submitter", Value.fromBytes(value));
   }
 
   get transactionHash(): string {
@@ -630,6 +684,15 @@ export class SetupFailedEvent extends Entity {
     this.set("id", Value.fromString(value));
   }
 
+  get submitter(): Bytes {
+    let value = this.get("submitter");
+    return value.toBytes();
+  }
+
+  set submitter(value: Bytes) {
+    this.set("submitter", Value.fromBytes(value));
+  }
+
   get transactionHash(): string {
     let value = this.get("transactionHash");
     return value.toString();
@@ -696,6 +759,15 @@ export class LiquidatedEvent extends Entity {
     this.set("id", Value.fromString(value));
   }
 
+  get submitter(): Bytes {
+    let value = this.get("submitter");
+    return value.toBytes();
+  }
+
+  set submitter(value: Bytes) {
+    this.set("submitter", Value.fromBytes(value));
+  }
+
   get transactionHash(): string {
     let value = this.get("transactionHash");
     return value.toString();
@@ -760,6 +832,15 @@ export class CourtesyCalledEvent extends Entity {
 
   set id(value: string) {
     this.set("id", Value.fromString(value));
+  }
+
+  get submitter(): Bytes {
+    let value = this.get("submitter");
+    return value.toBytes();
+  }
+
+  set submitter(value: Bytes) {
+    this.set("submitter", Value.fromBytes(value));
   }
 
   get transactionHash(): string {
@@ -832,6 +913,15 @@ export class StartedLiquidationEvent extends Entity {
 
   set id(value: string) {
     this.set("id", Value.fromString(value));
+  }
+
+  get submitter(): Bytes {
+    let value = this.get("submitter");
+    return value.toBytes();
+  }
+
+  set submitter(value: Bytes) {
+    this.set("submitter", Value.fromBytes(value));
   }
 
   get transactionHash(): string {
@@ -1571,6 +1661,42 @@ export class KeepMember extends Entity {
       this.set("keeps", Value.fromStringArray(value as Array<string>));
     }
   }
+
+  get bonded(): BigDecimal {
+    let value = this.get("bonded");
+    return value.toBigDecimal();
+  }
+
+  set bonded(value: BigDecimal) {
+    this.set("bonded", Value.fromBigDecimal(value));
+  }
+
+  get unboundAvailable(): BigDecimal {
+    let value = this.get("unboundAvailable");
+    return value.toBigDecimal();
+  }
+
+  set unboundAvailable(value: BigDecimal) {
+    this.set("unboundAvailable", Value.fromBigDecimal(value));
+  }
+
+  get totalKeepCount(): i32 {
+    let value = this.get("totalKeepCount");
+    return value.toI32();
+  }
+
+  set totalKeepCount(value: i32) {
+    this.set("totalKeepCount", Value.fromI32(value));
+  }
+
+  get activeKeepCount(): i32 {
+    let value = this.get("activeKeepCount");
+    return value.toI32();
+  }
+
+  set activeKeepCount(value: i32) {
+    this.set("activeKeepCount", Value.fromI32(value));
+  }
 }
 
 export class BondedECDSAKeep extends Entity {
@@ -1601,6 +1727,15 @@ export class BondedECDSAKeep extends Entity {
 
   set id(value: string) {
     this.set("id", Value.fromString(value));
+  }
+
+  get createdAt(): BigInt {
+    let value = this.get("createdAt");
+    return value.toBigInt();
+  }
+
+  set createdAt(value: BigInt) {
+    this.set("createdAt", Value.fromBigInt(value));
   }
 
   get keepAddress(): Bytes {

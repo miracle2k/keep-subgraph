@@ -10,7 +10,7 @@ import {
   RegisteredPubkey,
   SetupFailed,
 } from "../generated/TBTCSystem/TBTCSystem";
-import { log, BigInt, Address, ethereum, Entity } from "@graphprotocol/graph-ts";
+import { log, BigInt, Address, ethereum, Entity, BigDecimal } from "@graphprotocol/graph-ts";
 import { Transfer as TDTTransfer } from "../generated/TBTCDepositToken/TBTCDepositToken";
 import { DepositContract as DepositSmartContract } from "../generated/templates/DepositContract/DepositContract";
 import { BondedECDSAKeep as KeepSmartContract } from "../generated/templates/BondedECDSAKeep/BondedECDSAKeep";
@@ -35,6 +35,7 @@ import {
 } from "../generated/schema";
 import {getIDFromEvent} from "./utils";
 import {store, Value} from "@graphprotocol/graph-ts/index";
+import {toDecimal} from "./decimalUtils";
 
 
 // Wild-card re-export compiles but then does not find the functions at runtime.
@@ -90,6 +91,20 @@ function getOrCreateDeposit(depositID: string): Deposit {
   return <Deposit>deposit;
 }
 
+
+function getOrCreateKeepMember(keeperAddress: Address): KeepMember {
+  let member = KeepMember.load(keeperAddress.toHexString());
+  if (member == null) {
+    member = new KeepMember(keeperAddress.toHexString());
+    member.address = keeperAddress;
+    member.totalKeepCount = 0;
+    member.activeKeepCount = 0;
+    member.bonded = toDecimal(new BigInt(0));
+    member.unboundAvailable = toDecimal(new BigInt(0));
+  }
+  return member!;
+}
+
 export function handleCreatedEvent(event: Created): void {
   let contractAddress = event.params._depositContractAddress;
   let keepAddress = event.params._keepAddress;
@@ -107,7 +122,8 @@ export function handleCreatedEvent(event: Created): void {
 
   updateDepositDetails(deposit, contractAddress, event.block);
 
-  let bondedECDSAKeep = newBondedECDSAKeep(deposit, keepAddress);
+  let bondedECDSAKeep = newBondedECDSAKeep(deposit, keepAddress, event);
+
   deposit.bondedECDSAKeep = bondedECDSAKeep.id;
   deposit.save();
 
@@ -148,23 +164,15 @@ function updateDepositDetails(
   return deposit;
 }
 
-function getOrCreateKeepMember(keeperAddress: Address): KeepMember {
-  let member = KeepMember.load(keeperAddress.toHexString());
-  if (member == null) {
-    member = new KeepMember(keeperAddress.toHexString());
-    member.address = keeperAddress;
-    member.save();
-  }
-  return <KeepMember>member;
-}
-
 function newBondedECDSAKeep(
   deposit: Deposit,
-  keepAddress: Address
+  keepAddress: Address,
+  event: ethereum.Event
 ): BondedECDSAKeep {
   let contract = KeepSmartContract.bind(keepAddress);
 
   let bondedECDSAKeep = new BondedECDSAKeep(keepAddress.toHexString());
+  bondedECDSAKeep.createdAt = event.block.timestamp;
   bondedECDSAKeep.deposit = deposit.id;
   bondedECDSAKeep.keepAddress = keepAddress;
   bondedECDSAKeep.publicKey = contract.getPublicKey();
@@ -178,6 +186,9 @@ function newBondedECDSAKeep(
     let memberAddress = memberAddresses[i];
     let keepMember = getOrCreateKeepMember(memberAddress);
     members.push(keepMember.id);
+    keepMember.totalKeepCount += 1;
+    keepMember.activeKeepCount += 1;
+    keepMember.save()
   }
   bondedECDSAKeep.members = members;
   bondedECDSAKeep.save();
@@ -275,7 +286,6 @@ export function handleGotRedemptionSignatureEvent(
 ): void {
   setDepositState(event.params._depositContractAddress, "AWAITING_WITHDRAWAL_SIGNATURE");
 
-
   let logEvent = new GotRedemptionSignatureEvent(getIDFromEvent(event))
   logEvent.deposit = getDepositIdFromAddress(event.params._depositContractAddress);
   completeLogEvent(logEvent, event); logEvent.save()
@@ -294,6 +304,14 @@ export function handleRedeemedEvent(event: Redeemed): void {
   let keep = BondedECDSAKeep.load(deposit.keepAddress!.toHexString())!;
   keep.status = "CLOSED";
   keep.save();
+
+  let members = keep.members;
+  for (let i = 0; i < members.length; i++) {
+    let keepMemberAddress = members[i]!;
+    let member = getOrCreateKeepMember(Address.fromHexString(keepMemberAddress) as Address);
+    member.activeKeepCount -= 1;
+    member.save()
+  }
 
   let logEvent = new RedeemedEvent(getIDFromEvent(event))
   logEvent.deposit = deposit.id;
