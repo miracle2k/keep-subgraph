@@ -32,14 +32,113 @@ type TBTCDepositToken @entity {
 #  deposit: Deposit!
 #}
 
-type LogEntry @entity {
+# A generic event log entry
+interface Event {
   id: ID!
+  submitter: Bytes!
   transactionHash: String!
   timestamp: BigInt!
 
-  deposit: Deposit!
-  message: String!
+  # Set if this affects a deposit
+  deposit: Deposit
 }
+
+type CreatedEvent implements Event @entity {
+  id: ID!
+  submitter: Bytes!
+  transactionHash: String!
+  timestamp: BigInt!
+  deposit: Deposit
+}
+
+type FundedEvent implements Event @entity {
+  id: ID!
+  submitter: Bytes!
+  transactionHash: String!
+  timestamp: BigInt!
+  deposit: Deposit
+
+  tx: Bytes!
+}
+
+type RegisteredPubKeyEvent implements Event @entity {
+  id: ID!
+  submitter: Bytes!
+  transactionHash: String!
+  timestamp: BigInt!
+  deposit: Deposit
+
+  signingGroupPubkeyX: Bytes!
+  signingGroupPubkeyY: Bytes!
+}
+
+type RedeemedEvent implements Event @entity {
+  id: ID!
+  submitter: Bytes!
+  transactionHash: String!
+  timestamp: BigInt!
+  deposit: Deposit
+
+  tx: Bytes!
+}
+
+type GotRedemptionSignatureEvent implements Event @entity {
+  id: ID!
+  submitter: Bytes!
+  transactionHash: String!
+  timestamp: BigInt!
+  deposit: Deposit
+}
+
+type RedemptionRequestedEvent implements Event @entity {
+  id: ID!
+  submitter: Bytes!
+  transactionHash: String!
+  timestamp: BigInt!
+  deposit: Deposit
+
+  redeemerOutputScript: Bytes!
+  requestedFee: BigInt!
+  utxoValue: BigInt!
+  utxoOutpoint: Bytes!
+  redeemer: Bytes!
+  sigHashDigest: Bytes!
+}
+
+type SetupFailedEvent implements Event @entity {
+  id: ID!
+  submitter: Bytes!
+  transactionHash: String!
+  timestamp: BigInt!
+  deposit: Deposit
+}
+
+type LiquidatedEvent implements Event @entity {
+  id: ID!
+  submitter: Bytes!
+  transactionHash: String!
+  timestamp: BigInt!
+  deposit: Deposit
+}
+
+type CourtesyCalledEvent implements Event @entity {
+  id: ID!
+  submitter: Bytes!
+  transactionHash: String!
+  timestamp: BigInt!
+  deposit: Deposit
+}
+
+type StartedLiquidationEvent implements Event @entity {
+  id: ID!
+  submitter: Bytes!
+  transactionHash: String!
+  timestamp: BigInt!
+  deposit: Deposit
+
+  wasFraud: Boolean!
+}
+
 
 # from https://github.com/keep-network/tbtc/blob/master/solidity/contracts/deposit/DepositUtils.sol
 type Deposit @entity {

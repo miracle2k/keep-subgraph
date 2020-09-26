@@ -22,9 +22,9 @@ function getGovernance(): Governance {
 
     // Initialize with the default values the first time
     governance.newDepositsAllowed = true;
-    governance.lotSizes = [10**6, 10**7, 2 * 10**7, 5 * 10**7, 10**8].map(x => new BigInt(x));
+    governance.lotSizes = [new BigInt(1000000), new BigInt(10000000), new BigInt(20000000), new BigInt(50000000), new BigInt(100000000)];
     governance.priceFeeds = [
-        Bytes.fromHexString("0x81a679f98b63b3ddf2f17cb5619f4d6775b3c5ed ") as Bytes
+        Bytes.fromHexString("0x81a679f98b63b3ddf2f17cb5619f4d6775b3c5ed") as Bytes
     ];
     governance.signerFeeDivisor = 2000;
     governance.initialCollateralizedPercent = 150;

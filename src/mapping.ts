@@ -10,7 +10,7 @@ import {
   RegisteredPubkey,
   SetupFailed,
 } from "../generated/TBTCSystem/TBTCSystem";
-import { log, BigInt, Address, ethereum } from "@graphprotocol/graph-ts";
+import { log, BigInt, Address, ethereum, Entity } from "@graphprotocol/graph-ts";
 import { Transfer as TDTTransfer } from "../generated/TBTCDepositToken/TBTCDepositToken";
 import { DepositContract as DepositSmartContract } from "../generated/templates/DepositContract/DepositContract";
 import { BondedECDSAKeep as KeepSmartContract } from "../generated/templates/BondedECDSAKeep/BondedECDSAKeep";
@@ -22,8 +22,19 @@ import {
   DepositLiquidation,
   DepositRedemption,
   TBTCDepositToken,
-  LogEntry,
+  RedeemedEvent,
+  FundedEvent,
+  GotRedemptionSignatureEvent,
+  RedemptionRequestedEvent,
+  RegisteredPubKeyEvent,
+  SetupFailedEvent,
+  CourtesyCalledEvent,
+  LiquidatedEvent,
+  StartedLiquidationEvent,
+  CreatedEvent,
 } from "../generated/schema";
+import {getIDFromEvent} from "./utils";
+import {store, Value} from "@graphprotocol/graph-ts/index";
 
 
 // Wild-card re-export compiles but then does not find the functions at runtime.
@@ -62,6 +73,15 @@ function getDepositTokenIdFromDepositAddress(address: Address): string {
 }
 
 
+function completeLogEvent<T extends Entity>(log: T, event: ethereum.Event): void {
+  log.set("submitter", Value.fromBytes(event.transaction.from));
+  log.set("transactionHash", Value.fromString(event.transaction.hash.toHexString()))
+  log.set("timestamp", Value.fromBigInt(event.block.timestamp))
+  // Why is  nameof() not avaialble?
+  //store.set(nameof(typeof log), log.getString("id"), log);
+}
+
+
 function getOrCreateDeposit(depositID: string): Deposit {
   let deposit = Deposit.load(depositID);
   if (deposit == null) {
@@ -91,7 +111,9 @@ export function handleCreatedEvent(event: Created): void {
   deposit.bondedECDSAKeep = bondedECDSAKeep.id;
   deposit.save();
 
-  createLogEntry(event, deposit.id, "deposit was created")
+  let logEvent = new CreatedEvent(getIDFromEvent(event))
+  logEvent.deposit = getDepositIdFromAddress(event.params._depositContractAddress);
+  completeLogEvent(logEvent, event); logEvent.save()
 }
 
 function setDepositState(contractAddress: Address, newState: string): void {
@@ -186,7 +208,10 @@ export function handleStartedLiquidationEvent(event: StartedLiquidation): void {
     setDepositState(contractAddress, "LIQUIDATION_IN_PROGRESS");
   }
 
-  createLogEntry(event, getDepositIdFromAddress(event.params._depositContractAddress), "liquidation is now in progress")
+  let logEvent = new StartedLiquidationEvent(getIDFromEvent(event))
+  logEvent.deposit = getDepositIdFromAddress(event.params._depositContractAddress);
+  logEvent.wasFraud = event.params._wasFraud
+  completeLogEvent(logEvent, event); logEvent.save()
 }
 
 export function handleCourtesyCalledEvent(event: CourtesyCalled): void {
@@ -196,7 +221,10 @@ export function handleCourtesyCalledEvent(event: CourtesyCalled): void {
   depositLiquidation.save();
 
   setDepositState(contractAddress, "COURTESY_CALL");
-  createLogEntry(event, getDepositIdFromAddress(event.params._depositContractAddress), "Deposit courtesy called")
+
+  let logEvent = new CourtesyCalledEvent(getIDFromEvent(event))
+  logEvent.deposit = getDepositIdFromAddress(event.params._depositContractAddress);
+  completeLogEvent(logEvent, event); logEvent.save()
 }
 
 export function handleLiquidatedEvent(event: Liquidated): void {
@@ -207,7 +235,10 @@ export function handleLiquidatedEvent(event: Liquidated): void {
   depositLiquidation.save();
 
   setDepositState(contractAddress, "LIQUIDATED");
-  createLogEntry(event, getDepositIdFromAddress(event.params._depositContractAddress), "Deposit liquidated")
+
+  let logEvent = new LiquidatedEvent(getIDFromEvent(event))
+  logEvent.deposit = getDepositIdFromAddress(event.params._depositContractAddress);
+  completeLogEvent(logEvent, event); logEvent.save()
 }
 
 export function handleRedemptionRequestedEvent(
@@ -227,14 +258,27 @@ export function handleRedemptionRequestedEvent(
   depositRedemption.save();
 
   setDepositState(contractAddress, "AWAITING_WITHDRAWAL_SIGNATURE");
-  createLogEntry(event, getDepositIdFromAddress(event.params._depositContractAddress), "Deposit redemption was requested")
+
+  let logEvent = new RedemptionRequestedEvent(getIDFromEvent(event))
+  logEvent.deposit = getDepositIdFromAddress(event.params._depositContractAddress);
+  logEvent.redeemerOutputScript = event.params._redeemerOutputScript;
+  logEvent.requestedFee = event.params._requestedFee;
+  logEvent.utxoValue = event.params._utxoValue;
+  logEvent.redeemer = event.params._requester;
+  logEvent.utxoOutpoint = event.params._outpoint;
+  logEvent.sigHashDigest = event.params._digest;
+  completeLogEvent(logEvent, event); logEvent.save()
 }
 
 export function handleGotRedemptionSignatureEvent(
   event: GotRedemptionSignature
 ): void {
   setDepositState(event.params._depositContractAddress, "AWAITING_WITHDRAWAL_SIGNATURE");
-  createLogEntry(event, getDepositIdFromAddress(event.params._depositContractAddress), "Deposit redemption signature received")
+
+
+  let logEvent = new GotRedemptionSignatureEvent(getIDFromEvent(event))
+  logEvent.deposit = getDepositIdFromAddress(event.params._depositContractAddress);
+  completeLogEvent(logEvent, event); logEvent.save()
 }
 
 export function handleRedeemedEvent(event: Redeemed): void {
@@ -251,33 +295,38 @@ export function handleRedeemedEvent(event: Redeemed): void {
   keep.status = "CLOSED";
   keep.save();
 
-  createLogEntry(event, getDepositIdFromAddress(event.params._depositContractAddress), "Deposit was redeemed.")
-}
-
-function createLogEntry(event: ethereum.Event, depositId: string, message: string): void {
-  let entry = new LogEntry(event.transaction.hash.toHex() + "-" + event.logIndex.toString());
-  entry.deposit = depositId;
-  entry.message = message;
-  entry.transactionHash = event.transaction.hash.toHexString()
-  entry.timestamp = event.block.timestamp;
-
-  entry.save()
+  let logEvent = new RedeemedEvent(getIDFromEvent(event))
+  logEvent.deposit = deposit.id;
+  logEvent.tx = event.params._txid
+  completeLogEvent(logEvent, event); logEvent.save()
 }
 
 export function handleFundedEvent(event: Funded): void {
   setDepositState(event.params._depositContractAddress, "ACTIVE");
-  createLogEntry(event, getDepositIdFromAddress(event.params._depositContractAddress), "Deposit was funded.")
+
+  let logEvent = new FundedEvent(getIDFromEvent(event))
+  logEvent.deposit = getDepositIdFromAddress(event.params._depositContractAddress);
+  logEvent.tx = event.params._txid;
+  completeLogEvent(logEvent, event); logEvent.save()
 }
 
 export function handleRegisteredPubkey(event: RegisteredPubkey): void {
   setDepositState(event.params._depositContractAddress, "AWAITING_BTC_FUNDING_PROOF");
-  createLogEntry(event, getDepositIdFromAddress(event.params._depositContractAddress), "Signers submitted a bitcoin address (and presumably bonded their stake)")
+
+  let logEvent = new RegisteredPubKeyEvent(getIDFromEvent(event))
+  logEvent.deposit = getDepositIdFromAddress(event.params._depositContractAddress);
+  logEvent.signingGroupPubkeyX = event.params._signingGroupPubkeyX;
+  logEvent.signingGroupPubkeyY = event.params._signingGroupPubkeyY;
+  completeLogEvent(logEvent, event); logEvent.save()
 }
 
 
 export function handleSetupFailedEvent(event: SetupFailed): void {
   setDepositState(event.params._depositContractAddress, "FAILED_SETUP");
-  createLogEntry(event, getDepositIdFromAddress(event.params._depositContractAddress), "Setup failed (why?)")
+
+  let logEvent = new SetupFailedEvent(getIDFromEvent(event))
+  logEvent.deposit = getDepositIdFromAddress(event.params._depositContractAddress);
+  completeLogEvent(logEvent, event); logEvent.save()
 }
 
 
