@@ -31,7 +31,7 @@ function getGovernance(): Governance {
     governance.severelyUndercollateralizedThresholdPercent = 110
     governance.undercollateralizedThresholdPercent = 125
     governance.factorySelector = Bytes.fromI32(0) as Bytes;
-    governance.fullyBakedFactory = Bytes.fromI32(0) as Bytes;
+    governance.fullyBackedFactory = Bytes.fromI32(0) as Bytes;
     governance.keepStakedFactory = Bytes.fromHexString("0xA7d9E842EFB252389d613dA88EDa3731512e40bD") as Bytes;
   }
   return <Governance>governance;
@@ -72,12 +72,14 @@ function makeLogEntry(event: ethereum.Event, type: string, isRequest: boolean, c
 
 export function handleLotSizesUpdateStarted(event: LotSizesUpdateStarted): void {
   let change = makeGovernanceChange("LOT_SIZES", event);
-  change.newLotSizes = event.params._lotSizes;
-  change.save()
-
   let gov = getGovernance();
+
   gov.pendingLotSizeChange = change.id;
   gov.save()
+
+  change.newLotSizes = event.params._lotSizes;
+  change.prevLotSizes = gov.lotSizes
+  change.save()
 
   makeLogEntry(event, "LOT_SIZES", true, change);
 }
@@ -94,11 +96,13 @@ export function handleLotSizesUpdated(event: LotSizesUpdated): void {
 }
 
 export function handleSignerFeeDivisorUpdateStarted(event: SignerFeeDivisorUpdateStarted): void {
+  let gov = getGovernance();
   let change = makeGovernanceChange("SIGNER_FEE_DIVISOR", event);
+
+  change.prevSignerFeeDivisor = gov.signerFeeDivisor;
   change.newSignerFeeDivisor = event.params._signerFeeDivisor;
   change.save()
 
-  let gov = getGovernance();
   gov.pendingSignerFeeDivisorChange = change.id;
   gov.save()
 
@@ -118,13 +122,17 @@ export function handleSignerFeeDivisorUpdated(event: SignerFeeDivisorUpdated): v
 }
 
 export function handleCollateralizationThresholdsUpdateStarted(event: CollateralizationThresholdsUpdateStarted): void {
+  let gov = getGovernance();
+
   let change = makeGovernanceChange("COLLATERALIZATION_THRESHOLDS", event);
   change.newSeverelyUndercollateralizedThresholdPercent = event.params._severelyUndercollateralizedThresholdPercent;
   change.newUndercollateralizedThresholdPercent = event.params._undercollateralizedThresholdPercent;
   change.newInitialCollateralizedPercent = event.params._initialCollateralizedPercent;
+  change.prevSeverelyUndercollateralizedThresholdPercent = gov.severelyUndercollateralizedThresholdPercent;
+  change.prevUndercollateralizedThresholdPercent = gov.undercollateralizedThresholdPercent;
+  change.prevInitialCollateralizedPercent = gov.initialCollateralizedPercent;
   change.save()
 
-  let gov = getGovernance();
   gov.pendingCollateralizationThresholdsChange = change.id;
   gov.save()
 
@@ -145,11 +153,12 @@ export function handleCollateralizationThresholdsUpdated(event: Collateralizatio
 }
 
 export function handleEthBtcPriceFeedAdditionStarted(event: EthBtcPriceFeedAdditionStarted): void {
+  let gov = getGovernance();
   let change = makeGovernanceChange("ETH_BTC_PRICE_FEED_ADDITION", event);
+
   change.newPriceFeed = event.params._priceFeed
   change.save()
 
-  let gov = getGovernance();
   gov.pendingPriceFeedAddition = change.id;
   gov.save()
 
@@ -169,12 +178,16 @@ export function handleEthBtcPriceFeedAdded(event: EthBtcPriceFeedAdded): void {
 
 export function handleKeepFactoriesUpdateStarted(event: KeepFactoriesUpdateStarted): void {
   let change = makeGovernanceChange("KEEP_FACTORIES", event);
+  let gov = getGovernance();
+
   change.newFactorySelector = event.params._factorySelector;
-  change.newFullyBakedFactory = event.params._fullyBackedFactory;
+  change.newFullyBackedFactory = event.params._fullyBackedFactory;
   change.newKeepStakedFactory = event.params._keepStakedFactory
+  change.prevFactorySelector = gov.factorySelector;
+  change.prevFullyBackedFactory = gov.fullyBackedFactory;
+  change.prevKeepStakedFactory = gov.keepStakedFactory
   change.save();
 
-  let gov = getGovernance();
   gov.pendingFactoriesChange = change.id;
   gov.save()
 
@@ -184,7 +197,7 @@ export function handleKeepFactoriesUpdateStarted(event: KeepFactoriesUpdateStart
 export function handleKeepFactoriesUpdated(event: KeepFactoriesUpdated): void {
   let gov = getGovernance();
   gov.factorySelector = event.params._factorySelector;
-  gov.fullyBakedFactory = event.params._fullyBackedFactory;
+  gov.fullyBackedFactory = event.params._fullyBackedFactory;
   gov.keepStakedFactory = event.params._keepStakedFactory;
 
   let change = finalizeGovernanceChange(gov.pendingFactoriesChange!, event);

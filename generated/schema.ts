@@ -1220,8 +1220,8 @@ export class GovernanceChange extends Entity {
     }
   }
 
-  get newFullyBakedFactory(): Bytes | null {
-    let value = this.get("newFullyBakedFactory");
+  get newFullyBackedFactory(): Bytes | null {
+    let value = this.get("newFullyBackedFactory");
     if (value === null) {
       return null;
     } else {
@@ -1229,11 +1229,11 @@ export class GovernanceChange extends Entity {
     }
   }
 
-  set newFullyBakedFactory(value: Bytes | null) {
+  set newFullyBackedFactory(value: Bytes | null) {
     if (value === null) {
-      this.unset("newFullyBakedFactory");
+      this.unset("newFullyBackedFactory");
     } else {
-      this.set("newFullyBakedFactory", Value.fromBytes(value as Bytes));
+      this.set("newFullyBackedFactory", Value.fromBytes(value as Bytes));
     }
   }
 
@@ -1299,6 +1299,113 @@ export class GovernanceChange extends Entity {
 
   set newUndercollateralizedThresholdPercent(value: i32) {
     this.set("newUndercollateralizedThresholdPercent", Value.fromI32(value));
+  }
+
+  get prevLotSizes(): Array<BigInt> | null {
+    let value = this.get("prevLotSizes");
+    if (value === null) {
+      return null;
+    } else {
+      return value.toBigIntArray();
+    }
+  }
+
+  set prevLotSizes(value: Array<BigInt> | null) {
+    if (value === null) {
+      this.unset("prevLotSizes");
+    } else {
+      this.set("prevLotSizes", Value.fromBigIntArray(value as Array<BigInt>));
+    }
+  }
+
+  get prevSignerFeeDivisor(): i32 {
+    let value = this.get("prevSignerFeeDivisor");
+    return value.toI32();
+  }
+
+  set prevSignerFeeDivisor(value: i32) {
+    this.set("prevSignerFeeDivisor", Value.fromI32(value));
+  }
+
+  get prevFactorySelector(): Bytes | null {
+    let value = this.get("prevFactorySelector");
+    if (value === null) {
+      return null;
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set prevFactorySelector(value: Bytes | null) {
+    if (value === null) {
+      this.unset("prevFactorySelector");
+    } else {
+      this.set("prevFactorySelector", Value.fromBytes(value as Bytes));
+    }
+  }
+
+  get prevFullyBackedFactory(): Bytes | null {
+    let value = this.get("prevFullyBackedFactory");
+    if (value === null) {
+      return null;
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set prevFullyBackedFactory(value: Bytes | null) {
+    if (value === null) {
+      this.unset("prevFullyBackedFactory");
+    } else {
+      this.set("prevFullyBackedFactory", Value.fromBytes(value as Bytes));
+    }
+  }
+
+  get prevKeepStakedFactory(): Bytes | null {
+    let value = this.get("prevKeepStakedFactory");
+    if (value === null) {
+      return null;
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set prevKeepStakedFactory(value: Bytes | null) {
+    if (value === null) {
+      this.unset("prevKeepStakedFactory");
+    } else {
+      this.set("prevKeepStakedFactory", Value.fromBytes(value as Bytes));
+    }
+  }
+
+  get prevInitialCollateralizedPercent(): i32 {
+    let value = this.get("prevInitialCollateralizedPercent");
+    return value.toI32();
+  }
+
+  set prevInitialCollateralizedPercent(value: i32) {
+    this.set("prevInitialCollateralizedPercent", Value.fromI32(value));
+  }
+
+  get prevSeverelyUndercollateralizedThresholdPercent(): i32 {
+    let value = this.get("prevSeverelyUndercollateralizedThresholdPercent");
+    return value.toI32();
+  }
+
+  set prevSeverelyUndercollateralizedThresholdPercent(value: i32) {
+    this.set(
+      "prevSeverelyUndercollateralizedThresholdPercent",
+      Value.fromI32(value)
+    );
+  }
+
+  get prevUndercollateralizedThresholdPercent(): i32 {
+    let value = this.get("prevUndercollateralizedThresholdPercent");
+    return value.toI32();
+  }
+
+  set prevUndercollateralizedThresholdPercent(value: i32) {
+    this.set("prevUndercollateralizedThresholdPercent", Value.fromI32(value));
   }
 }
 
@@ -1405,13 +1512,13 @@ export class Governance extends Entity {
     this.set("factorySelector", Value.fromBytes(value));
   }
 
-  get fullyBakedFactory(): Bytes {
-    let value = this.get("fullyBakedFactory");
+  get fullyBackedFactory(): Bytes {
+    let value = this.get("fullyBackedFactory");
     return value.toBytes();
   }
 
-  set fullyBakedFactory(value: Bytes) {
-    this.set("fullyBakedFactory", Value.fromBytes(value));
+  set fullyBackedFactory(value: Bytes) {
+    this.set("fullyBackedFactory", Value.fromBytes(value));
   }
 
   get keepStakedFactory(): Bytes {

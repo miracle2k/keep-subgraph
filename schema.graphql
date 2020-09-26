@@ -179,27 +179,37 @@ type GovernanceChange @entity {
   newLotSizes: [BigInt!]
   newSignerFeeDivisor: Int,
   newFactorySelector: Bytes
-  newFullyBakedFactory: Bytes
+  newFullyBackedFactory: Bytes
   newKeepStakedFactory: Bytes,
   newPriceFeed: Bytes,
   newInitialCollateralizedPercent: Int,
   newSeverelyUndercollateralizedThresholdPercent: Int,
   newUndercollateralizedThresholdPercent: Int,
+
+  prevLotSizes: [BigInt!]
+  prevSignerFeeDivisor: Int,
+  prevFactorySelector: Bytes
+  prevFullyBackedFactory: Bytes
+  prevKeepStakedFactory: Bytes,
+  prevInitialCollateralizedPercent: Int,
+  prevSeverelyUndercollateralizedThresholdPercent: Int,
+  prevUndercollateralizedThresholdPercent: Int,
 }
+
 
 type Governance @entity {
   id: ID!
 
   newDepositsAllowed: Boolean!
 
-  signerFeeDivisor: Int,
+  signerFeeDivisor: Int!,
   pendingSignerFeeDivisorChange: GovernanceChange,
 
   lotSizes: [BigInt!]!
   pendingLotSizeChange: GovernanceChange
 
   factorySelector: Bytes!
-  fullyBakedFactory: Bytes!
+  fullyBackedFactory: Bytes!
   keepStakedFactory: Bytes!
   pendingFactoriesChange: GovernanceChange
 
