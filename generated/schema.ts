@@ -1005,13 +1005,40 @@ export class GovernanceLogEntry extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get type(): string {
-    let value = this.get("type");
+  get timestamp(): BigInt {
+    let value = this.get("timestamp");
+    return value.toBigInt();
+  }
+
+  set timestamp(value: BigInt) {
+    this.set("timestamp", Value.fromBigInt(value));
+  }
+
+  get submitter(): Bytes {
+    let value = this.get("submitter");
+    return value.toBytes();
+  }
+
+  set submitter(value: Bytes) {
+    this.set("submitter", Value.fromBytes(value));
+  }
+
+  get block(): BigInt {
+    let value = this.get("block");
+    return value.toBigInt();
+  }
+
+  set block(value: BigInt) {
+    this.set("block", Value.fromBigInt(value));
+  }
+
+  get transactionHash(): string {
+    let value = this.get("transactionHash");
     return value.toString();
   }
 
-  set type(value: string) {
-    this.set("type", Value.fromString(value));
+  set transactionHash(value: string) {
+    this.set("transactionHash", Value.fromString(value));
   }
 
   get isRequest(): boolean {
@@ -1023,76 +1050,25 @@ export class GovernanceLogEntry extends Entity {
     this.set("isRequest", Value.fromBoolean(value));
   }
 
-  get newLotSizes(): Array<BigInt> | null {
-    let value = this.get("newLotSizes");
+  get change(): string | null {
+    let value = this.get("change");
     if (value === null) {
       return null;
     } else {
-      return value.toBigIntArray();
+      return value.toString();
     }
   }
 
-  set newLotSizes(value: Array<BigInt> | null) {
+  set change(value: string | null) {
     if (value === null) {
-      this.unset("newLotSizes");
+      this.unset("change");
     } else {
-      this.set("newLotSizes", Value.fromBigIntArray(value as Array<BigInt>));
-    }
-  }
-
-  get newFactorySelector(): Bytes | null {
-    let value = this.get("newFactorySelector");
-    if (value === null) {
-      return null;
-    } else {
-      return value.toBytes();
-    }
-  }
-
-  set newFactorySelector(value: Bytes | null) {
-    if (value === null) {
-      this.unset("newFactorySelector");
-    } else {
-      this.set("newFactorySelector", Value.fromBytes(value as Bytes));
-    }
-  }
-
-  get newFullyBakedFactory(): Bytes | null {
-    let value = this.get("newFullyBakedFactory");
-    if (value === null) {
-      return null;
-    } else {
-      return value.toBytes();
-    }
-  }
-
-  set newFullyBakedFactory(value: Bytes | null) {
-    if (value === null) {
-      this.unset("newFullyBakedFactory");
-    } else {
-      this.set("newFullyBakedFactory", Value.fromBytes(value as Bytes));
-    }
-  }
-
-  get newKeepStakedFactory(): Bytes | null {
-    let value = this.get("newKeepStakedFactory");
-    if (value === null) {
-      return null;
-    } else {
-      return value.toBytes();
-    }
-  }
-
-  set newKeepStakedFactory(value: Bytes | null) {
-    if (value === null) {
-      this.unset("newKeepStakedFactory");
-    } else {
-      this.set("newKeepStakedFactory", Value.fromBytes(value as Bytes));
+      this.set("change", Value.fromString(value as string));
     }
   }
 }
 
-export class PendingGovernanceChange extends Entity {
+export class GovernanceChange extends Entity {
   constructor(id: string) {
     super();
     this.set("id", Value.fromString(id));
@@ -1100,23 +1076,17 @@ export class PendingGovernanceChange extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(
-      id !== null,
-      "Cannot save PendingGovernanceChange entity without an ID"
-    );
+    assert(id !== null, "Cannot save GovernanceChange entity without an ID");
     assert(
       id.kind == ValueKind.STRING,
-      "Cannot save PendingGovernanceChange entity with non-string ID. " +
+      "Cannot save GovernanceChange entity with non-string ID. " +
         'Considering using .toHex() to convert the "id" to a string.'
     );
-    store.set("PendingGovernanceChange", id.toString(), this);
+    store.set("GovernanceChange", id.toString(), this);
   }
 
-  static load(id: string): PendingGovernanceChange | null {
-    return store.get(
-      "PendingGovernanceChange",
-      id
-    ) as PendingGovernanceChange | null;
+  static load(id: string): GovernanceChange | null {
+    return store.get("GovernanceChange", id) as GovernanceChange | null;
   }
 
   get id(): string {
@@ -1206,6 +1176,130 @@ export class PendingGovernanceChange extends Entity {
       this.set("finalizeTransactionHash", Value.fromString(value as string));
     }
   }
+
+  get newLotSizes(): Array<BigInt> | null {
+    let value = this.get("newLotSizes");
+    if (value === null) {
+      return null;
+    } else {
+      return value.toBigIntArray();
+    }
+  }
+
+  set newLotSizes(value: Array<BigInt> | null) {
+    if (value === null) {
+      this.unset("newLotSizes");
+    } else {
+      this.set("newLotSizes", Value.fromBigIntArray(value as Array<BigInt>));
+    }
+  }
+
+  get newSignerFeeDivisor(): i32 {
+    let value = this.get("newSignerFeeDivisor");
+    return value.toI32();
+  }
+
+  set newSignerFeeDivisor(value: i32) {
+    this.set("newSignerFeeDivisor", Value.fromI32(value));
+  }
+
+  get newFactorySelector(): Bytes | null {
+    let value = this.get("newFactorySelector");
+    if (value === null) {
+      return null;
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set newFactorySelector(value: Bytes | null) {
+    if (value === null) {
+      this.unset("newFactorySelector");
+    } else {
+      this.set("newFactorySelector", Value.fromBytes(value as Bytes));
+    }
+  }
+
+  get newFullyBakedFactory(): Bytes | null {
+    let value = this.get("newFullyBakedFactory");
+    if (value === null) {
+      return null;
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set newFullyBakedFactory(value: Bytes | null) {
+    if (value === null) {
+      this.unset("newFullyBakedFactory");
+    } else {
+      this.set("newFullyBakedFactory", Value.fromBytes(value as Bytes));
+    }
+  }
+
+  get newKeepStakedFactory(): Bytes | null {
+    let value = this.get("newKeepStakedFactory");
+    if (value === null) {
+      return null;
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set newKeepStakedFactory(value: Bytes | null) {
+    if (value === null) {
+      this.unset("newKeepStakedFactory");
+    } else {
+      this.set("newKeepStakedFactory", Value.fromBytes(value as Bytes));
+    }
+  }
+
+  get newPriceFeed(): Bytes | null {
+    let value = this.get("newPriceFeed");
+    if (value === null) {
+      return null;
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set newPriceFeed(value: Bytes | null) {
+    if (value === null) {
+      this.unset("newPriceFeed");
+    } else {
+      this.set("newPriceFeed", Value.fromBytes(value as Bytes));
+    }
+  }
+
+  get newInitialCollateralizedPercent(): i32 {
+    let value = this.get("newInitialCollateralizedPercent");
+    return value.toI32();
+  }
+
+  set newInitialCollateralizedPercent(value: i32) {
+    this.set("newInitialCollateralizedPercent", Value.fromI32(value));
+  }
+
+  get newSeverelyUndercollateralizedThresholdPercent(): i32 {
+    let value = this.get("newSeverelyUndercollateralizedThresholdPercent");
+    return value.toI32();
+  }
+
+  set newSeverelyUndercollateralizedThresholdPercent(value: i32) {
+    this.set(
+      "newSeverelyUndercollateralizedThresholdPercent",
+      Value.fromI32(value)
+    );
+  }
+
+  get newUndercollateralizedThresholdPercent(): i32 {
+    let value = this.get("newUndercollateralizedThresholdPercent");
+    return value.toI32();
+  }
+
+  set newUndercollateralizedThresholdPercent(value: i32) {
+    this.set("newUndercollateralizedThresholdPercent", Value.fromI32(value));
+  }
 }
 
 export class Governance extends Entity {
@@ -1247,6 +1341,35 @@ export class Governance extends Entity {
     this.set("newDepositsAllowed", Value.fromBoolean(value));
   }
 
+  get signerFeeDivisor(): i32 {
+    let value = this.get("signerFeeDivisor");
+    return value.toI32();
+  }
+
+  set signerFeeDivisor(value: i32) {
+    this.set("signerFeeDivisor", Value.fromI32(value));
+  }
+
+  get pendingSignerFeeDivisorChange(): string | null {
+    let value = this.get("pendingSignerFeeDivisorChange");
+    if (value === null) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set pendingSignerFeeDivisorChange(value: string | null) {
+    if (value === null) {
+      this.unset("pendingSignerFeeDivisorChange");
+    } else {
+      this.set(
+        "pendingSignerFeeDivisorChange",
+        Value.fromString(value as string)
+      );
+    }
+  }
+
   get lotSizes(): Array<BigInt> {
     let value = this.get("lotSizes");
     return value.toBigIntArray();
@@ -1254,26 +1377,6 @@ export class Governance extends Entity {
 
   set lotSizes(value: Array<BigInt>) {
     this.set("lotSizes", Value.fromBigIntArray(value));
-  }
-
-  get pendingLotSizes(): Array<BigInt> | null {
-    let value = this.get("pendingLotSizes");
-    if (value === null) {
-      return null;
-    } else {
-      return value.toBigIntArray();
-    }
-  }
-
-  set pendingLotSizes(value: Array<BigInt> | null) {
-    if (value === null) {
-      this.unset("pendingLotSizes");
-    } else {
-      this.set(
-        "pendingLotSizes",
-        Value.fromBigIntArray(value as Array<BigInt>)
-      );
-    }
   }
 
   get pendingLotSizeChange(): string | null {
@@ -1320,57 +1423,6 @@ export class Governance extends Entity {
     this.set("keepStakedFactory", Value.fromBytes(value));
   }
 
-  get pendingFactorySelector(): Bytes | null {
-    let value = this.get("pendingFactorySelector");
-    if (value === null) {
-      return null;
-    } else {
-      return value.toBytes();
-    }
-  }
-
-  set pendingFactorySelector(value: Bytes | null) {
-    if (value === null) {
-      this.unset("pendingFactorySelector");
-    } else {
-      this.set("pendingFactorySelector", Value.fromBytes(value as Bytes));
-    }
-  }
-
-  get pendingFullyBakedFactory(): Bytes | null {
-    let value = this.get("pendingFullyBakedFactory");
-    if (value === null) {
-      return null;
-    } else {
-      return value.toBytes();
-    }
-  }
-
-  set pendingFullyBakedFactory(value: Bytes | null) {
-    if (value === null) {
-      this.unset("pendingFullyBakedFactory");
-    } else {
-      this.set("pendingFullyBakedFactory", Value.fromBytes(value as Bytes));
-    }
-  }
-
-  get pendingKeepStakedFactory(): Bytes | null {
-    let value = this.get("pendingKeepStakedFactory");
-    if (value === null) {
-      return null;
-    } else {
-      return value.toBytes();
-    }
-  }
-
-  set pendingKeepStakedFactory(value: Bytes | null) {
-    if (value === null) {
-      this.unset("pendingKeepStakedFactory");
-    } else {
-      this.set("pendingKeepStakedFactory", Value.fromBytes(value as Bytes));
-    }
-  }
-
   get pendingFactoriesChange(): string | null {
     let value = this.get("pendingFactoriesChange");
     if (value === null) {
@@ -1385,6 +1437,82 @@ export class Governance extends Entity {
       this.unset("pendingFactoriesChange");
     } else {
       this.set("pendingFactoriesChange", Value.fromString(value as string));
+    }
+  }
+
+  get priceFeeds(): Array<Bytes> {
+    let value = this.get("priceFeeds");
+    return value.toBytesArray();
+  }
+
+  set priceFeeds(value: Array<Bytes>) {
+    this.set("priceFeeds", Value.fromBytesArray(value));
+  }
+
+  get pendingPriceFeedAddition(): string | null {
+    let value = this.get("pendingPriceFeedAddition");
+    if (value === null) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set pendingPriceFeedAddition(value: string | null) {
+    if (value === null) {
+      this.unset("pendingPriceFeedAddition");
+    } else {
+      this.set("pendingPriceFeedAddition", Value.fromString(value as string));
+    }
+  }
+
+  get initialCollateralizedPercent(): i32 {
+    let value = this.get("initialCollateralizedPercent");
+    return value.toI32();
+  }
+
+  set initialCollateralizedPercent(value: i32) {
+    this.set("initialCollateralizedPercent", Value.fromI32(value));
+  }
+
+  get severelyUndercollateralizedThresholdPercent(): i32 {
+    let value = this.get("severelyUndercollateralizedThresholdPercent");
+    return value.toI32();
+  }
+
+  set severelyUndercollateralizedThresholdPercent(value: i32) {
+    this.set(
+      "severelyUndercollateralizedThresholdPercent",
+      Value.fromI32(value)
+    );
+  }
+
+  get undercollateralizedThresholdPercent(): i32 {
+    let value = this.get("undercollateralizedThresholdPercent");
+    return value.toI32();
+  }
+
+  set undercollateralizedThresholdPercent(value: i32) {
+    this.set("undercollateralizedThresholdPercent", Value.fromI32(value));
+  }
+
+  get pendingCollateralizationThresholdsChange(): string | null {
+    let value = this.get("pendingCollateralizationThresholdsChange");
+    if (value === null) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set pendingCollateralizationThresholdsChange(value: string | null) {
+    if (value === null) {
+      this.unset("pendingCollateralizationThresholdsChange");
+    } else {
+      this.set(
+        "pendingCollateralizationThresholdsChange",
+        Value.fromString(value as string)
+      );
     }
   }
 }

@@ -147,24 +147,23 @@ enum BondedECDSAKeepStatus {
 
 type GovernanceLogEntry @entity {
   id: ID!
-  type: GovernanceChangeType!
+  timestamp: BigInt!
+  submitter: Bytes!
+  block: BigInt!
+  transactionHash: String!
   isRequest: Boolean!
-
-  # A copy of the governance type, but all fields are optional. It might be preferable to use interfaces
-  # and separate subtypes for each log change kind, but this spams the type list of the graph too much,
-  # and we have no ability for any type to be non-root.
-  newLotSizes: [BigInt!]
-  newFactorySelector: Bytes
-  newFullyBakedFactory: Bytes
-  newKeepStakedFactory: Bytes
+  change: GovernanceChange
 }
 
 enum GovernanceChangeType {
   LOT_SIZES,
-  KEEP_FACTORIES
+  SIGNER_FEE_DIVISOR,
+  KEEP_FACTORIES,
+  COLLATERALIZATION_THRESHOLDS,
+  ETH_BTC_PRICE_FEED_ADDITION
 }
 
-type PendingGovernanceChange @entity {
+type GovernanceChange @entity {
   id: ID!
   type: GovernanceChangeType!
   requestedAt: BigInt!
@@ -172,7 +171,20 @@ type PendingGovernanceChange @entity {
   requestBlock: BigInt!
   requestTransactionHash: String!
   finalizeBlock: BigInt
-  finalizeTransactionHash: String
+  finalizeTransactionHash: String,
+
+  # A copy of the governance type, but all fields are optional. It might be preferable to use interfaces
+  # and separate subtypes for each log change kind, but this spams the type list of the graph too much,
+  # and we have no ability for any type to be non-root.
+  newLotSizes: [BigInt!]
+  newSignerFeeDivisor: Int,
+  newFactorySelector: Bytes
+  newFullyBakedFactory: Bytes
+  newKeepStakedFactory: Bytes,
+  newPriceFeed: Bytes,
+  newInitialCollateralizedPercent: Int,
+  newSeverelyUndercollateralizedThresholdPercent: Int,
+  newUndercollateralizedThresholdPercent: Int,
 }
 
 type Governance @entity {
@@ -180,16 +192,22 @@ type Governance @entity {
 
   newDepositsAllowed: Boolean!
 
+  signerFeeDivisor: Int,
+  pendingSignerFeeDivisorChange: GovernanceChange,
+
   lotSizes: [BigInt!]!
-  pendingLotSizes: [BigInt!]
-  pendingLotSizeChange: PendingGovernanceChange
+  pendingLotSizeChange: GovernanceChange
 
   factorySelector: Bytes!
   fullyBakedFactory: Bytes!
   keepStakedFactory: Bytes!
-  pendingFactorySelector: Bytes
-  pendingFullyBakedFactory: Bytes
-  pendingKeepStakedFactory: Bytes
-  pendingFactoriesChange: PendingGovernanceChange
+  pendingFactoriesChange: GovernanceChange
 
+  priceFeeds: [Bytes!]!
+  pendingPriceFeedAddition: GovernanceChange,
+
+  initialCollateralizedPercent: Int!,
+  severelyUndercollateralizedThresholdPercent: Int!,
+  undercollateralizedThresholdPercent: Int!,
+  pendingCollateralizationThresholdsChange: GovernanceChange,
 }
