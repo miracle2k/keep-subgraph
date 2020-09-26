@@ -86,34 +86,17 @@ export class TBTCDepositToken extends Entity {
     this.set("mintedAt", Value.fromBigInt(value));
   }
 
-  get isBurned(): boolean {
-    let value = this.get("isBurned");
-    return value.toBoolean();
+  get minter(): Bytes {
+    let value = this.get("minter");
+    return value.toBytes();
   }
 
-  set isBurned(value: boolean) {
-    this.set("isBurned", Value.fromBoolean(value));
-  }
-
-  get burnedAt(): BigInt | null {
-    let value = this.get("burnedAt");
-    if (value === null) {
-      return null;
-    } else {
-      return value.toBigInt();
-    }
-  }
-
-  set burnedAt(value: BigInt | null) {
-    if (value === null) {
-      this.unset("burnedAt");
-    } else {
-      this.set("burnedAt", Value.fromBigInt(value as BigInt));
-    }
+  set minter(value: Bytes) {
+    this.set("minter", Value.fromBytes(value));
   }
 }
 
-export class TBTCToken extends Entity {
+export class LogEntry extends Entity {
   constructor(id: string) {
     super();
     this.set("id", Value.fromString(id));
@@ -121,17 +104,17 @@ export class TBTCToken extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id !== null, "Cannot save TBTCToken entity without an ID");
+    assert(id !== null, "Cannot save LogEntry entity without an ID");
     assert(
       id.kind == ValueKind.STRING,
-      "Cannot save TBTCToken entity with non-string ID. " +
+      "Cannot save LogEntry entity with non-string ID. " +
         'Considering using .toHex() to convert the "id" to a string.'
     );
-    store.set("TBTCToken", id.toString(), this);
+    store.set("LogEntry", id.toString(), this);
   }
 
-  static load(id: string): TBTCToken | null {
-    return store.get("TBTCToken", id) as TBTCToken | null;
+  static load(id: string): LogEntry | null {
+    return store.get("LogEntry", id) as LogEntry | null;
   }
 
   get id(): string {
@@ -143,57 +126,40 @@ export class TBTCToken extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get owner(): Bytes {
-    let value = this.get("owner");
-    return value.toBytes();
+  get transactionHash(): string {
+    let value = this.get("transactionHash");
+    return value.toString();
   }
 
-  set owner(value: Bytes) {
-    this.set("owner", Value.fromBytes(value));
+  set transactionHash(value: string) {
+    this.set("transactionHash", Value.fromString(value));
   }
 
-  get amount(): BigInt {
-    let value = this.get("amount");
+  get timestamp(): BigInt {
+    let value = this.get("timestamp");
     return value.toBigInt();
   }
 
-  set amount(value: BigInt) {
-    this.set("amount", Value.fromBigInt(value));
+  set timestamp(value: BigInt) {
+    this.set("timestamp", Value.fromBigInt(value));
   }
 
-  get mintedAt(): BigInt {
-    let value = this.get("mintedAt");
-    return value.toBigInt();
+  get deposit(): string {
+    let value = this.get("deposit");
+    return value.toString();
   }
 
-  set mintedAt(value: BigInt) {
-    this.set("mintedAt", Value.fromBigInt(value));
+  set deposit(value: string) {
+    this.set("deposit", Value.fromString(value));
   }
 
-  get burnedAt(): BigInt | null {
-    let value = this.get("burnedAt");
-    if (value === null) {
-      return null;
-    } else {
-      return value.toBigInt();
-    }
+  get message(): string {
+    let value = this.get("message");
+    return value.toString();
   }
 
-  set burnedAt(value: BigInt | null) {
-    if (value === null) {
-      this.unset("burnedAt");
-    } else {
-      this.set("burnedAt", Value.fromBigInt(value as BigInt));
-    }
-  }
-
-  get isBurned(): boolean {
-    let value = this.get("isBurned");
-    return value.toBoolean();
-  }
-
-  set isBurned(value: boolean) {
-    this.set("isBurned", Value.fromBoolean(value));
+  set message(value: string) {
+    this.set("message", Value.fromString(value));
   }
 }
 
@@ -236,15 +202,6 @@ export class Deposit extends Entity {
     this.set("tbtcSystem", Value.fromBytes(value));
   }
 
-  get owner(): Bytes {
-    let value = this.get("owner");
-    return value.toBytes();
-  }
-
-  set owner(value: Bytes) {
-    this.set("owner", Value.fromBytes(value));
-  }
-
   get contractAddress(): Bytes {
     let value = this.get("contractAddress");
     return value.toBytes();
@@ -254,21 +211,13 @@ export class Deposit extends Entity {
     this.set("contractAddress", Value.fromBytes(value));
   }
 
-  get tbtcToken(): string | null {
-    let value = this.get("tbtcToken");
-    if (value === null) {
-      return null;
-    } else {
-      return value.toString();
-    }
+  get tdtToken(): string {
+    let value = this.get("tdtToken");
+    return value.toString();
   }
 
-  set tbtcToken(value: string | null) {
-    if (value === null) {
-      this.unset("tbtcToken");
-    } else {
-      this.set("tbtcToken", Value.fromString(value as string));
-    }
+  set tdtToken(value: string) {
+    this.set("tdtToken", Value.fromString(value));
   }
 
   get currentState(): string | null {
@@ -412,8 +361,8 @@ export class Deposit extends Entity {
     }
   }
 
-  get remainingTerm(): BigInt | null {
-    let value = this.get("remainingTerm");
+  get endOfTerm(): BigInt | null {
+    let value = this.get("endOfTerm");
     if (value === null) {
       return null;
     } else {
@@ -421,11 +370,11 @@ export class Deposit extends Entity {
     }
   }
 
-  set remainingTerm(value: BigInt | null) {
+  set endOfTerm(value: BigInt | null) {
     if (value === null) {
-      this.unset("remainingTerm");
+      this.unset("endOfTerm");
     } else {
-      this.set("remainingTerm", Value.fromBigInt(value as BigInt));
+      this.set("endOfTerm", Value.fromBigInt(value as BigInt));
     }
   }
 
@@ -1023,5 +972,419 @@ export class BondedECDSAKeep extends Entity {
 
   set members(value: Array<string | null>) {
     this.set("members", Value.fromStringArray(value));
+  }
+}
+
+export class GovernanceLogEntry extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id !== null, "Cannot save GovernanceLogEntry entity without an ID");
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save GovernanceLogEntry entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("GovernanceLogEntry", id.toString(), this);
+  }
+
+  static load(id: string): GovernanceLogEntry | null {
+    return store.get("GovernanceLogEntry", id) as GovernanceLogEntry | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get type(): string {
+    let value = this.get("type");
+    return value.toString();
+  }
+
+  set type(value: string) {
+    this.set("type", Value.fromString(value));
+  }
+
+  get isRequest(): boolean {
+    let value = this.get("isRequest");
+    return value.toBoolean();
+  }
+
+  set isRequest(value: boolean) {
+    this.set("isRequest", Value.fromBoolean(value));
+  }
+
+  get newLotSizes(): Array<BigInt> | null {
+    let value = this.get("newLotSizes");
+    if (value === null) {
+      return null;
+    } else {
+      return value.toBigIntArray();
+    }
+  }
+
+  set newLotSizes(value: Array<BigInt> | null) {
+    if (value === null) {
+      this.unset("newLotSizes");
+    } else {
+      this.set("newLotSizes", Value.fromBigIntArray(value as Array<BigInt>));
+    }
+  }
+
+  get newFactorySelector(): Bytes | null {
+    let value = this.get("newFactorySelector");
+    if (value === null) {
+      return null;
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set newFactorySelector(value: Bytes | null) {
+    if (value === null) {
+      this.unset("newFactorySelector");
+    } else {
+      this.set("newFactorySelector", Value.fromBytes(value as Bytes));
+    }
+  }
+
+  get newFullyBakedFactory(): Bytes | null {
+    let value = this.get("newFullyBakedFactory");
+    if (value === null) {
+      return null;
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set newFullyBakedFactory(value: Bytes | null) {
+    if (value === null) {
+      this.unset("newFullyBakedFactory");
+    } else {
+      this.set("newFullyBakedFactory", Value.fromBytes(value as Bytes));
+    }
+  }
+
+  get newKeepStakedFactory(): Bytes | null {
+    let value = this.get("newKeepStakedFactory");
+    if (value === null) {
+      return null;
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set newKeepStakedFactory(value: Bytes | null) {
+    if (value === null) {
+      this.unset("newKeepStakedFactory");
+    } else {
+      this.set("newKeepStakedFactory", Value.fromBytes(value as Bytes));
+    }
+  }
+}
+
+export class PendingGovernanceChange extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(
+      id !== null,
+      "Cannot save PendingGovernanceChange entity without an ID"
+    );
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save PendingGovernanceChange entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("PendingGovernanceChange", id.toString(), this);
+  }
+
+  static load(id: string): PendingGovernanceChange | null {
+    return store.get(
+      "PendingGovernanceChange",
+      id
+    ) as PendingGovernanceChange | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get type(): string {
+    let value = this.get("type");
+    return value.toString();
+  }
+
+  set type(value: string) {
+    this.set("type", Value.fromString(value));
+  }
+
+  get requestedAt(): BigInt {
+    let value = this.get("requestedAt");
+    return value.toBigInt();
+  }
+
+  set requestedAt(value: BigInt) {
+    this.set("requestedAt", Value.fromBigInt(value));
+  }
+
+  get takesEffectAfter(): BigInt {
+    let value = this.get("takesEffectAfter");
+    return value.toBigInt();
+  }
+
+  set takesEffectAfter(value: BigInt) {
+    this.set("takesEffectAfter", Value.fromBigInt(value));
+  }
+
+  get requestBlock(): BigInt {
+    let value = this.get("requestBlock");
+    return value.toBigInt();
+  }
+
+  set requestBlock(value: BigInt) {
+    this.set("requestBlock", Value.fromBigInt(value));
+  }
+
+  get requestTransactionHash(): string {
+    let value = this.get("requestTransactionHash");
+    return value.toString();
+  }
+
+  set requestTransactionHash(value: string) {
+    this.set("requestTransactionHash", Value.fromString(value));
+  }
+
+  get finalizeBlock(): BigInt | null {
+    let value = this.get("finalizeBlock");
+    if (value === null) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set finalizeBlock(value: BigInt | null) {
+    if (value === null) {
+      this.unset("finalizeBlock");
+    } else {
+      this.set("finalizeBlock", Value.fromBigInt(value as BigInt));
+    }
+  }
+
+  get finalizeTransactionHash(): string | null {
+    let value = this.get("finalizeTransactionHash");
+    if (value === null) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set finalizeTransactionHash(value: string | null) {
+    if (value === null) {
+      this.unset("finalizeTransactionHash");
+    } else {
+      this.set("finalizeTransactionHash", Value.fromString(value as string));
+    }
+  }
+}
+
+export class Governance extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id !== null, "Cannot save Governance entity without an ID");
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save Governance entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("Governance", id.toString(), this);
+  }
+
+  static load(id: string): Governance | null {
+    return store.get("Governance", id) as Governance | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get newDepositsAllowed(): boolean {
+    let value = this.get("newDepositsAllowed");
+    return value.toBoolean();
+  }
+
+  set newDepositsAllowed(value: boolean) {
+    this.set("newDepositsAllowed", Value.fromBoolean(value));
+  }
+
+  get lotSizes(): Array<BigInt> {
+    let value = this.get("lotSizes");
+    return value.toBigIntArray();
+  }
+
+  set lotSizes(value: Array<BigInt>) {
+    this.set("lotSizes", Value.fromBigIntArray(value));
+  }
+
+  get pendingLotSizes(): Array<BigInt> | null {
+    let value = this.get("pendingLotSizes");
+    if (value === null) {
+      return null;
+    } else {
+      return value.toBigIntArray();
+    }
+  }
+
+  set pendingLotSizes(value: Array<BigInt> | null) {
+    if (value === null) {
+      this.unset("pendingLotSizes");
+    } else {
+      this.set(
+        "pendingLotSizes",
+        Value.fromBigIntArray(value as Array<BigInt>)
+      );
+    }
+  }
+
+  get pendingLotSizeChange(): string | null {
+    let value = this.get("pendingLotSizeChange");
+    if (value === null) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set pendingLotSizeChange(value: string | null) {
+    if (value === null) {
+      this.unset("pendingLotSizeChange");
+    } else {
+      this.set("pendingLotSizeChange", Value.fromString(value as string));
+    }
+  }
+
+  get factorySelector(): Bytes {
+    let value = this.get("factorySelector");
+    return value.toBytes();
+  }
+
+  set factorySelector(value: Bytes) {
+    this.set("factorySelector", Value.fromBytes(value));
+  }
+
+  get fullyBakedFactory(): Bytes {
+    let value = this.get("fullyBakedFactory");
+    return value.toBytes();
+  }
+
+  set fullyBakedFactory(value: Bytes) {
+    this.set("fullyBakedFactory", Value.fromBytes(value));
+  }
+
+  get keepStakedFactory(): Bytes {
+    let value = this.get("keepStakedFactory");
+    return value.toBytes();
+  }
+
+  set keepStakedFactory(value: Bytes) {
+    this.set("keepStakedFactory", Value.fromBytes(value));
+  }
+
+  get pendingFactorySelector(): Bytes | null {
+    let value = this.get("pendingFactorySelector");
+    if (value === null) {
+      return null;
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set pendingFactorySelector(value: Bytes | null) {
+    if (value === null) {
+      this.unset("pendingFactorySelector");
+    } else {
+      this.set("pendingFactorySelector", Value.fromBytes(value as Bytes));
+    }
+  }
+
+  get pendingFullyBakedFactory(): Bytes | null {
+    let value = this.get("pendingFullyBakedFactory");
+    if (value === null) {
+      return null;
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set pendingFullyBakedFactory(value: Bytes | null) {
+    if (value === null) {
+      this.unset("pendingFullyBakedFactory");
+    } else {
+      this.set("pendingFullyBakedFactory", Value.fromBytes(value as Bytes));
+    }
+  }
+
+  get pendingKeepStakedFactory(): Bytes | null {
+    let value = this.get("pendingKeepStakedFactory");
+    if (value === null) {
+      return null;
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set pendingKeepStakedFactory(value: Bytes | null) {
+    if (value === null) {
+      this.unset("pendingKeepStakedFactory");
+    } else {
+      this.set("pendingKeepStakedFactory", Value.fromBytes(value as Bytes));
+    }
+  }
+
+  get pendingFactoriesChange(): string | null {
+    let value = this.get("pendingFactoriesChange");
+    if (value === null) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set pendingFactoriesChange(value: string | null) {
+    if (value === null) {
+      this.unset("pendingFactoriesChange");
+    } else {
+      this.set("pendingFactoriesChange", Value.fromString(value as string));
+    }
   }
 }

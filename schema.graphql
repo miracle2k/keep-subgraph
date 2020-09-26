@@ -4,17 +4,7 @@ type TBTCDepositToken @entity {
   tokenID: BigInt!
   owner: Bytes!
   mintedAt: BigInt!
-  isBurned: Boolean
-  burnedAt: BigInt
-}
-
-type TBTCToken @entity {
-  id: ID!
-  owner: Bytes!
-  amount: BigInt!
-  mintedAt: BigInt!
-  burnedAt: BigInt
-  isBurned: Boolean!
+  minter: Bytes!
 }
 
 # type FeeRebateToken @entity {
@@ -24,13 +14,39 @@ type TBTCToken @entity {
 #   address: Bytes!
 # }
 
+# This logs everything about the system, but no tBTC or KEEP transfers.
+#interface LogEntry @entity {
+#  id: ID!
+#  timestamp: BigInt!
+#}
+#
+#interface LogEntryDeposit {
+#  deposit: Deposit!
+#}
+#
+#type LogEntryTDTTransfer implements LogEntry & LogEntryDeposit @entity {
+#  id: ID!
+#  timestamp: BigInt!
+#
+#  token: TBTCDepositToken!
+#  deposit: Deposit!
+#}
+
+type LogEntry @entity {
+  id: ID!
+  transactionHash: String!
+  timestamp: BigInt!
+
+  deposit: Deposit!
+  message: String!
+}
+
 # from https://github.com/keep-network/tbtc/blob/master/solidity/contracts/deposit/DepositUtils.sol
 type Deposit @entity {
   id: ID!
   tbtcSystem: Bytes! # address of the system contract
-  owner: Bytes!
   contractAddress: Bytes!
-  tbtcToken: TBTCToken
+  tdtToken: TBTCDepositToken!
   currentState: DepositState
   createdAt: BigInt
 
@@ -43,7 +59,7 @@ type Deposit @entity {
   severelyUndercollateralizedThresholdPercent: Int
   signerFee: BigInt
   utxoSize: BigInt
-  remainingTerm: BigInt
+  endOfTerm: BigInt
   auctionValue: BigInt
   bondedECDSAKeep: BondedECDSAKeep
 
@@ -127,4 +143,53 @@ enum BondedECDSAKeepStatus {
   ACTIVE
   CLOSED
   TERMINATED
+}
+
+type GovernanceLogEntry @entity {
+  id: ID!
+  type: GovernanceChangeType!
+  isRequest: Boolean!
+
+  # A copy of the governance type, but all fields are optional. It might be preferable to use interfaces
+  # and separate subtypes for each log change kind, but this spams the type list of the graph too much,
+  # and we have no ability for any type to be non-root.
+  newLotSizes: [BigInt!]
+  newFactorySelector: Bytes
+  newFullyBakedFactory: Bytes
+  newKeepStakedFactory: Bytes
+}
+
+enum GovernanceChangeType {
+  LOT_SIZES,
+  KEEP_FACTORIES
+}
+
+type PendingGovernanceChange @entity {
+  id: ID!
+  type: GovernanceChangeType!
+  requestedAt: BigInt!
+  takesEffectAfter: BigInt!
+  requestBlock: BigInt!
+  requestTransactionHash: String!
+  finalizeBlock: BigInt
+  finalizeTransactionHash: String
+}
+
+type Governance @entity {
+  id: ID!
+
+  newDepositsAllowed: Boolean!
+
+  lotSizes: [BigInt!]!
+  pendingLotSizes: [BigInt!]
+  pendingLotSizeChange: PendingGovernanceChange
+
+  factorySelector: Bytes!
+  fullyBakedFactory: Bytes!
+  keepStakedFactory: Bytes!
+  pendingFactorySelector: Bytes
+  pendingFullyBakedFactory: Bytes
+  pendingKeepStakedFactory: Bytes
+  pendingFactoriesChange: PendingGovernanceChange
+
 }
