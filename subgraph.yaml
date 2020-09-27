@@ -142,6 +142,8 @@ dataSources:
           handler: handleAllowNewDepositsUpdated
 
       file: ./src/mapping.ts
+
+
 templates:
   - name: DepositContract
     kind: ethereum/contract

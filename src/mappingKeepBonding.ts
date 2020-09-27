@@ -1,99 +1,153 @@
 import {
-  KeepBonding,
   BondCreated,
   BondReassigned,
   BondReleased,
   BondSeized,
   UnbondedValueDeposited,
   UnbondedValueWithdrawn
-} from "../generated/KeepBonding/KeepBonding"
+} from "../generated/KeepBonding/KeepBondingContract"
 
 import { toDecimal } from "./decimalUtils";
-import { BIGDECIMAL_ZERO, BIGINT_ZERO } from "./constants";
 import {getOrCreateKeepMember} from "./helpers";
-import { log } from "@graphprotocol/graph-ts";
+import { Address, BigDecimal, BigInt, log } from "@graphprotocol/graph-ts";
+import {Bond, Stats} from "../generated/schema";
+import {BIGDECIMAL_ZERO} from "./constants";
 
-// - contract.authorizerOf(...)
-// - contract.availableUnbondedValue(...)
-// - contract.beneficiaryOf(...)
-// - contract.bondAmount(...)
-// - contract.hasSecondaryAuthorization(...)
-// - contract.isAuthorizedForOperator(...)
-// - contract.unbondedValue(...)
+
+// TODO: Reassign
+
+// TODO: Consider whether, instead of doing the math ourselves, we should/can call inot the contract to get the
+// bonded amounts per member.
+
+
+function getBondId(operator: Address,  referenceId: BigInt): string {
+  return operator.toHex()  + "-" + referenceId.toString();
+}
+
+export function getStats(): Stats {
+  let stats = Stats.load("current");
+  if (stats == null) {
+    stats = new Stats("current")
+    stats.availableToBeBonded = BIGDECIMAL_ZERO
+    stats.totalBonded = BIGDECIMAL_ZERO;
+    stats.totalBondsSeized = BIGDECIMAL_ZERO;
+  }
+  return stats!;
+}
+
 
 export function handleBondCreated(event: BondCreated): void {
-  // let totalBonded = getOrCreateTotalBondedECDSAKeep();
-  // totalBonded.totalAvailable  = totalBonded.totalAvailable.minus(toDecimal(event.params.amount));
-  // totalBonded.totalBonded  = totalBonded.totalBonded.plus(toDecimal(event.params.amount));
-  // totalBonded.save()
-
-  // let contract = KeepBonding.bind(event.address);
-  // let idKeepbonding = event.params.holder.toHex();
-  // let keepBonding = getOrCreateKeepBonding(idKeepbonding);
-  // keepBonding.holder =event.params.holder;
-  // keepBonding.referenceID = event.params.referenceID;
-  // keepBonding.sortitionPool = event.params.sortitionPool;
-  // keepBonding.bondedECDSAKeep =event.params.holder.toHex();
-  // keepBonding.save()
+  let bond = new Bond(getBondId(event.params.operator, event.params.referenceID));
+  bond.status = 'ACTIVE';
+  bond.bondedAmount = BIGDECIMAL_ZERO.plus(toDecimal(event.params.amount));
+  bond.holder = event.params.holder;
+  bond.operator = event.params.operator.toHexString();
+  bond.keep = event.params.holder.toHexString();
+  bond.referenceID = event.params.referenceID;
+  bond.save()
 
   let operator = getOrCreateKeepMember(event.params.operator);
-  // let keeps = operator.keeps;
-  // keeps.push(keepBonding.id);
-  // operator.keeps = keeps;
-
   operator.unboundAvailable = operator.unboundAvailable.minus(toDecimal(event.params.amount));
   operator.bonded = operator.bonded.plus(toDecimal(event.params.amount));
-  operator.save()
+  operator.save();
+
+  let stats = getStats();
+  stats.availableToBeBonded = stats.availableToBeBonded.minus(toDecimal(event.params.amount));
+  stats.totalBonded = stats.totalBonded.plus(toDecimal(event.params.amount));
+  stats.save()
 }
 
 export function handleBondReassigned(event: BondReassigned): void {
+  // let bondId = getBondId(event.params.operator, event.params.referenceID);
+  // let bond = Bond.load(bondId)!;
+  //
+  // let newBond =
+  //
+  //
+  // let operatorAddress = event.params.operator;
+  // let referenceID = event.params.referenceID;
+  // let newReferenceId = event.params.newReferenceID;
+  // const id = generateMemberId(operatorAddress.toHex(),referenceID.toString());
+  // let oldMemberLocked = MemberLocked.load(id);
+  // if (oldMemberLocked != null) {
+  //   const newId = generateMemberId(
+  //       operatorAddress.toHex(),
+  //       newReferenceId.toString()
+  //   );
+  //   let newMemberLocked = getOrCreateMemberLocked(newId);
+  //   newMemberLocked.holder = oldMemberLocked.holder;
+  //   newMemberLocked.operator = oldMemberLocked.operator;
+  //   newMemberLocked.referenceID = oldMemberLocked.referenceID;
+  //   newMemberLocked.bonded = oldMemberLocked.bonded;
+  //   newMemberLocked.save();
+  //
+  //   let member = getOrCreateKeepMember(event.params.operator.toHex());
+  //   let memberLockes = member.memberLocks;
+  //   const index = memberLockes.indexOf(oldMemberLocked.id);
+  //   memberLockes.splice(index, 1);
+  //   memberLockes.push(oldMemberLocked.id);
+  //   member.memberLocks = memberLockes;
+  //   member.save();
+  //}
 }
 
 export function handleBondReleased(event: BondReleased): void {
+  // We do not get the amount here from the contract event, so we have to read it from the bond.
+  let bondId = getBondId(event.params.operator, event.params.referenceID);
+  let bond = Bond.load(bondId)!;
+  let bondedAmount: BigDecimal = bond.bondedAmount;
+  bond.bondedAmount = BIGDECIMAL_ZERO;
+  bond.status = 'RELEASED';
+  bond.save();
+
   let operator = getOrCreateKeepMember(event.params.operator);
-
-  // let totalBonded = getOrCreateTotalBondedECDSAKeep();
-  // totalBonded.totalAvailable  = totalBonded.totalAvailable.plus(operator.bonded);
-  // totalBonded.totalBonded = totalBonded.totalBonded.minus(operator.bonded);
-  // totalBonded.save()
-
-  operator.unboundAvailable = operator.unboundAvailable.plus(operator.bonded);
-  operator.bonded =  operator.bonded.minus(toDecimal(event.params.amount));
+  operator.unboundAvailable = operator.unboundAvailable.plus(bondedAmount);
+  operator.bonded = operator.bonded.minus(bondedAmount);
   operator.save()
+
+  let stats = getStats();
+  stats.availableToBeBonded = stats.availableToBeBonded.plus(bondedAmount);
+  stats.totalBonded = stats.totalBonded.minus(bondedAmount);
+  stats.save()
 }
 
 export function handleBondSeized(event: BondSeized): void {
+  let bondId = getBondId(event.params.operator, event.params.referenceID);
+  let bond = Bond.load(bondId)!;
+  bond.bondedAmount = BIGDECIMAL_ZERO;
+  bond.status = 'SEIZED';
+  bond.save();
+
   let operator = getOrCreateKeepMember(event.params.operator);
-  // operator.destination = event.params.destination;
-  // operator.seizeAmount = toDecimal(event.params.amount);
   operator.bonded = operator.bonded.minus(toDecimal(event.params.amount));
   operator.save()
 
-  // let totalBonded = getOrCreateTotalBondedECDSAKeep();
-  // totalBonded.totalBonded = totalBonded.totalBonded.minus(toDecimal(event.params.amount));
-  // totalBonded.save()
+  let stats = getStats();
+  stats.totalBonded = stats.totalBonded.minus(toDecimal(event.params.amount));
+  stats.totalBondsSeized = stats.totalBondsSeized.plus(toDecimal(event.params.amount));
+  stats.save()
 }
 
 export function handleUnbondedValueDeposited(
     event: UnbondedValueDeposited
 ): void {
-  // let totalBonded = getOrCreateTotalBondedECDSAKeep();
-  // totalBonded.totalAvailable  = totalBonded.totalAvailable.plus(toDecimal(event.params.amount));
-  // totalBonded.save()
-
   let operator = getOrCreateKeepMember(event.params.operator);
   operator.unboundAvailable = operator.unboundAvailable.plus(toDecimal(event.params.amount));
   operator.save()
+
+  let stats = getStats();
+  stats.availableToBeBonded = stats.availableToBeBonded.plus(toDecimal(event.params.amount));
+  stats.save()
 }
 
 export function handleUnbondedValueWithdrawn(
     event: UnbondedValueWithdrawn
 ): void {
-  // let totalBonded = getOrCreateTotalBondedECDSAKeep();
-  // totalBonded.totalAvailable  = totalBonded.totalAvailable.minus(toDecimal(event.params.amount));
-  // totalBonded.save()
-
   let operator = getOrCreateKeepMember(event.params.operator);
   operator.unboundAvailable = operator.unboundAvailable.minus(toDecimal(event.params.amount));
   operator.save()
+
+  let stats = getStats();
+  stats.availableToBeBonded = stats.availableToBeBonded.minus(toDecimal(event.params.amount));
+  stats.save()
 }

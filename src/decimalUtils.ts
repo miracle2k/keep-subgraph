@@ -19,12 +19,13 @@ export function pow(base: BigDecimal, exponent: number): BigDecimal {
 
 export function toDecimal(value: BigInt, decimals: number = DEFAULT_DECIMALS): BigDecimal {
   let precision = BigInt.fromI32(10)
+      // @ts-ignore
       .pow(<u8>decimals)
       .toBigDecimal()
 
-  return value.divDecimal(precision)
+  return value.divDecimal(precision) as BigDecimal;
 }
 
 export function toDecimalBtc(value: BigInt, decimals: number = DEFAULT_DECIMALS_BTC): BigDecimal {
-  return toDecimal(value,DEFAULT_DECIMALS_BTC);
+  return toDecimal(value, DEFAULT_DECIMALS_BTC);
 }

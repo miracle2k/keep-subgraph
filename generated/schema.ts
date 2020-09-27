@@ -1103,15 +1103,6 @@ export class Deposit extends Entity {
     this.set("initialCollateralizedPercent", Value.fromI32(value));
   }
 
-  get collateralizationPercent(): i32 {
-    let value = this.get("collateralizationPercent");
-    return value.toI32();
-  }
-
-  set collateralizationPercent(value: i32) {
-    this.set("collateralizationPercent", Value.fromI32(value));
-  }
-
   get undercollateralizedThresholdPercent(): i32 {
     let value = this.get("undercollateralizedThresholdPercent");
     return value.toI32();
@@ -1662,6 +1653,15 @@ export class KeepMember extends Entity {
     }
   }
 
+  get bonds(): Array<string> {
+    let value = this.get("bonds");
+    return value.toStringArray();
+  }
+
+  set bonds(value: Array<string>) {
+    this.set("bonds", Value.fromStringArray(value));
+  }
+
   get bonded(): BigDecimal {
     let value = this.get("bonded");
     return value.toBigDecimal();
@@ -1696,6 +1696,91 @@ export class KeepMember extends Entity {
 
   set activeKeepCount(value: i32) {
     this.set("activeKeepCount", Value.fromI32(value));
+  }
+}
+
+export class Bond extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id !== null, "Cannot save Bond entity without an ID");
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save Bond entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("Bond", id.toString(), this);
+  }
+
+  static load(id: string): Bond | null {
+    return store.get("Bond", id) as Bond | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get status(): string {
+    let value = this.get("status");
+    return value.toString();
+  }
+
+  set status(value: string) {
+    this.set("status", Value.fromString(value));
+  }
+
+  get referenceID(): BigInt {
+    let value = this.get("referenceID");
+    return value.toBigInt();
+  }
+
+  set referenceID(value: BigInt) {
+    this.set("referenceID", Value.fromBigInt(value));
+  }
+
+  get bondedAmount(): BigDecimal {
+    let value = this.get("bondedAmount");
+    return value.toBigDecimal();
+  }
+
+  set bondedAmount(value: BigDecimal) {
+    this.set("bondedAmount", Value.fromBigDecimal(value));
+  }
+
+  get operator(): string {
+    let value = this.get("operator");
+    return value.toString();
+  }
+
+  set operator(value: string) {
+    this.set("operator", Value.fromString(value));
+  }
+
+  get holder(): Bytes {
+    let value = this.get("holder");
+    return value.toBytes();
+  }
+
+  set holder(value: Bytes) {
+    this.set("holder", Value.fromBytes(value));
+  }
+
+  get keep(): string {
+    let value = this.get("keep");
+    return value.toString();
+  }
+
+  set keep(value: string) {
+    this.set("keep", Value.fromString(value));
   }
 }
 
@@ -2472,5 +2557,63 @@ export class Governance extends Entity {
         Value.fromString(value as string)
       );
     }
+  }
+}
+
+export class Stats extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id !== null, "Cannot save Stats entity without an ID");
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save Stats entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("Stats", id.toString(), this);
+  }
+
+  static load(id: string): Stats | null {
+    return store.get("Stats", id) as Stats | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get availableToBeBonded(): BigDecimal {
+    let value = this.get("availableToBeBonded");
+    return value.toBigDecimal();
+  }
+
+  set availableToBeBonded(value: BigDecimal) {
+    this.set("availableToBeBonded", Value.fromBigDecimal(value));
+  }
+
+  get totalBonded(): BigDecimal {
+    let value = this.get("totalBonded");
+    return value.toBigDecimal();
+  }
+
+  set totalBonded(value: BigDecimal) {
+    this.set("totalBonded", Value.fromBigDecimal(value));
+  }
+
+  get totalBondsSeized(): BigDecimal {
+    let value = this.get("totalBondsSeized");
+    return value.toBigDecimal();
+  }
+
+  set totalBondsSeized(value: BigDecimal) {
+    this.set("totalBondsSeized", Value.fromBigDecimal(value));
   }
 }

@@ -7,31 +7,6 @@ type TBTCDepositToken @entity {
   minter: Bytes!
 }
 
-# type FeeRebateToken @entity {
-#   id: ID!
-#   name: String!
-#   symbol: String!
-#   address: Bytes!
-# }
-
-# This logs everything about the system, but no tBTC or KEEP transfers.
-#interface LogEntry @entity {
-#  id: ID!
-#  timestamp: BigInt!
-#}
-#
-#interface LogEntryDeposit {
-#  deposit: Deposit!
-#}
-#
-#type LogEntryTDTTransfer implements LogEntry & LogEntryDeposit @entity {
-#  id: ID!
-#  timestamp: BigInt!
-#
-#  token: TBTCDepositToken!
-#  deposit: Deposit!
-#}
-
 # A generic event log entry
 interface Event {
   id: ID!
@@ -139,7 +114,6 @@ type StartedLiquidationEvent implements Event @entity {
   wasFraud: Boolean!
 }
 
-
 # from https://github.com/keep-network/tbtc/blob/master/solidity/contracts/deposit/DepositUtils.sol
 type Deposit @entity {
   id: ID!
@@ -224,12 +198,29 @@ type KeepMember @entity {
   id: ID!
   address: Bytes!
   keeps: [BondedECDSAKeep!] @derivedFrom(field: "members")
+  bonds: [Bond!]!  @derivedFrom(field: "operator")
 
   bonded: BigDecimal!
   unboundAvailable: BigDecimal!
 
   totalKeepCount: Int!
   activeKeepCount: Int!
+}
+
+enum BondStatus {
+  ACTIVE
+  RELEASED
+  SEIZED
+}
+
+type Bond @entity {
+  id: ID!
+  status: BondStatus!
+  referenceID: BigInt!
+  bondedAmount: BigDecimal!
+  operator: KeepMember!
+  holder: Bytes!
+  keep: BondedECDSAKeep!
 }
 
 type BondedECDSAKeep @entity {
@@ -325,4 +316,12 @@ type Governance @entity {
   severelyUndercollateralizedThresholdPercent: Int!,
   undercollateralizedThresholdPercent: Int!,
   pendingCollateralizationThresholdsChange: GovernanceChange,
+}
+
+type Stats @entity {
+  id: ID!
+
+  availableToBeBonded: BigDecimal!
+  totalBonded: BigDecimal!
+  totalBondsSeized: BigDecimal!
 }
