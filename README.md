@@ -1,81 +1,16 @@
-# Example Queries
+# A subgraph for the Keep/tBTC network.
 
-### Total ETH actively bonded
+This was created to back [allthekeeps.com](https://allthekeeps.com). It incorporates work from️:
 
-```graphql
-{
-  bondedECDSAKeeps(where: { status: ACTIVE }) {
-    keepAddress
-    totalBondAmount
-  }
-}
-```
+- [@juliankoh](https://github.com/juliankoh): His [keep subgraph](https://github.com/juliankoh/keep-subgraph)
 
-### Total ETH bonded (lifetime)
+- [@suntzu93](https://github.com/suntzu93): His [tBTC](https://github.com/suntzu93/tbtc-thegraph) and
+  [keepnetwork](https://github.com/suntzu93/keepnetwork-subgraph) subgraphs.
+ 
+- [@Tibike6](https://github.com/Tibike6): His [keep subgraph](https://github.com/Tibike6/keep-subgraph/)
 
-```graphql
-{
-  bondedECDSAKeeps(where: { status_not: TERMINATED }) {
-    keepAddress
-    totalBondAmount
-  }
-}
-```
+❤️
 
-### TDTs minted at a given day (May 15 2020)
+The live version is ready for you to play with: TBD
 
-```graphql
-{
-  tbtcdepositTokens(
-    where: { mintedAt_gt: "1589587200", mintedAt_lt: "1589673600" }
-  ) {
-    tokenID
-    owner
-    isBurned
-  }
-}
-```
-
-### TBTCs minted at a given day (May 15 2020)
-
-```graphql
-{
-  tbtctokens(where: { mintedAt_gt: "1589587200", mintedAt_lt: "1589673600" }) {
-    id
-    mintedAt
-    amount
-    owner
-  }
-}
-```
-
-### New deposits at a given day (May 15 2020)
-
-```graphql
-{
-  deposits(where: { createdAt_gt: "1589587200", createdAt_lt: "1589673600" }) {
-    contractAddress
-    lotSizeSatoshis
-    collateralizationPercent
-    utxoSize
-    currentState
-    createdAt
-  }
-}
-```
-
-### Redemptions at a given day (May 15 2020)
-
-```graphql
-{
-  depositRedemptions(
-    where: { redeemedAt_gt: "1589587200", redeemedAt_lt: "1589673600" }
-  ) {
-    withdrawalRequestAt
-    utxoSize
-    redeemedAt
-    outpoint
-    redeemerOutputScript
-  }
-}
-```
+You may also find my companion graph [keep-pricefeed](https://github.com/miracle2k/keep-pricefeed) of interest.
