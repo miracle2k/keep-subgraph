@@ -143,10 +143,7 @@ function updateDepositDetails(
   deposit.utxoSize = utxoValue.reverted ? new BigInt(0) : utxoValue.value;
   deposit.endOfTerm = depositSmartContract.remainingTerm().plus(block.timestamp);
   let auctionValue = depositSmartContract.try_auctionValue();
-  deposit.auctionValue = auctionValue.reverted ? new BigInt(0) : auctionValue.value; 
-  deposit.collateralizationPercent = depositSmartContract
-    .collateralizationPercentage()
-    .toI32();
+  deposit.auctionValue = auctionValue.reverted ? new BigInt(0) : auctionValue.value;
 
   return deposit;
 }

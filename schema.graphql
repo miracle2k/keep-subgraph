@@ -153,7 +153,6 @@ type Deposit @entity {
   keepAddress: Bytes # The address of our keep contract
   lotSizeSatoshis: BigInt
   initialCollateralizedPercent: Int
-  collateralizationPercent: Int
   undercollateralizedThresholdPercent: Int
   severelyUndercollateralizedThresholdPercent: Int
   signerFee: BigInt
