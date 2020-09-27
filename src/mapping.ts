@@ -36,6 +36,7 @@ import {
 import {getIDFromEvent} from "./utils";
 import {store, Value} from "@graphprotocol/graph-ts/index";
 import {toDecimal} from "./decimalUtils";
+import {getOrCreateKeepMember} from "./helpers";
 
 
 // Wild-card re-export compiles but then does not find the functions at runtime.
@@ -89,20 +90,6 @@ function getOrCreateDeposit(depositID: string): Deposit {
     deposit = new Deposit(depositID);
   }
   return <Deposit>deposit;
-}
-
-
-function getOrCreateKeepMember(keeperAddress: Address): KeepMember {
-  let member = KeepMember.load(keeperAddress.toHexString());
-  if (member == null) {
-    member = new KeepMember(keeperAddress.toHexString());
-    member.address = keeperAddress;
-    member.totalKeepCount = 0;
-    member.activeKeepCount = 0;
-    member.bonded = toDecimal(new BigInt(0));
-    member.unboundAvailable = toDecimal(new BigInt(0));
-  }
-  return member!;
 }
 
 export function handleCreatedEvent(event: Created): void {
