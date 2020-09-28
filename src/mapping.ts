@@ -267,7 +267,7 @@ export function handleRedemptionRequestedEvent(
 export function handleGotRedemptionSignatureEvent(
   event: GotRedemptionSignature
 ): void {
-  setDepositState(event.params._depositContractAddress, "AWAITING_WITHDRAWAL_SIGNATURE");
+  setDepositState(event.params._depositContractAddress, "AWAITING_WITHDRAWAL_PROOF");
 
   let logEvent = new GotRedemptionSignatureEvent(getIDFromEvent(event))
   logEvent.deposit = getDepositIdFromAddress(event.params._depositContractAddress);
