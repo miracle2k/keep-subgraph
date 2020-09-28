@@ -143,7 +143,6 @@ dataSources:
 
       file: ./src/mapping.ts
 
-
 templates:
   - name: DepositContract
     kind: ethereum/contract
@@ -160,6 +159,7 @@ templates:
       abis:
         - name: DepositContract
           file: ./abis/DepositContract.json
+
   - name: BondedECDSAKeep
     kind: ethereum/contract
     network: mainnet
@@ -169,10 +169,17 @@ templates:
       kind: ethereum/events
       apiVersion: 0.0.1
       language: wasm/assemblyscript
-      file: ./src/mapping.ts
+      file: ./src/mappingBondedECDSAKeep.ts
       entities:
         - BondedECDSAKeep
       abis:
         - name: BondedECDSAKeep
           file: ./abis/BondedECDSAKeep.json
-      # KeepContract.submitPublicKey() => emits PublicKeyPublished (signers providing the bitcoin address, apparently this happens 3 times)
+      eventHandlers:
+        # KeepContract.submitPublicKey() x3 => emits PublicKeyPublished
+        - event: PublicKeyPublished(bytes)
+          handler: handlePublicKeyPublished
+        - event: KeepClosed()
+          handler: handleKeepClosed
+        - event: KeepTerminated()
+          handler: handleKeepTerminated

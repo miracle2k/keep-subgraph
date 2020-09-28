@@ -10,7 +10,7 @@ import {
   RegisteredPubkey,
   SetupFailed,
 } from "../generated/TBTCSystem/TBTCSystem";
-import { log, BigInt, Address, ethereum, Entity, BigDecimal } from "@graphprotocol/graph-ts";
+import { log, BigInt, Address, ethereum, Entity, BigDecimal, DataSourceContext } from "@graphprotocol/graph-ts";
 import { Transfer as TDTTransfer } from "../generated/TBTCDepositToken/TBTCDepositToken";
 import { DepositContract as DepositSmartContract } from "../generated/templates/DepositContract/DepositContract";
 import { BondedECDSAKeep as KeepSmartContract } from "../generated/templates/BondedECDSAKeep/BondedECDSAKeep";
@@ -35,7 +35,6 @@ import {
 } from "../generated/schema";
 import {getIDFromEvent} from "./utils";
 import {store, Value} from "@graphprotocol/graph-ts/index";
-import {toDecimal} from "./decimalUtils";
 import {getOrCreateKeepMember} from "./helpers";
 
 
@@ -105,7 +104,8 @@ export function handleCreatedEvent(event: Created): void {
   deposit.tdtToken = getDepositTokenIdFromDepositAddress(contractAddress)
 
   // this indexes the newly created contract address for events
-  BondedECDSAKeepTemplate.create(keepAddress);
+  let context = new DataSourceContext()
+  BondedECDSAKeepTemplate.createWithContext(keepAddress, context);
 
   updateDepositDetails(deposit, contractAddress, event.block);
 
@@ -159,7 +159,6 @@ function newBondedECDSAKeep(
   bondedECDSAKeep.createdAt = event.block.timestamp;
   bondedECDSAKeep.deposit = deposit.id;
   bondedECDSAKeep.keepAddress = keepAddress;
-  bondedECDSAKeep.publicKey = contract.getPublicKey();
   bondedECDSAKeep.totalBondAmount = contract.checkBondAmount();
   bondedECDSAKeep.status = "ACTIVE";
   bondedECDSAKeep.honestThreshold = contract.honestThreshold().toI32();
@@ -284,18 +283,6 @@ export function handleRedeemedEvent(event: Redeemed): void {
   depositRedemption.txid = event.params._txid;
   depositRedemption.redeemedAt = event.block.timestamp;
   depositRedemption.save();
-
-  let keep = BondedECDSAKeep.load(deposit.keepAddress!.toHexString())!;
-  keep.status = "CLOSED";
-  keep.save();
-
-  let members = keep.members;
-  for (let i = 0; i < members.length; i++) {
-    let keepMemberAddress = members[i]!;
-    let member = getOrCreateKeepMember(Address.fromHexString(keepMemberAddress) as Address);
-    member.activeKeepCount -= 1;
-    member.save()
-  }
 
   let logEvent = new RedeemedEvent(getIDFromEvent(event))
   logEvent.deposit = deposit.id;

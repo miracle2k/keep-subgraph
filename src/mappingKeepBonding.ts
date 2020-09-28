@@ -14,8 +14,6 @@ import {Bond, Stats} from "../generated/schema";
 import {BIGDECIMAL_ZERO} from "./constants";
 
 
-// TODO: Reassign
-
 // TODO: Consider whether, instead of doing the math ourselves, we should/can call inot the contract to get the
 // bonded amounts per member.
 
@@ -57,6 +55,7 @@ export function handleBondCreated(event: BondCreated): void {
   stats.save()
 }
 
+// TODO: Reassign
 export function handleBondReassigned(event: BondReassigned): void {
   // let bondId = getBondId(event.params.operator, event.params.referenceID);
   // let bond = Bond.load(bondId)!;
