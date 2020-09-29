@@ -134,14 +134,22 @@ function saveDeposit(deposit: Deposit): void {
   )
   deposit.filter_liquidationLikeState = (
       deposit.currentState === "COURTESY_CALL" ||
-      deposit.currentState !== "FRAUD_LIQUIDATION_IN_PROGRESS" &&
-      deposit.currentState !== "LIQUIDATION_IN_PROGRESS" &&
-      deposit.currentState !== "LIQUIDATED"
+      deposit.currentState === "FRAUD_LIQUIDATION_IN_PROGRESS" ||
+      deposit.currentState === "LIQUIDATION_IN_PROGRESS" ||
+      deposit.currentState === "LIQUIDATED"
   )
 
   let ownedByVendingMachine = deposit.owner.toHexString() == '0x526c08e5532a9308b3fb33b7968ef78a5005d2ac';
 
-  deposit.filter_unmintedTDT = deposit.filter_activeLikeState && !ownedByVendingMachine;
+  deposit.filter_unmintedTDT = (
+      deposit.currentState === "ACTIVE" ||
+      deposit.currentState === "AWAITING_WITHDRAWAL_SIGNATURE" ||
+      deposit.currentState === "AWAITING_WITHDRAWAL_PROOF" ||
+      deposit.currentState === "COURTESY_CALL" ||
+      deposit.currentState === "FRAUD_LIQUIDATION_IN_PROGRESS" ||
+      deposit.currentState === "LIQUIDATION_IN_PROGRESS"
+
+  ) && !ownedByVendingMachine;
 
   if (deposit.currentState === "COURTESY_CALL" || ownedByVendingMachine) {
     deposit.filter_redeemableAsOf = BigInt.fromI32(2147483647);  // equiv to about year 2038 - need to figure out how to do fromI64()
