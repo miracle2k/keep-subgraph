@@ -132,7 +132,6 @@ type Deposit @entity {
   signerFee: BigInt
   utxoSize: BigInt
   endOfTerm: BigInt
-  auctionValue: BigInt
   bondedECDSAKeep: BondedECDSAKeep
 
   # SET ON FRAUD
