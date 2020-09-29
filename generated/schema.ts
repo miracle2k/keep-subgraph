@@ -1175,23 +1175,6 @@ export class Deposit extends Entity {
     }
   }
 
-  get auctionValue(): BigInt | null {
-    let value = this.get("auctionValue");
-    if (value === null) {
-      return null;
-    } else {
-      return value.toBigInt();
-    }
-  }
-
-  set auctionValue(value: BigInt | null) {
-    if (value === null) {
-      this.unset("auctionValue");
-    } else {
-      this.set("auctionValue", Value.fromBigInt(value as BigInt));
-    }
-  }
-
   get bondedECDSAKeep(): string | null {
     let value = this.get("bondedECDSAKeep");
     if (value === null) {
