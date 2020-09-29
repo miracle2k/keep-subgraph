@@ -10,7 +10,7 @@ import {
   RegisteredPubkey,
   SetupFailed,
 } from "../generated/TBTCSystem/TBTCSystem";
-import { log, BigInt, Address, ethereum, Entity, BigDecimal, DataSourceContext } from "@graphprotocol/graph-ts";
+import { log, BigInt, Address, ethereum, Entity, DataSourceContext, BigDecimal } from "@graphprotocol/graph-ts";
 import { Transfer as TDTTransfer } from "../generated/TBTCDepositToken/TBTCDepositToken";
 import { DepositContract as DepositSmartContract } from "../generated/templates/DepositContract/DepositContract";
 import { BondedECDSAKeep as KeepSmartContract } from "../generated/templates/BondedECDSAKeep/BondedECDSAKeep";
@@ -18,7 +18,6 @@ import { BondedECDSAKeep as BondedECDSAKeepTemplate } from "../generated/templat
 import {
   Deposit,
   BondedECDSAKeep,
-  KeepMember,
   DepositLiquidation,
   DepositRedemption,
   TBTCDepositToken,
@@ -34,8 +33,9 @@ import {
   CreatedEvent,
 } from "../generated/schema";
 import {getIDFromEvent} from "./utils";
-import {store, Value} from "@graphprotocol/graph-ts/index";
+import {Value} from "@graphprotocol/graph-ts/index";
 import {getOrCreateKeepMember} from "./helpers";
+import {BIGINT_ZERO} from "./constants";
 
 
 // Wild-card re-export compiles but then does not find the functions at runtime.
@@ -102,6 +102,7 @@ export function handleCreatedEvent(event: Created): void {
   deposit.keepAddress = event.params._keepAddress;
   deposit.createdAt = event.block.timestamp;
   deposit.tdtToken = getDepositTokenIdFromDepositAddress(contractAddress)
+  deposit.owner = event.transaction.from;
 
   // this indexes the newly created contract address for events
   let context = new DataSourceContext()
@@ -117,17 +118,53 @@ export function handleCreatedEvent(event: Created): void {
   let bondedECDSAKeep = newBondedECDSAKeep(deposit, keepAddress, event);
 
   deposit.bondedECDSAKeep = bondedECDSAKeep.id;
-  deposit.save();
+  saveDeposit(deposit);
 
   let logEvent = new CreatedEvent(getIDFromEvent(event))
   logEvent.deposit = getDepositIdFromAddress(event.params._depositContractAddress);
   completeLogEvent(logEvent, event); logEvent.save()
 }
 
-function setDepositState(contractAddress: Address, newState: string): void {
-  let deposit = Deposit.load(getDepositIdFromAddress(contractAddress));
-  deposit!.currentState = newState;
+// Do not save a deposit directly. There are certain denormalized values which need to be recalculated
+function saveDeposit(deposit: Deposit): void {
+  deposit.filter_activeLikeState = (
+      deposit.currentState !== "FAILED_SETUP" &&
+      deposit.currentState !== "LIQUIDATED" &&
+      deposit.currentState !== "REDEEMED"
+  )
+  deposit.filter_liquidationLikeState = (
+      deposit.currentState === "COURTESY_CALL" ||
+      deposit.currentState !== "FRAUD_LIQUIDATION_IN_PROGRESS" &&
+      deposit.currentState !== "LIQUIDATION_IN_PROGRESS" &&
+      deposit.currentState !== "LIQUIDATED"
+  )
+
+  let ownedByVendingMachine = deposit.owner.toHexString() == '0x526c08e5532a9308b3fb33b7968ef78a5005d2ac';
+
+  deposit.filter_unmintedTDT = deposit.filter_activeLikeState && !ownedByVendingMachine;
+
+  if (deposit.currentState === "COURTESY_CALL" || ownedByVendingMachine) {
+    deposit.filter_redeemableAsOf = BigInt.fromI32(2147483647);  // equiv to about year 2038 - need to figure out how to do fromI64()
+  }
+  else if (deposit.currentState !== "ACTIVE") {
+    deposit.filter_redeemableAsOf = BIGINT_ZERO;
+  }
+  else {
+    deposit.filter_redeemableAsOf = deposit.endOfTerm ? deposit.endOfTerm! : BIGINT_ZERO;
+  }
+
+
   deposit!.save();
+}
+
+
+/**
+ * Helper to change the deposit state & save. Useful if you don't have to do anything else.
+ */
+function setDepositState(contractAddress: Address, newState: string): void {
+  let deposit = Deposit.load(getDepositIdFromAddress(contractAddress))!;
+  deposit.currentState = newState;
+  saveDeposit(deposit);
 }
 
 function newBondedECDSAKeep(
@@ -176,7 +213,7 @@ export function handleStartedLiquidationEvent(event: StartedLiquidation): void {
   depositLiquidation.save();
 
   deposit.depositLiquidation = depositLiquidation.id;
-  deposit.save();
+  saveDeposit(deposit);
 
   if (event.params._wasFraud) {
     setDepositState(contractAddress, "FRAUD_LIQUIDATION_IN_PROGRESS");
@@ -281,7 +318,7 @@ export function handleFundedEvent(event: Funded): void {
   let utxoValue = depositSmartContract.try_utxoValue();
   deposit.utxoSize = utxoValue.reverted ? new BigInt(0) : utxoValue.value;
   deposit.endOfTerm = depositSmartContract.remainingTerm().plus(event.block.timestamp);
-  deposit.save();
+  saveDeposit(deposit);
 
   let logEvent = new FundedEvent(getIDFromEvent(event))
   logEvent.deposit = getDepositIdFromAddress(event.params._depositContractAddress);
@@ -317,9 +354,11 @@ const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 export function handleMintTBTCDepositToken(event: TDTTransfer): void {
   let tokenId = getDepositTokenIdFromTokenID(event.params.tokenId);
 
+  let depositToken: TBTCDepositToken;
+
   // A mint
   if (event.params.from.toHexString() == ZERO_ADDRESS) {
-    let depositToken = new TBTCDepositToken(tokenId);
+    depositToken = new TBTCDepositToken(tokenId);
     depositToken.deposit = getDepositIdFromTokenID(event.params.tokenId);
     depositToken.tokenID = event.params.tokenId;
     depositToken.owner = event.params.to;
@@ -327,8 +366,14 @@ export function handleMintTBTCDepositToken(event: TDTTransfer): void {
     depositToken.mintedAt = event.block.timestamp;
     depositToken.save();
   } else {
-    let depositToken = new TBTCDepositToken(tokenId);
+    depositToken = new TBTCDepositToken(tokenId);
     depositToken.owner = event.params.to;
     depositToken.save()
+  }
+
+  let deposit = Deposit.load(getDepositIdFromTokenID(event.params.tokenId))
+  if (deposit) {
+    deposit.owner = depositToken!.owner;
+    saveDeposit(deposit!);
   }
 }

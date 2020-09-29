@@ -1060,6 +1060,15 @@ export class Deposit extends Entity {
     }
   }
 
+  get owner(): Bytes {
+    let value = this.get("owner");
+    return value.toBytes();
+  }
+
+  set owner(value: Bytes) {
+    this.set("owner", Value.fromBytes(value));
+  }
+
   get keepAddress(): Bytes | null {
     let value = this.get("keepAddress");
     if (value === null) {
@@ -1224,6 +1233,42 @@ export class Deposit extends Entity {
     } else {
       this.set("depositRedemption", Value.fromString(value as string));
     }
+  }
+
+  get filter_liquidationLikeState(): boolean {
+    let value = this.get("filter_liquidationLikeState");
+    return value.toBoolean();
+  }
+
+  set filter_liquidationLikeState(value: boolean) {
+    this.set("filter_liquidationLikeState", Value.fromBoolean(value));
+  }
+
+  get filter_activeLikeState(): boolean {
+    let value = this.get("filter_activeLikeState");
+    return value.toBoolean();
+  }
+
+  set filter_activeLikeState(value: boolean) {
+    this.set("filter_activeLikeState", Value.fromBoolean(value));
+  }
+
+  get filter_unmintedTDT(): boolean {
+    let value = this.get("filter_unmintedTDT");
+    return value.toBoolean();
+  }
+
+  set filter_unmintedTDT(value: boolean) {
+    this.set("filter_unmintedTDT", Value.fromBoolean(value));
+  }
+
+  get filter_redeemableAsOf(): BigInt {
+    let value = this.get("filter_redeemableAsOf");
+    return value.toBigInt();
+  }
+
+  set filter_redeemableAsOf(value: BigInt) {
+    this.set("filter_redeemableAsOf", Value.fromBigInt(value));
   }
 }
 

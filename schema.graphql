@@ -123,8 +123,11 @@ type Deposit @entity {
   currentState: DepositState
   createdAt: BigInt
 
-  # SET DURING CONSTRUCTION
-  keepAddress: Bytes # The address of our keep contract
+  # owner is the owner of the TDT token, will match tdtToken.owner (shortcut). we have this mostly because
+  # it makes our code easier!
+  owner: Bytes!
+
+  keepAddress: Bytes
   lotSizeSatoshis: BigInt
   initialCollateralizedPercent: Int
   undercollateralizedThresholdPercent: Int
@@ -134,11 +137,15 @@ type Deposit @entity {
   endOfTerm: BigInt
   bondedECDSAKeep: BondedECDSAKeep
 
-  # SET ON FRAUD
   depositLiquidation: DepositLiquidation
-
-  # INITIALLY WRITTEN BY REDEMPTION FLOW
   depositRedemption: DepositRedemption
+
+  # Because TheGraph does not support complex filters (and/or), we pre-calculate some useful ones here.
+  filter_liquidationLikeState: Boolean!,
+  filter_activeLikeState: Boolean!,
+  filter_unmintedTDT: Boolean!,
+  # will be the endOfTerm, or, if the deposit is already reeemable before that, will be maxInt. If not redeemable because closed, will be 0
+  filter_redeemableAsOf: BigInt!
 }
 
 enum DepositState {

@@ -25,6 +25,28 @@ dataSources:
         - event: Transfer(indexed address,indexed address,indexed uint256)
           handler: handleMintTBTCDepositToken
 
+
+  - kind: ethereum/contract
+    name: TBTCToken
+    network: mainnet
+    source:
+      startBlock: 10867840
+      address: "0x8dAEBADE922dF735c38C80C7eBD708Af50815fAa"
+      abi: TBTCTokenContract
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - TBTCToken
+      abis:
+        - name: TBTCTokenContract
+          file: ./abis/TBTCToken.json
+      file: ./src/mappingTBTCToken.ts
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleMintTBTCToken
+
   # Ultimately, this one has "unbonded" value for each operator + the bonded one that belongs to each keep
   # I believe operators directly bond their ETH.
   # On the other hand, STAKING is different and is the KEEP being held.
