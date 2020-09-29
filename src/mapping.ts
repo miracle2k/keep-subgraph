@@ -107,7 +107,12 @@ export function handleCreatedEvent(event: Created): void {
   let context = new DataSourceContext()
   BondedECDSAKeepTemplate.createWithContext(keepAddress, context);
 
-  updateDepositDetails(deposit, contractAddress, event.block);
+  let depositSmartContract = DepositSmartContract.bind(contractAddress);
+  deposit.lotSizeSatoshis = depositSmartContract.lotSizeSatoshis();
+  deposit.initialCollateralizedPercent = depositSmartContract.initialCollateralizedPercent();
+  deposit.undercollateralizedThresholdPercent = depositSmartContract.undercollateralizedThresholdPercent();
+  deposit.severelyUndercollateralizedThresholdPercent = depositSmartContract.severelyUndercollateralizedThresholdPercent();
+  deposit.signerFee = depositSmartContract.signerFeeTbtc();
 
   let bondedECDSAKeep = newBondedECDSAKeep(deposit, keepAddress, event);
 
@@ -123,27 +128,6 @@ function setDepositState(contractAddress: Address, newState: string): void {
   let deposit = Deposit.load(getDepositIdFromAddress(contractAddress));
   deposit!.currentState = newState;
   deposit!.save();
-}
-
-function updateDepositDetails(
-  deposit: Deposit,
-  contractAddress: Address,
-  block: ethereum.Block
-): Deposit {
-  // we backfill the deposit contract's data by querying the ethereum smart contract
-  let depositSmartContract = DepositSmartContract.bind(contractAddress);
-
-  deposit.lotSizeSatoshis = depositSmartContract.lotSizeSatoshis();
-  deposit.initialCollateralizedPercent = depositSmartContract.initialCollateralizedPercent();
-  deposit.undercollateralizedThresholdPercent = depositSmartContract.undercollateralizedThresholdPercent();
-  deposit.severelyUndercollateralizedThresholdPercent = depositSmartContract.severelyUndercollateralizedThresholdPercent();
-  deposit.signerFee = depositSmartContract.signerFeeTbtc();
-
-  let utxoValue = depositSmartContract.try_utxoValue();
-  deposit.utxoSize = utxoValue.reverted ? new BigInt(0) : utxoValue.value;
-  deposit.endOfTerm = depositSmartContract.remainingTerm().plus(block.timestamp);
-
-  return deposit;
 }
 
 function newBondedECDSAKeep(
@@ -289,7 +273,15 @@ export function handleRedeemedEvent(event: Redeemed): void {
 }
 
 export function handleFundedEvent(event: Funded): void {
-  setDepositState(event.params._depositContractAddress, "ACTIVE");
+  let deposit = Deposit.load(getDepositIdFromAddress(event.params._depositContractAddress))!;
+  deposit.currentState = "ACTIVE";
+
+  // At this point those values will be set
+  let depositSmartContract = DepositSmartContract.bind(event.params._depositContractAddress);
+  let utxoValue = depositSmartContract.try_utxoValue();
+  deposit.utxoSize = utxoValue.reverted ? new BigInt(0) : utxoValue.value;
+  deposit.endOfTerm = depositSmartContract.remainingTerm().plus(event.block.timestamp);
+  deposit.save();
 
   let logEvent = new FundedEvent(getIDFromEvent(event))
   logEvent.deposit = getDepositIdFromAddress(event.params._depositContractAddress);
