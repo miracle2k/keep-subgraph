@@ -22,7 +22,7 @@ function getGovernance(): Governance {
 
     // Initialize with the default values the first time
     governance.newDepositsAllowed = true;
-    governance.lotSizes = [new BigInt(1000000), new BigInt(10000000), new BigInt(20000000), new BigInt(50000000), new BigInt(100000000)];
+    governance.lotSizes = [BigInt.fromI32(1000000), BigInt.fromI32(10000000), BigInt.fromI32(20000000), BigInt.fromI32(50000000), BigInt.fromI32(100000000)];
     governance.priceFeeds = [
         Bytes.fromHexString("0x81a679f98b63b3ddf2f17cb5619f4d6775b3c5ed") as Bytes
     ];
@@ -44,8 +44,8 @@ const GOVERNANCE_DELAY =  3600 * 48;  // 48 hours
 function makeGovernanceChange(type: string, event: ethereum.Event): GovernanceChange {
   let change = new GovernanceChange(getIDFromEvent(event))
   change.type = type;
-  change.requestedAt = event.block.timestamp
-  change.takesEffectAfter = event.block.timestamp.plus(new BigInt(GOVERNANCE_DELAY));
+  change.requestedAt = event.block.timestamp;
+  change.takesEffectAfter = event.block.timestamp.plus(BigInt.fromI32(GOVERNANCE_DELAY));
   change.requestBlock = event.block.number;
   change.requestTransactionHash = event.transaction.hash.toHexString()
   return change;
