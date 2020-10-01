@@ -241,9 +241,9 @@ templates:
         - function: notifyFundingTimedOut()
           handler: handleNotifyFundingTimedOut
         - function: notifySignerSetupFailed()
-          handler: handleNotifySignerSetupFailed()
-#        - function: provideFundingECDdSAFraudProof(uint8, bytes32, bytes32, bytes32, memory)
-#          handler: handleProvideFundingECDSAFraudProof
+          handler: handleNotifySignerSetupFailed
+        - function: provideFundingECDdSAFraudProof(uint8, bytes32, bytes32, bytes32, memory)
+          handler: handleProvideFundingECDSAFraudProof
 
 
   - name: BondedECDSAKeep

@@ -113,7 +113,7 @@ export function handleCreatedEvent(event: Created): void {
   // Instantiate the graph templates: this indexes the newly created contracts for events
   let context = new DataSourceContext()
   BondedECDSAKeepTemplate.createWithContext(keepAddress, context);
-  DepositContract.create(keepAddress);
+  DepositContract.create(contractAddress);
 
   let depositSmartContract = DepositSmartContract.bind(contractAddress);
   deposit.lotSizeSatoshis = depositSmartContract.lotSizeSatoshis();

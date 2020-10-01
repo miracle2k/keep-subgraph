@@ -31,7 +31,6 @@ export function handleNotifyFundingTimedOut(call: NotifyFundingTimedOutCall): vo
   log.info("foobar", []);
   let contractAddress = call.to;
   setDepositState(contractAddress, "FAILED_SETUP");
-
   newSetupFailedEvent(contractAddress, "FUNDING_TIMEOUT", call)
 }
 
