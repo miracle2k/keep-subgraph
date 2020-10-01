@@ -8,8 +8,8 @@ dataSources:
     name: TBTCDepositToken
     network: mainnet
     source:
-      startBlock: 10867845
-      address: "0x10B66Bd1e3b5a936B7f8Dbc5976004311037Cdf0"
+      startBlock: 8595001
+      address: "0x7cAad48DF199Cd661762485fc44126F4Fe8A58C9"
       abi: TBTCDepositToken
     mapping:
       kind: ethereum/events
@@ -30,8 +30,8 @@ dataSources:
     name: TBTCToken
     network: mainnet
     source:
-      startBlock: 10867840
-      address: "0x8dAEBADE922dF735c38C80C7eBD708Af50815fAa"
+      startBlock: 8594999
+      address: "0x7c07C42973047223F80C4A69Bb62D5195460Eb5F"
       abi: TBTCTokenContract
     mapping:
       kind: ethereum/events
@@ -54,9 +54,9 @@ dataSources:
     name: KeepBonding
     network: mainnet
     source:
-      address: "0x27321f84704a599aB740281E285cc4463d89A3D5"
+      startBlock: 8593098
+      address: "0x60535A59B4e71F908f3fEB0116F450703FB35eD8"
       abi: KeepBondingContract
-      startBlock: 10834319
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -97,8 +97,8 @@ dataSources:
     name: TBTCSystem
     network: mainnet
     source:
-      startBlock: 10867764
-      address: "0xe20A5C79b39bC8C363f0f49ADcFa82C2a01ab64a"
+      startBlock: 8594981
+      address: "0xc3f96306eDabACEa249D2D22Ec65697f38c6Da69"
       abi: TBTCSystem
     mapping:
       kind: ethereum/events
@@ -170,9 +170,9 @@ dataSources:
     name: StakingContract
     network: mainnet
     source:
-      address: "0x1293a54e160d1cd7075487898d65266081a15458"
+      startBlock: 8580771
+      address: "0x234d2182B29c6a64ce3ab6940037b5C8FdAB608e"
       abi: StakingContract
-      startBlock : 10834080
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -241,9 +241,9 @@ templates:
         - function: notifyFundingTimedOut()
           handler: handleNotifyFundingTimedOut
         - function: notifySignerSetupFailed()
-          handler: handleNotifySignerSetupFailed()
-#        - function: provideFundingECDdSAFraudProof(uint8, bytes32, bytes32, bytes32, memory)
-#          handler: handleProvideFundingECDSAFraudProof
+          handler: handleNotifySignerSetupFailed
+        - function: provideFundingECDdSAFraudProof(uint8, bytes32, bytes32, bytes32, memory)
+          handler: handleProvideFundingECDSAFraudProof
 
 
   - name: BondedECDSAKeep

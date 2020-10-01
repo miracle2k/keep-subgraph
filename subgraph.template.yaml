@@ -8,8 +8,8 @@ dataSources:
     name: TBTCDepositToken
     network: mainnet
     source:
-      startBlock: 10867845
-      address: "0x10B66Bd1e3b5a936B7f8Dbc5976004311037Cdf0"
+      startBlock: {{ TBTCDepositToken.startBlock }}
+      address: "{{ TBTCDepositToken.address }}"
       abi: TBTCDepositToken
     mapping:
       kind: ethereum/events
@@ -30,8 +30,8 @@ dataSources:
     name: TBTCToken
     network: mainnet
     source:
-      startBlock: 10867840
-      address: "0x8dAEBADE922dF735c38C80C7eBD708Af50815fAa"
+      startBlock: {{ TBTCToken.startBlock }}
+      address: "{{ TBTCToken.address }}"
       abi: TBTCTokenContract
     mapping:
       kind: ethereum/events
@@ -54,8 +54,8 @@ dataSources:
     name: KeepBonding
     network: mainnet
     source:
-      startBlock: 10834319
-      address: "0x27321f84704a599aB740281E285cc4463d89A3D5"
+      startBlock: {{ KeepBonding.startBlock }}
+      address: "{{ KeepBonding.address }}"
       abi: KeepBondingContract
     mapping:
       kind: ethereum/events
@@ -97,8 +97,8 @@ dataSources:
     name: TBTCSystem
     network: mainnet
     source:
-      startBlock: 10867764
-      address: "0xe20A5C79b39bC8C363f0f49ADcFa82C2a01ab64a"
+      startBlock: {{ TBTCSystem.startBlock }}
+      address: "{{ TBTCSystem.address }}"
       abi: TBTCSystem
     mapping:
       kind: ethereum/events
@@ -170,8 +170,8 @@ dataSources:
     name: StakingContract
     network: mainnet
     source:
-      startBlock: 10834080
-      address: "0x1293a54e160d1cd7075487898d65266081a15458"
+      startBlock: {{ TokenStaking.startBlock }}
+      address: "{{ TokenStaking.address }}"
       abi: StakingContract
     mapping:
       kind: ethereum/events

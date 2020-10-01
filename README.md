@@ -14,3 +14,7 @@ This was created to back [allthekeeps.com](https://allthekeeps.com). It incorpor
 The live version is ready for you to play with: TBD
 
 You may also find my companion graph [keep-pricefeed](https://github.com/miracle2k/keep-pricefeed) of interest.
+
+# Development
+
+- Run ./update-yamls.js to regenerate the subgraph.yaml files for both mainnet and ropsten based on the template.
