@@ -5,7 +5,7 @@ import {
 } from "../generated/templates/DepositContract/DepositContract";
 import {SetupFailedEvent} from "../generated/schema";
 import {completeLogEventRaw, getDepositIdFromAddress, setDepositState} from "./mapping";
-import { Address } from "@graphprotocol/graph-ts";
+import { Address, log } from "@graphprotocol/graph-ts";
 import {ethereum} from "@graphprotocol/graph-ts/index";
 
 
@@ -28,6 +28,7 @@ function newSetupFailedEvent(depositAddress: Address, reason: string, call: ethe
 // event was raised. We have to look into the call handlers directly to figure out *why* a SetupFailed event
 // was raised.
 export function handleNotifyFundingTimedOut(call: NotifyFundingTimedOutCall): void {
+  log.info("foobar", []);
   let contractAddress = call.to;
   setDepositState(contractAddress, "FAILED_SETUP");
 
@@ -35,6 +36,7 @@ export function handleNotifyFundingTimedOut(call: NotifyFundingTimedOutCall): vo
 }
 
 export function handleNotifySignerSetupFailed(call: NotifySignerSetupFailedCall): void {
+  log.info("foobar2", []);
   let contractAddress = call.to;
   setDepositState(contractAddress, "FAILED_SETUP");
   newSetupFailedEvent(contractAddress, "SIGNER_SETUP_FAILED", call)

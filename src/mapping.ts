@@ -34,7 +34,7 @@ import {
 } from "../generated/schema";
 import {getIDFromEvent} from "./utils";
 import {Value} from "@graphprotocol/graph-ts/index";
-import {getOrCreateKeepMember} from "./helpers";
+import {getOrCreateOperator} from "./helpers";
 import {BIGINT_ZERO} from "./constants";
 
 
@@ -198,11 +198,11 @@ function newBondedECDSAKeep(
   let memberAddresses = contract.getMembers();
   for (let i = 0; i < memberAddresses.length; i++) {
     let memberAddress = memberAddresses[i];
-    let keepMember = getOrCreateKeepMember(memberAddress);
-    members.push(keepMember.id);
-    keepMember.totalKeepCount += 1;
-    keepMember.activeKeepCount += 1;
-    keepMember.save()
+    let operator = getOrCreateOperator(memberAddress);
+    members.push(operator.id);
+    operator.totalKeepCount += 1;
+    operator.activeKeepCount += 1;
+    operator.save()
   }
   bondedECDSAKeep.members = members;
   bondedECDSAKeep.save();

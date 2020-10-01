@@ -1,11 +1,11 @@
 import {BIGDECIMAL_ZERO} from "./constants";
 import {Address, BigInt} from "@graphprotocol/graph-ts/index";
-import {KeepMember} from "../generated/schema";
+import {Operator} from "../generated/schema";
 
-export function getOrCreateKeepMember(keeperAddress: Address): KeepMember {
-  let member = KeepMember.load(keeperAddress.toHexString());
+export function getOrCreateOperator(keeperAddress: Address): Operator {
+  let member = Operator.load(keeperAddress.toHexString());
   if (member == null) {
-    member = new KeepMember(keeperAddress.toHexString());
+    member = new Operator(keeperAddress.toHexString());
     member.address = keeperAddress;
     member.totalKeepCount = 0;
     member.activeKeepCount = 0;

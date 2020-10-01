@@ -8,7 +8,7 @@ import {
 } from "../generated/KeepBonding/KeepBondingContract"
 
 import { toDecimal } from "./decimalUtils";
-import {getOrCreateKeepMember} from "./helpers";
+import {getOrCreateOperator} from "./helpers";
 import { Address, BigDecimal, BigInt, log } from "@graphprotocol/graph-ts";
 import {Bond, Stats} from "../generated/schema";
 import {BIGDECIMAL_ZERO} from "./constants";
@@ -44,7 +44,7 @@ export function handleBondCreated(event: BondCreated): void {
   bond.referenceID = event.params.referenceID;
   bond.save()
 
-  let operator = getOrCreateKeepMember(event.params.operator);
+  let operator = getOrCreateOperator(event.params.operator);
   operator.unboundAvailable = operator.unboundAvailable.minus(toDecimal(event.params.amount));
   operator.bonded = operator.bonded.plus(toDecimal(event.params.amount));
   operator.save();
@@ -80,7 +80,7 @@ export function handleBondReassigned(event: BondReassigned): void {
   //   newMemberLocked.bonded = oldMemberLocked.bonded;
   //   newMemberLocked.save();
   //
-  //   let member = getOrCreateKeepMember(event.params.operator.toHex());
+  //   let member = getOrCreateOperator(event.params.operator.toHex());
   //   let memberLockes = member.memberLocks;
   //   const index = memberLockes.indexOf(oldMemberLocked.id);
   //   memberLockes.splice(index, 1);
@@ -99,7 +99,7 @@ export function handleBondReleased(event: BondReleased): void {
   bond.status = 'RELEASED';
   bond.save();
 
-  let operator = getOrCreateKeepMember(event.params.operator);
+  let operator = getOrCreateOperator(event.params.operator);
   operator.unboundAvailable = operator.unboundAvailable.plus(bondedAmount);
   operator.bonded = operator.bonded.minus(bondedAmount);
   operator.save()
@@ -117,7 +117,7 @@ export function handleBondSeized(event: BondSeized): void {
   bond.status = 'SEIZED';
   bond.save();
 
-  let operator = getOrCreateKeepMember(event.params.operator);
+  let operator = getOrCreateOperator(event.params.operator);
   operator.bonded = operator.bonded.minus(toDecimal(event.params.amount));
   operator.save()
 
@@ -130,7 +130,7 @@ export function handleBondSeized(event: BondSeized): void {
 export function handleUnbondedValueDeposited(
     event: UnbondedValueDeposited
 ): void {
-  let operator = getOrCreateKeepMember(event.params.operator);
+  let operator = getOrCreateOperator(event.params.operator);
   operator.unboundAvailable = operator.unboundAvailable.plus(toDecimal(event.params.amount));
   operator.save()
 
@@ -142,7 +142,7 @@ export function handleUnbondedValueDeposited(
 export function handleUnbondedValueWithdrawn(
     event: UnbondedValueWithdrawn
 ): void {
-  let operator = getOrCreateKeepMember(event.params.operator);
+  let operator = getOrCreateOperator(event.params.operator);
   operator.unboundAvailable = operator.unboundAvailable.minus(toDecimal(event.params.amount));
   operator.save()
 

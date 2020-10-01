@@ -1,6 +1,6 @@
 import {KeepClosed, KeepTerminated, PublicKeyPublished} from "../generated/templates/BondedECDSAKeep/BondedECDSAKeep";
 import {BondedECDSAKeep} from "../generated/schema";
-import {getOrCreateKeepMember} from "./helpers";
+import {getOrCreateOperator} from "./helpers";
 import {Address} from "@graphprotocol/graph-ts/index";
 
 export function handlePublicKeyPublished(event: PublicKeyPublished): void {
@@ -28,7 +28,7 @@ export function handleKeepTerminated(event: KeepTerminated): void {
 function reduceMemberKeepCount(members: Array<string | null>): void {
   for (let i = 0; i < members.length; i++) {
     let keepMemberAddress = members[i]!;
-    let member = getOrCreateKeepMember(Address.fromHexString(keepMemberAddress) as Address);
+    let member = getOrCreateOperator(Address.fromHexString(keepMemberAddress) as Address);
     member.activeKeepCount -= 1;
     member.save()
   }

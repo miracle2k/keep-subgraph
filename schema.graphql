@@ -222,7 +222,9 @@ type Operator @entity {
   address: Bytes!
 
   keeps: [BondedECDSAKeep!] @derivedFrom(field: "members")
-  bonds: [Bond!]!  @derivedFrom(field: "operator")
+  bonds: [Bond!]! @derivedFrom(field: "operator")
+
+  locks: [Lock!]! @derivedFrom(field: "operator")
 
   # The other "staker" roles.
   owner: Bytes
@@ -235,6 +237,17 @@ type Operator @entity {
   unboundAvailable: BigDecimal!
   totalKeepCount: Int!
   activeKeepCount: Int!
+  stakedAmount: BigDecimal!
+}
+
+"""
+A lock on an operator stake.
+"""
+type Lock @entity {
+  id: ID!
+  creator: Bytes!
+  operator: Operator!
+  until: BigInt!
 }
 
 enum BondStatus {
@@ -248,7 +261,7 @@ type Bond @entity {
   status: BondStatus!
   referenceID: BigInt!
   bondedAmount: BigDecimal!
-  operator: KeepMember!
+  operator: Operator!
   holder: Bytes!
   keep: BondedECDSAKeep!
 }
@@ -262,7 +275,7 @@ type BondedECDSAKeep @entity {
   publicKey: Bytes
   status: BondedECDSAKeepStatus
   honestThreshold: Int
-  members: [KeepMember]!
+  members: [Operator]!
 }
 
 enum BondedECDSAKeepStatus {

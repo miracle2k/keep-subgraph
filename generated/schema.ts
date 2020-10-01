@@ -1642,7 +1642,7 @@ export class DepositRedemption extends Entity {
   }
 }
 
-export class KeepMember extends Entity {
+export class Operator extends Entity {
   constructor(id: string) {
     super();
     this.set("id", Value.fromString(id));
@@ -1650,17 +1650,17 @@ export class KeepMember extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id !== null, "Cannot save KeepMember entity without an ID");
+    assert(id !== null, "Cannot save Operator entity without an ID");
     assert(
       id.kind == ValueKind.STRING,
-      "Cannot save KeepMember entity with non-string ID. " +
+      "Cannot save Operator entity with non-string ID. " +
         'Considering using .toHex() to convert the "id" to a string.'
     );
-    store.set("KeepMember", id.toString(), this);
+    store.set("Operator", id.toString(), this);
   }
 
-  static load(id: string): KeepMember | null {
-    return store.get("KeepMember", id) as KeepMember | null;
+  static load(id: string): Operator | null {
+    return store.get("Operator", id) as Operator | null;
   }
 
   get id(): string {
@@ -1707,6 +1707,83 @@ export class KeepMember extends Entity {
     this.set("bonds", Value.fromStringArray(value));
   }
 
+  get locks(): Array<string> {
+    let value = this.get("locks");
+    return value.toStringArray();
+  }
+
+  set locks(value: Array<string>) {
+    this.set("locks", Value.fromStringArray(value));
+  }
+
+  get owner(): Bytes | null {
+    let value = this.get("owner");
+    if (value === null) {
+      return null;
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set owner(value: Bytes | null) {
+    if (value === null) {
+      this.unset("owner");
+    } else {
+      this.set("owner", Value.fromBytes(value as Bytes));
+    }
+  }
+
+  get operator(): Bytes | null {
+    let value = this.get("operator");
+    if (value === null) {
+      return null;
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set operator(value: Bytes | null) {
+    if (value === null) {
+      this.unset("operator");
+    } else {
+      this.set("operator", Value.fromBytes(value as Bytes));
+    }
+  }
+
+  get beneficiary(): Bytes | null {
+    let value = this.get("beneficiary");
+    if (value === null) {
+      return null;
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set beneficiary(value: Bytes | null) {
+    if (value === null) {
+      this.unset("beneficiary");
+    } else {
+      this.set("beneficiary", Value.fromBytes(value as Bytes));
+    }
+  }
+
+  get authorizer(): Bytes | null {
+    let value = this.get("authorizer");
+    if (value === null) {
+      return null;
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set authorizer(value: Bytes | null) {
+    if (value === null) {
+      this.unset("authorizer");
+    } else {
+      this.set("authorizer", Value.fromBytes(value as Bytes));
+    }
+  }
+
   get bonded(): BigDecimal {
     let value = this.get("bonded");
     return value.toBigDecimal();
@@ -1741,6 +1818,73 @@ export class KeepMember extends Entity {
 
   set activeKeepCount(value: i32) {
     this.set("activeKeepCount", Value.fromI32(value));
+  }
+
+  get stakedAmount(): BigDecimal {
+    let value = this.get("stakedAmount");
+    return value.toBigDecimal();
+  }
+
+  set stakedAmount(value: BigDecimal) {
+    this.set("stakedAmount", Value.fromBigDecimal(value));
+  }
+}
+
+export class Lock extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id !== null, "Cannot save Lock entity without an ID");
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save Lock entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("Lock", id.toString(), this);
+  }
+
+  static load(id: string): Lock | null {
+    return store.get("Lock", id) as Lock | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get creator(): Bytes {
+    let value = this.get("creator");
+    return value.toBytes();
+  }
+
+  set creator(value: Bytes) {
+    this.set("creator", Value.fromBytes(value));
+  }
+
+  get operator(): string {
+    let value = this.get("operator");
+    return value.toString();
+  }
+
+  set operator(value: string) {
+    this.set("operator", Value.fromString(value));
+  }
+
+  get until(): BigInt {
+    let value = this.get("until");
+    return value.toBigInt();
+  }
+
+  set until(value: BigInt) {
+    this.set("until", Value.fromBigInt(value));
   }
 }
 
