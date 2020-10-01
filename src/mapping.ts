@@ -14,7 +14,7 @@ import { log, BigInt, Address, ethereum, Entity, DataSourceContext, BigDecimal }
 import { Transfer as TDTTransfer } from "../generated/TBTCDepositToken/TBTCDepositToken";
 import { DepositContract as DepositSmartContract } from "../generated/templates/DepositContract/DepositContract";
 import { BondedECDSAKeep as KeepSmartContract } from "../generated/templates/BondedECDSAKeep/BondedECDSAKeep";
-import { BondedECDSAKeep as BondedECDSAKeepTemplate } from "../generated/templates";
+import {BondedECDSAKeep as BondedECDSAKeepTemplate, DepositContract} from "../generated/templates";
 import {
   Deposit,
   BondedECDSAKeep,
@@ -108,9 +108,10 @@ export function handleCreatedEvent(event: Created): void {
   deposit.tdtToken = getDepositTokenIdFromDepositAddress(contractAddress)
   deposit.owner = event.transaction.from;
 
-  // this indexes the newly created contract address for events
+  // Instantiate the graph templates: this indexes the newly created contracts for events
   let context = new DataSourceContext()
   BondedECDSAKeepTemplate.createWithContext(keepAddress, context);
+  DepositContract.create(keepAddress);
 
   let depositSmartContract = DepositSmartContract.bind(contractAddress);
   deposit.lotSizeSatoshis = depositSmartContract.lotSizeSatoshis();
