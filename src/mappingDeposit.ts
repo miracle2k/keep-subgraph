@@ -14,7 +14,7 @@ function newSetupFailedEvent(depositAddress: Address, reason: string, call: ethe
   // format for the Graph object id. We do not have access to this here. Since there should only ever be a single
   // successful `failedSetup` call per deposit, we use this.
 
-  let logEvent = new SetupFailedEvent(`${depositAddress}-failedSetup`);
+  let logEvent = new SetupFailedEvent(`${depositAddress.toHexString()}-failedSetup`);
   logEvent.deposit = getDepositIdFromAddress(depositAddress);
   logEvent.reason = reason;
 
