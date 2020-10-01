@@ -55,10 +55,10 @@ const DP = 'dp-';
  * token id encoded for that address. We can therefore determine the ID of a deposit through either the
  * token id, or through the contract address.
  */
-function getDepositIdFromAddress(address: Address): string {
+export function getDepositIdFromAddress(address: Address): string {
   return DP+address.toHexString();
 }
-function getDepositIdFromTokenID(tokenID: BigInt): string {
+export function getDepositIdFromTokenID(tokenID: BigInt): string {
   return DP + getDepositTokenIdFromTokenID(tokenID);
 }
 
@@ -74,10 +74,14 @@ function getDepositTokenIdFromDepositAddress(address: Address): string {
 }
 
 
-function completeLogEvent<T extends Entity>(log: T, event: ethereum.Event): void {
-  log.set("submitter", Value.fromBytes(event.transaction.from));
-  log.set("transactionHash", Value.fromString(event.transaction.hash.toHexString()))
-  log.set("timestamp", Value.fromBigInt(event.block.timestamp))
+export function completeLogEvent<T extends Entity>(log: T, event: ethereum.Event): void {
+  completeLogEventRaw(log, event.transaction, event.block)
+}
+
+export function completeLogEventRaw<T extends Entity>(log: T, tx: ethereum.Transaction, block: ethereum.Block): void {
+  log.set("submitter", Value.fromBytes(tx.from));
+  log.set("transactionHash", Value.fromString(tx.hash.toHexString()))
+  log.set("timestamp", Value.fromBigInt(block.timestamp))
   // Why is  nameof() not avaialble?
   //store.set(nameof(typeof log), log.getString("id"), log);
 }
@@ -169,7 +173,7 @@ function saveDeposit(deposit: Deposit): void {
 /**
  * Helper to change the deposit state & save. Useful if you don't have to do anything else.
  */
-function setDepositState(contractAddress: Address, newState: string): void {
+export function setDepositState(contractAddress: Address, newState: string): void {
   let deposit = Deposit.load(getDepositIdFromAddress(contractAddress))!;
   deposit.currentState = newState;
   saveDeposit(deposit);
@@ -346,11 +350,8 @@ export function handleRegisteredPubkey(event: RegisteredPubkey): void {
 
 
 export function handleSetupFailedEvent(event: SetupFailed): void {
-  setDepositState(event.params._depositContractAddress, "FAILED_SETUP");
-
-  let logEvent = new SetupFailedEvent(getIDFromEvent(event))
-  logEvent.deposit = getDepositIdFromAddress(event.params._depositContractAddress);
-  completeLogEvent(logEvent, event); logEvent.save()
+  // For now, this is a noop - instead, we handle those notify() contract calls that can cause this event
+  // to be triggered in the first place.  Might want to remove this for better indexing performance.
 }
 
 

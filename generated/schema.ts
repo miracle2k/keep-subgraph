@@ -727,6 +727,23 @@ export class SetupFailedEvent extends Entity {
       this.set("deposit", Value.fromString(value as string));
     }
   }
+
+  get reason(): string | null {
+    let value = this.get("reason");
+    if (value === null) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set reason(value: string | null) {
+    if (value === null) {
+      this.unset("reason");
+    } else {
+      this.set("reason", Value.fromString(value as string));
+    }
+  }
 }
 
 export class LiquidatedEvent extends Entity {

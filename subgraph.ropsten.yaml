@@ -166,6 +166,61 @@ dataSources:
 
       file: ./src/mapping.ts
 
+  - kind: ethereum/contract
+    name: StakingContract
+    network: mainnet
+    source:
+      address: "0x1293a54e160d1cd7075487898d65266081a15458"
+      abi: StakingContract
+      startBlock : 10834080
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - ExpiredLockReleased
+        - LockReleased
+        - OperatorStaked
+        - RecoveredStake
+        - StakeDelegated
+        - StakeLocked
+        - StakeOwnershipTransferred
+        - TokensSeized
+        - TokensSlashed
+        - TopUpCompleted
+        - TopUpInitiated
+        - Undelegated
+      abis:
+        - name: StakingContract
+          file: ./abis/StakingContract.json
+      eventHandlers:
+        - event: ExpiredLockReleased(indexed address,address)
+          handler: handleExpiredLockReleased
+        - event: LockReleased(indexed address,address)
+          handler: handleLockReleased
+        - event: OperatorStaked(indexed address,indexed address,indexed address,uint256)
+          handler: handleOperatorStaked
+        - event: RecoveredStake(address)
+          handler: handleRecoveredStake
+        - event: StakeDelegated(indexed address,indexed address)
+          handler: handleStakeDelegated
+        - event: StakeLocked(indexed address,address,uint256)
+          handler: handleStakeLocked
+        - event: StakeOwnershipTransferred(indexed address,indexed address)
+          handler: handleStakeOwnershipTransferred
+        - event: TokensSeized(indexed address,uint256)
+          handler: handleTokensSeized
+        - event: TokensSlashed(indexed address,uint256)
+          handler: handleTokensSlashed
+        - event: TopUpCompleted(indexed address,uint256)
+          handler: handleTopUpCompleted
+        - event: TopUpInitiated(indexed address,uint256)
+          handler: handleTopUpInitiated
+        - event: Undelegated(indexed address,uint256)
+          handler: handleUndelegated
+      file: ./src/mappingTokenStaking.ts
+
+
 templates:
   - name: DepositContract
     kind: ethereum/contract

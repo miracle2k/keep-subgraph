@@ -80,12 +80,21 @@ type RedemptionRequestedEvent implements Event @entity {
   sigHashDigest: Bytes!
 }
 
+enum SetupFailedReason {
+  SIGNER_SETUP_FAILED,
+  FUNDING_TIMEOUT,
+  FUNDING_ECDSA_FRAUD
+}
+
 type SetupFailedEvent implements Event @entity {
   id: ID!
   submitter: Bytes!
   transactionHash: String!
   timestamp: BigInt!
   deposit: Deposit
+
+  "The reason for the failure, based on which contract call caused the failure state to be entered."
+  reason: SetupFailedReason
 }
 
 type LiquidatedEvent implements Event @entity {
@@ -200,15 +209,30 @@ type DepositRedemption @entity {
   txid: Bytes
 }
 
-type KeepMember @entity {
+"""
+A node operator.
+
+In Staking terms (https://docs.keep.network/random-beacon/staking/), there is an abstract role called the Staker,
+representing owner, operator, beneficiary and authorizer. "Stakers are identified by their operator address", and
+in our graph, through the Operator entity. Understand that in staking terms, only a single owner can delegate
+their tokens to a particular owner, so the tokens staked always come from the samea address.
+"""
+type Operator @entity {
   id: ID!
   address: Bytes!
+
   keeps: [BondedECDSAKeep!] @derivedFrom(field: "members")
   bonds: [Bond!]!  @derivedFrom(field: "operator")
 
+  # The other "staker" roles.
+  owner: Bytes
+  operator: Bytes
+  beneficiary: Bytes
+  authorizer: Bytes
+
+  # Statistics
   bonded: BigDecimal!
   unboundAvailable: BigDecimal!
-
   totalKeepCount: Int!
   activeKeepCount: Int!
 }
