@@ -29,6 +29,7 @@ export function getStats(): Stats {
     stats.availableToBeBonded = BIGDECIMAL_ZERO
     stats.totalBonded = BIGDECIMAL_ZERO;
     stats.totalBondsSeized = BIGDECIMAL_ZERO;
+    stats.btcUnderDeposit = BIGDECIMAL_ZERO;
   }
   return stats!;
 }

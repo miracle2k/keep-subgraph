@@ -2805,4 +2805,13 @@ export class Stats extends Entity {
   set totalBondsSeized(value: BigDecimal) {
     this.set("totalBondsSeized", Value.fromBigDecimal(value));
   }
+
+  get btcUnderDeposit(): BigDecimal {
+    let value = this.get("btcUnderDeposit");
+    return value.toBigDecimal();
+  }
+
+  set btcUnderDeposit(value: BigDecimal) {
+    this.set("btcUnderDeposit", Value.fromBigDecimal(value));
+  }
 }

@@ -36,6 +36,8 @@ import {getIDFromEvent} from "./utils";
 import {Value} from "@graphprotocol/graph-ts/index";
 import {getOrCreateOperator} from "./helpers";
 import {BIGINT_ZERO} from "./constants";
+import {getStats} from "./mappingKeepBonding";
+import {toDecimal} from "./decimalUtils";
 
 
 // Wild-card re-export compiles but then does not find the functions at runtime.
@@ -320,6 +322,9 @@ export function handleRedeemedEvent(event: Redeemed): void {
   logEvent.deposit = deposit.id;
   logEvent.tx = event.params._txid
   completeLogEvent(logEvent, event); logEvent.save()
+
+  let stats = getStats()
+  stats.btcUnderDeposit = stats.btcUnderDeposit.minus(toDecimal(deposit.lotSizeSatoshis!));
 }
 
 export function handleFundedEvent(event: Funded): void {
@@ -337,6 +342,9 @@ export function handleFundedEvent(event: Funded): void {
   logEvent.deposit = getDepositIdFromAddress(event.params._depositContractAddress);
   logEvent.tx = event.params._txid;
   completeLogEvent(logEvent, event); logEvent.save()
+
+  let stats = getStats()
+  stats.btcUnderDeposit = stats.btcUnderDeposit.plus(toDecimal(deposit.lotSizeSatoshis!));
 }
 
 export function handleRegisteredPubkey(event: RegisteredPubkey): void {

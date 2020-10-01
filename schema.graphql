@@ -367,4 +367,6 @@ type Stats @entity {
   availableToBeBonded: BigDecimal!
   totalBonded: BigDecimal!
   totalBondsSeized: BigDecimal!
+
+  btcUnderDeposit: BigDecimal!
 }
