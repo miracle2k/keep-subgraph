@@ -2,6 +2,7 @@ const nunjucks = require('nunjucks');
 const fs = require('fs');
 
 const mainNetVars = {
+  network: 'mainnet',
   'TBTCDepositToken': {
     'address': '0x10B66Bd1e3b5a936B7f8Dbc5976004311037Cdf0',
     'startBlock': '10867845'
@@ -25,6 +26,7 @@ const mainNetVars = {
 }
 
 const ropstenVars = {
+  network: 'ropsten',
   'TBTCDepositToken': {
     'address': '0x7cAad48DF199Cd661762485fc44126F4Fe8A58C9',
     'startBlock': '8595001'

@@ -6,7 +6,7 @@ schema:
 dataSources:
   - kind: ethereum/contract
     name: TBTCDepositToken
-    network: mainnet
+    network: {{ network }}
     source:
       startBlock: {{ TBTCDepositToken.startBlock }}
       address: "{{ TBTCDepositToken.address }}"
@@ -28,7 +28,7 @@ dataSources:
 
   - kind: ethereum/contract
     name: TBTCToken
-    network: mainnet
+    network: {{ network }}
     source:
       startBlock: {{ TBTCToken.startBlock }}
       address: "{{ TBTCToken.address }}"
@@ -52,7 +52,7 @@ dataSources:
   # On the other hand, STAKING is different and is the KEEP being held.
   - kind: ethereum/contract
     name: KeepBonding
-    network: mainnet
+    network: {{ network }}
     source:
       startBlock: {{ KeepBonding.startBlock }}
       address: "{{ KeepBonding.address }}"
@@ -95,7 +95,7 @@ dataSources:
 
   - kind: ethereum/contract
     name: TBTCSystem
-    network: mainnet
+    network: {{ network }}
     source:
       startBlock: {{ TBTCSystem.startBlock }}
       address: "{{ TBTCSystem.address }}"
@@ -168,7 +168,7 @@ dataSources:
 
   - kind: ethereum/contract
     name: StakingContract
-    network: mainnet
+    network: {{ network }}
     source:
       startBlock: {{ TokenStaking.startBlock }}
       address: "{{ TokenStaking.address }}"
@@ -224,7 +224,7 @@ dataSources:
 templates:
   - name: DepositContract
     kind: ethereum/contract
-    network: mainnet
+    network: {{ network }}
     source:
       abi: DepositContract
     mapping:
@@ -248,7 +248,7 @@ templates:
 
   - name: BondedECDSAKeep
     kind: ethereum/contract
-    network: mainnet
+    network: {{ network }}
     source:
       abi: BondedECDSAKeep
     mapping:

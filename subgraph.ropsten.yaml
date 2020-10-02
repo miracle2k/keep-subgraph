@@ -6,7 +6,7 @@ schema:
 dataSources:
   - kind: ethereum/contract
     name: TBTCDepositToken
-    network: mainnet
+    network: ropsten
     source:
       startBlock: 8595001
       address: "0x7cAad48DF199Cd661762485fc44126F4Fe8A58C9"
@@ -28,7 +28,7 @@ dataSources:
 
   - kind: ethereum/contract
     name: TBTCToken
-    network: mainnet
+    network: ropsten
     source:
       startBlock: 8594999
       address: "0x7c07C42973047223F80C4A69Bb62D5195460Eb5F"
@@ -52,7 +52,7 @@ dataSources:
   # On the other hand, STAKING is different and is the KEEP being held.
   - kind: ethereum/contract
     name: KeepBonding
-    network: mainnet
+    network: ropsten
     source:
       startBlock: 8593098
       address: "0x60535A59B4e71F908f3fEB0116F450703FB35eD8"
@@ -95,7 +95,7 @@ dataSources:
 
   - kind: ethereum/contract
     name: TBTCSystem
-    network: mainnet
+    network: ropsten
     source:
       startBlock: 8594981
       address: "0xc3f96306eDabACEa249D2D22Ec65697f38c6Da69"
@@ -168,7 +168,7 @@ dataSources:
 
   - kind: ethereum/contract
     name: StakingContract
-    network: mainnet
+    network: ropsten
     source:
       startBlock: 8580771
       address: "0x234d2182B29c6a64ce3ab6940037b5C8FdAB608e"
@@ -224,7 +224,7 @@ dataSources:
 templates:
   - name: DepositContract
     kind: ethereum/contract
-    network: mainnet
+    network: ropsten
     source:
       abi: DepositContract
     mapping:
@@ -248,7 +248,7 @@ templates:
 
   - name: BondedECDSAKeep
     kind: ethereum/contract
-    network: mainnet
+    network: ropsten
     source:
       abi: BondedECDSAKeep
     mapping:
