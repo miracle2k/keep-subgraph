@@ -345,6 +345,7 @@ export function handleRedeemedEvent(event: Redeemed): void {
 
   let stats = getStats()
   stats.btcUnderDeposit = stats.btcUnderDeposit.minus(toDecimal(deposit.lotSizeSatoshis!));
+  stats.save()
 }
 
 export function handleFundedEvent(event: Funded): void {
@@ -365,6 +366,7 @@ export function handleFundedEvent(event: Funded): void {
 
   let stats = getStats()
   stats.btcUnderDeposit = stats.btcUnderDeposit.plus(toDecimal(deposit.lotSizeSatoshis!));
+  stats.save()
 }
 
 export function handleRegisteredPubkey(event: RegisteredPubkey): void {
