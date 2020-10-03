@@ -1077,6 +1077,23 @@ export class Deposit extends Entity {
     }
   }
 
+  get updatedAt(): BigInt | null {
+    let value = this.get("updatedAt");
+    if (value === null) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set updatedAt(value: BigInt | null) {
+    if (value === null) {
+      this.unset("updatedAt");
+    } else {
+      this.set("updatedAt", Value.fromBigInt(value as BigInt));
+    }
+  }
+
   get owner(): Bytes {
     let value = this.get("owner");
     return value.toBytes();

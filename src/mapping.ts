@@ -81,10 +81,10 @@ export function getDepositSetup(depositAddress: Address): DepositSetup {
   let id = DPS+depositAddress.toHexString();
   let setup = DepositSetup.load(id);
   if (setup == null) {
-    setup = new DepositSetup(id)!;
+    setup = new DepositSetup(id);
     setup.deposit = getDepositIdFromAddress(depositAddress);
   }
-  return setup;
+  return setup!;
 }
 
 
@@ -119,6 +119,7 @@ export function handleCreatedEvent(event: Created): void {
   deposit.currentState = "AWAITING_SIGNER_SETUP";
   deposit.keepAddress = event.params._keepAddress;
   deposit.createdAt = event.block.timestamp;
+  deposit.updatedAt = event.block.timestamp;
   deposit.tdtToken = getDepositTokenIdFromDepositAddress(contractAddress)
   deposit.owner = event.transaction.from;
 
@@ -137,7 +138,7 @@ export function handleCreatedEvent(event: Created): void {
   let bondedECDSAKeep = newBondedECDSAKeep(deposit, keepAddress, event);
 
   deposit.bondedECDSAKeep = bondedECDSAKeep.id;
-  saveDeposit(deposit);
+  saveDeposit(deposit, event.block);
 
   let logEvent = new CreatedEvent(getIDFromEvent(event))
   logEvent.deposit = getDepositIdFromAddress(event.params._depositContractAddress);
@@ -148,7 +149,7 @@ export function handleCreatedEvent(event: Created): void {
 }
 
 // Do not save a deposit directly. There are certain denormalized values which need to be recalculated
-function saveDeposit(deposit: Deposit): void {
+function saveDeposit(deposit: Deposit, block: ethereum.Block): void {
   deposit.filter_activeLikeState = (
       deposit.currentState !== "FAILED_SETUP" &&
       deposit.currentState !== "LIQUIDATED" &&
@@ -183,6 +184,8 @@ function saveDeposit(deposit: Deposit): void {
     deposit.filter_redeemableAsOf = deposit.endOfTerm ? deposit.endOfTerm! : BIGINT_ZERO;
   }
 
+  deposit.updatedAt = block.timestamp;
+
   deposit!.save();
 }
 
@@ -190,10 +193,10 @@ function saveDeposit(deposit: Deposit): void {
 /**
  * Helper to change the deposit state & save. Useful if you don't have to do anything else.
  */
-export function setDepositState(contractAddress: Address, newState: string): void {
+export function setDepositState(contractAddress: Address, newState: string, block: ethereum.Block): void {
   let deposit = Deposit.load(getDepositIdFromAddress(contractAddress))!;
   deposit.currentState = newState;
-  saveDeposit(deposit);
+  saveDeposit(deposit, block);
 }
 
 function newBondedECDSAKeep(
@@ -241,14 +244,16 @@ export function handleStartedLiquidationEvent(event: StartedLiquidation): void {
   depositLiquidation.liquidationInitiator = event.transaction.from;
   depositLiquidation.save();
 
+  deposit.updatedAt = event.block.timestamp;
   deposit.depositLiquidation = depositLiquidation.id;
-  saveDeposit(deposit);
 
   if (event.params._wasFraud) {
-    setDepositState(contractAddress, "FRAUD_LIQUIDATION_IN_PROGRESS");
+    deposit.currentState = "FRAUD_LIQUIDATION_IN_PROGRESS";
   } else {
-    setDepositState(contractAddress, "LIQUIDATION_IN_PROGRESS");
+    deposit.currentState = "LIQUIDATION_IN_PROGRESS";
   }
+
+  saveDeposit(deposit, event.block);
 
   let logEvent = new StartedLiquidationEvent(getIDFromEvent(event))
   logEvent.deposit = getDepositIdFromAddress(event.params._depositContractAddress);
@@ -262,7 +267,7 @@ export function handleCourtesyCalledEvent(event: CourtesyCalled): void {
   depositLiquidation.courtesyCallInitiated = event.block.timestamp;
   depositLiquidation.save();
 
-  setDepositState(contractAddress, "COURTESY_CALL");
+  setDepositState(contractAddress, "COURTESY_CALL", event.block);
 
   let logEvent = new CourtesyCalledEvent(getIDFromEvent(event))
   logEvent.deposit = getDepositIdFromAddress(event.params._depositContractAddress);
@@ -276,7 +281,7 @@ export function handleLiquidatedEvent(event: Liquidated): void {
   depositLiquidation.isLiquidated = true;
   depositLiquidation.save();
 
-  setDepositState(contractAddress, "LIQUIDATED");
+  setDepositState(contractAddress, "LIQUIDATED", event.block);
 
   let logEvent = new LiquidatedEvent(getIDFromEvent(event))
   logEvent.deposit = getDepositIdFromAddress(event.params._depositContractAddress);
@@ -299,7 +304,7 @@ export function handleRedemptionRequestedEvent(
   depositRedemption.utxoSize = event.params._utxoValue;
   depositRedemption.save();
 
-  setDepositState(contractAddress, "AWAITING_WITHDRAWAL_SIGNATURE");
+  setDepositState(contractAddress, "AWAITING_WITHDRAWAL_SIGNATURE", event.block);
 
   let logEvent = new RedemptionRequestedEvent(getIDFromEvent(event))
   logEvent.deposit = getDepositIdFromAddress(event.params._depositContractAddress);
@@ -315,7 +320,7 @@ export function handleRedemptionRequestedEvent(
 export function handleGotRedemptionSignatureEvent(
   event: GotRedemptionSignature
 ): void {
-  setDepositState(event.params._depositContractAddress, "AWAITING_WITHDRAWAL_PROOF");
+  setDepositState(event.params._depositContractAddress, "AWAITING_WITHDRAWAL_PROOF", event.block);
 
   let logEvent = new GotRedemptionSignatureEvent(getIDFromEvent(event))
   logEvent.deposit = getDepositIdFromAddress(event.params._depositContractAddress);
@@ -325,7 +330,7 @@ export function handleGotRedemptionSignatureEvent(
 export function handleRedeemedEvent(event: Redeemed): void {
   let contractAddress = event.params._depositContractAddress;
   let deposit = Deposit.load(getDepositIdFromAddress(contractAddress))!;
-  setDepositState(contractAddress, "REDEEMED");
+  setDepositState(contractAddress, "REDEEMED", event.block);
 
   let depositRedemption = DepositRedemption.load(DPR+contractAddress.toHexString())!;
   depositRedemption.txid = event.params._txid;
@@ -350,7 +355,7 @@ export function handleFundedEvent(event: Funded): void {
   let utxoValue = depositSmartContract.try_utxoValue();
   deposit.utxoSize = utxoValue.reverted ? new BigInt(0) : utxoValue.value;
   deposit.endOfTerm = depositSmartContract.remainingTerm().plus(event.block.timestamp);
-  saveDeposit(deposit);
+  saveDeposit(deposit, event.block);
 
   let logEvent = new FundedEvent(getIDFromEvent(event))
   logEvent.deposit = getDepositIdFromAddress(event.params._depositContractAddress);
@@ -362,7 +367,7 @@ export function handleFundedEvent(event: Funded): void {
 }
 
 export function handleRegisteredPubkey(event: RegisteredPubkey): void {
-  setDepositState(event.params._depositContractAddress, "AWAITING_BTC_FUNDING_PROOF");
+  setDepositState(event.params._depositContractAddress, "AWAITING_BTC_FUNDING_PROOF", event.block);
 
   let logEvent = new RegisteredPubKeyEvent(getIDFromEvent(event))
   logEvent.deposit = getDepositIdFromAddress(event.params._depositContractAddress);
@@ -406,6 +411,6 @@ export function handleMintTBTCDepositToken(event: TDTTransfer): void {
   let deposit = Deposit.load(getDepositIdFromTokenID(event.params.tokenId))
   if (deposit) {
     deposit.owner = depositToken!.owner;
-    saveDeposit(deposit!);
+    saveDeposit(deposit!, event.block);
   }
 }

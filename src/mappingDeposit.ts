@@ -30,7 +30,7 @@ function newSetupFailedEvent(depositAddress: Address, reason: string, call: ethe
 export function handleNotifyFundingTimedOut(call: NotifyFundingTimedOutCall): void {
   log.info("foobar", []);
   let contractAddress = call.to;
-  setDepositState(contractAddress, "FAILED_SETUP");
+  setDepositState(contractAddress, "FAILED_SETUP", call.block);
   newSetupFailedEvent(contractAddress, "FUNDING_TIMEOUT", call);
 
   let setup = getDepositSetup(contractAddress);
@@ -41,7 +41,7 @@ export function handleNotifyFundingTimedOut(call: NotifyFundingTimedOutCall): vo
 export function handleNotifySignerSetupFailed(call: NotifySignerSetupFailedCall): void {
   log.info("foobar2", []);
   let contractAddress = call.to;
-  setDepositState(contractAddress, "FAILED_SETUP");
+  setDepositState(contractAddress, "FAILED_SETUP", call.block);
   newSetupFailedEvent(contractAddress, "SIGNER_SETUP_FAILED", call)
 
   let setup = getDepositSetup(contractAddress);
@@ -51,7 +51,7 @@ export function handleNotifySignerSetupFailed(call: NotifySignerSetupFailedCall)
 
 export function handleProvideFundingECDSAFraudProof(call: ProvideFundingECDSAFraudProofCall): void {
   let contractAddress = call.to;
-  setDepositState(contractAddress, "FAILED_SETUP");
+  setDepositState(contractAddress, "FAILED_SETUP", call.block);
   newSetupFailedEvent(contractAddress, "FUNDING_ECDSA_FRAUD", call)
 
   let setup = getDepositSetup(contractAddress);
