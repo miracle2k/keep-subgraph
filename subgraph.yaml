@@ -268,3 +268,6 @@ templates:
           handler: handleKeepClosed
         - event: KeepTerminated()
           handler: handleKeepTerminated
+      callHandlers:
+        - function: submitPublicKey(bytes)
+          handler: handleSubmitPublicKey

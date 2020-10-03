@@ -292,6 +292,9 @@ type BondedECDSAKeep @entity {
   status: BondedECDSAKeepStatus
   honestThreshold: Int
   members: [Operator]!
+
+  "The nodes which have submitted their pubkey."
+  pubkeySubmissions: [Operator]!
 }
 
 enum BondedECDSAKeepStatus {

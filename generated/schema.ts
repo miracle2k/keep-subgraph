@@ -2189,6 +2189,15 @@ export class BondedECDSAKeep extends Entity {
   set members(value: Array<string | null>) {
     this.set("members", Value.fromStringArray(value));
   }
+
+  get pubkeySubmissions(): Array<string | null> {
+    let value = this.get("pubkeySubmissions");
+    return value.toStringArray();
+  }
+
+  set pubkeySubmissions(value: Array<string | null>) {
+    this.set("pubkeySubmissions", Value.fromStringArray(value));
+  }
 }
 
 export class GovernanceLogEntry extends Entity {

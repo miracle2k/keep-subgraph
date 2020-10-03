@@ -44,6 +44,18 @@ function reduceMemberKeepCount(members: Array<string | null>): void {
   }
 }
 
-// import { dataSource } from "@graphprotocol/graph-ts"
-// let context = dataSource.context()
-// let tradingPair = context.getString("tradingPair")
+/**
+ * Every signer in a keep submits the key using this call. When all keys have been submitted,
+ * PublicKeyPublished is emitted.
+ *
+ * We want to keep track of which signers did or did not submit their key, so we can blame someone.
+ */
+export function handleSubmitPublicKey(call: SubmitPublicKeyCall): void {
+  let keep = BondedECDSAKeep.load(call.to.toHexString())!;
+  let array = keep.pubkeySubmissions;
+  array.push(call.from.toHexString())
+  keep.pubkeySubmissions = array;
+
+  // TODO: This could also be a log entry, but probably one that we want to show as "lesser", and possible
+  // hide it in some cases where it is not important (give it a `important=low` property).
+}
