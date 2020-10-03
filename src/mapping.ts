@@ -213,6 +213,7 @@ function newBondedECDSAKeep(
   bondedECDSAKeep.totalBondAmount = contract.checkBondAmount();
   bondedECDSAKeep.status = "ACTIVE";
   bondedECDSAKeep.honestThreshold = contract.honestThreshold().toI32();
+  bondedECDSAKeep.pubkeySubmissions = [];
 
   let members: string[] = [];
   let memberAddresses = contract.getMembers();
