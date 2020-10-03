@@ -2915,3 +2915,52 @@ export class Stats extends Entity {
     this.set("btcUnderDeposit", Value.fromBigDecimal(value));
   }
 }
+
+export class RandomBeaconGroup extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id !== null, "Cannot save RandomBeaconGroup entity without an ID");
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save RandomBeaconGroup entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("RandomBeaconGroup", id.toString(), this);
+  }
+
+  static load(id: string): RandomBeaconGroup | null {
+    return store.get("RandomBeaconGroup", id) as RandomBeaconGroup | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get createdAt(): BigInt {
+    let value = this.get("createdAt");
+    return value.toBigInt();
+  }
+
+  set createdAt(value: BigInt) {
+    this.set("createdAt", Value.fromBigInt(value));
+  }
+
+  get members(): Array<string> {
+    let value = this.get("members");
+    return value.toStringArray();
+  }
+
+  set members(value: Array<string>) {
+    this.set("members", Value.fromStringArray(value));
+  }
+}

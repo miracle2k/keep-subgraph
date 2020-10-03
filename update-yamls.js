@@ -22,6 +22,10 @@ const mainNetVars = {
   'TokenStaking': {
     'address': '0x1293a54e160d1cd7075487898d65266081a15458',
     'startBlock': '10834080'
+  },
+  'KeepRandomBeaconOperator': {
+    'address': '0xdF708431162Ba247dDaE362D2c919e0fbAfcf9DE',
+    'startBlock': '10834116'
   }
 }
 
@@ -46,6 +50,10 @@ const ropstenVars = {
   'TokenStaking': {
     'address': '0x234d2182B29c6a64ce3ab6940037b5C8FdAB608e',
     'startBlock': '8580771'
+  },
+  'KeepRandomBeaconOperator': {
+    'address': '0xC8337a94a50d16191513dEF4D1e61A6886BF410f',
+    'startBlock': '8580806'
   }
 }
 

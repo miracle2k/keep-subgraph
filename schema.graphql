@@ -389,3 +389,10 @@ type Stats @entity {
 
   btcUnderDeposit: BigDecimal!
 }
+
+type RandomBeaconGroup @entity {
+  id: ID!
+
+  createdAt: BigInt!
+  members: [Operator!]!
+}

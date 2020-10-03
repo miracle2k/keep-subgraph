@@ -220,6 +220,33 @@ dataSources:
           handler: handleUndelegated
       file: ./src/mappingTokenStaking.ts
 
+  - kind: ethereum/contract
+    name: KeepRandomBeaconOperator
+    network: ropsten
+    source:
+      startBlock: 8580806
+      address: "0xC8337a94a50d16191513dEF4D1e61A6886BF410f"
+      abi: KeepRandomBeaconOperator
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - ExpiredLockReleased
+      abis:
+        - name: KeepRandomBeaconOperator
+          file: ./abis/KeepRandomBeaconOperator.json
+      eventHandlers:
+        - event: DkgResultSubmittedEvent(uint256,bytes,bytes)
+          handler: handleDkgResultSubmittedEvent
+        - event: RelayEntryRequested(bytes,bytes)
+          handler: handleRelayEntryRequested
+        - event: RelayEntrySubmitted()
+          handler: handleRelayEntrySubmitted
+        - event: GroupSelectionStarted(uint256)
+          handler: handleGroupSelectionStarted
+      file: ./src/mappingKeepRandomBeaconOperator.ts
+
 
 templates:
   - name: DepositContract

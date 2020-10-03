@@ -1,0 +1,34 @@
+import {
+  DkgResultSubmittedEvent,
+  GroupSelectionStarted, KeepRandomBeaconOperator
+} from "../generated/KeepRandomBeaconOperator/KeepRandomBeaconOperator";
+import {RandomBeaconGroup} from "../generated/schema";
+import {BondedECDSAKeep as KeepSmartContract} from "../generated/templates/BondedECDSAKeep/BondedECDSAKeep";
+
+/**
+ * Event: GroupSelectionStarted
+ *
+ * KeepRandomBeaconServiceImplV1.entryCreated -> .createGroupIfApplicable() ->
+ *    KeepRandomBeaconOperator.createGroup -> This Event.
+ */
+export function handleGroupSelectionStarted(event: GroupSelectionStarted): void {
+    // TODO: A single group selection can be in progress, we may indicate this somewhere.
+}
+
+
+/**
+ * Event: DkgResultSubmittedEvent
+ *
+ * Emitted when submitDkgResult() is called. Complete the group creation process.
+ */
+export function handleDkgResultSubmittedEvent(event: DkgResultSubmittedEvent): void {
+  let group = new RandomBeaconGroup(event.params.groupPubKey.toHexString());
+  group.createdAt = event.block.timestamp;
+
+  let contract = KeepRandomBeaconOperator.bind(event.address);
+  const members = contract.getGroupMembers(event.params.groupPubKey);
+  group.members = members.map(address => address.toHexString());
+  group.save()
+}
+
+// NB: Expiring old groups has no event it seems, is done via selectGroup() which is called by signRelayEntry().
