@@ -1,9 +1,9 @@
+import { Address } from "@graphprotocol/graph-ts";
 import {
   DkgResultSubmittedEvent,
   GroupSelectionStarted, KeepRandomBeaconOperator
 } from "../generated/KeepRandomBeaconOperator/KeepRandomBeaconOperator";
 import {RandomBeaconGroup} from "../generated/schema";
-import {BondedECDSAKeep as KeepSmartContract} from "../generated/templates/BondedECDSAKeep/BondedECDSAKeep";
 
 /**
  * Event: GroupSelectionStarted
@@ -26,8 +26,8 @@ export function handleDkgResultSubmittedEvent(event: DkgResultSubmittedEvent): v
   group.createdAt = event.block.timestamp;
 
   let contract = KeepRandomBeaconOperator.bind(event.address);
-  const members = contract.getGroupMembers(event.params.groupPubKey);
-  group.members = members.map(address => address.toHexString());
+  let members = contract.getGroupMembers(event.params.groupPubKey);
+  group.members = members.map<string>(address => address.toHexString());
   group.save()
 }
 
