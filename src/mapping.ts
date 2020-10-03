@@ -149,7 +149,7 @@ export function handleCreatedEvent(event: Created): void {
 }
 
 // Do not save a deposit directly. There are certain denormalized values which need to be recalculated
-function saveDeposit(deposit: Deposit, block: ethereum.Block): void {
+export function saveDeposit(deposit: Deposit, block: ethereum.Block): void {
   deposit.filter_activeLikeState = (
       deposit.currentState !== "FAILED_SETUP" &&
       deposit.currentState !== "LIQUIDATED" &&

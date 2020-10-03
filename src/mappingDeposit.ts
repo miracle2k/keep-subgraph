@@ -3,8 +3,8 @@ import {
   NotifySignerSetupFailedCall,
   ProvideFundingECDSAFraudProofCall
 } from "../generated/templates/DepositContract/DepositContract";
-import {SetupFailedEvent} from "../generated/schema";
-import {completeLogEventRaw, getDepositIdFromAddress, getDepositSetup, setDepositState} from "./mapping";
+import {BondedECDSAKeep, Deposit, SetupFailedEvent} from "../generated/schema";
+import {completeLogEventRaw, getDepositIdFromAddress, getDepositSetup, saveDeposit, setDepositState} from "./mapping";
 import { Address, log } from "@graphprotocol/graph-ts";
 import {ethereum} from "@graphprotocol/graph-ts/index";
 
@@ -28,7 +28,6 @@ function newSetupFailedEvent(depositAddress: Address, reason: string, call: ethe
 // event was raised. We have to look into the call handlers directly to figure out *why* a SetupFailed event
 // was raised.
 export function handleNotifyFundingTimedOut(call: NotifyFundingTimedOutCall): void {
-  log.info("foobar", []);
   let contractAddress = call.to;
   setDepositState(contractAddress, "FAILED_SETUP", call.block);
   newSetupFailedEvent(contractAddress, "FUNDING_TIMEOUT", call);
@@ -39,13 +38,26 @@ export function handleNotifyFundingTimedOut(call: NotifyFundingTimedOutCall): vo
 }
 
 export function handleNotifySignerSetupFailed(call: NotifySignerSetupFailedCall): void {
-  log.info("foobar2", []);
   let contractAddress = call.to;
-  setDepositState(contractAddress, "FAILED_SETUP", call.block);
   newSetupFailedEvent(contractAddress, "SIGNER_SETUP_FAILED", call)
 
+  let deposit = Deposit.load(getDepositIdFromAddress(contractAddress))!;
+  deposit.currentState = 'FAILED_SETUP';
+  saveDeposit(deposit, call.block);
+
+  // To figure out who actually is at fault here, we have to see if the signers managed to publish a PublicKey
+  // to the keep. If they did, it was the depositor who failed to call `retrieveSignerPubKey()` to advance the
+  // deposit process, allowing for this timeout to happen.
+  let keep = BondedECDSAKeep.load(deposit.bondedECDSAKeep!)!
+  let failureReason: string;
+  if (keep.publicKey) {
+    failureReason = 'SIGNER_SETUP_FAILED_DEPOSITOR';
+  } else {
+    failureReason = 'SIGNER_SETUP_FAILED';
+  }
+
   let setup = getDepositSetup(contractAddress);
-  setup.failureReason = 'SIGNER_SETUP_FAILED';
+  setup.failureReason = failureReason;
   setup.save()
 }
 

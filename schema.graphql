@@ -81,7 +81,14 @@ type RedemptionRequestedEvent implements Event @entity {
 }
 
 enum SetupFailedReason {
+  # Both of those cases are handled the same in the contract, but we want to differentiate
+  # between one of the signers failing to publish a key (PublicKeyPublished is never raised)
+  # and the depositor simply abandoning the process and not "picking up the key" (calling
+  # `retrieveSignerPubkey()`) - which is really more comparible with the depositor failing
+  # to fund the deposit.
   SIGNER_SETUP_FAILED,
+  SIGNER_SETUP_FAILED_DEPOSITOR,
+
   FUNDING_TIMEOUT,
   FUNDING_ECDSA_FRAUD
 }
@@ -149,7 +156,7 @@ type Deposit @entity {
 
   depositLiquidation: DepositLiquidation
   depositRedemption: DepositRedemption
-  depositSetup: DepositSetup
+  depositSetup: DepositSetup @derivedFrom(field: "deposit")
 
   # Because TheGraph does not support complex filters (and/or), we pre-calculate some useful ones here.
   filter_liquidationLikeState: Boolean!,

@@ -245,7 +245,6 @@ templates:
         - function: provideFundingECDdSAFraudProof(uint8, bytes32, bytes32, bytes32, memory)
           handler: handleProvideFundingECDSAFraudProof
 
-
   - name: BondedECDSAKeep
     kind: ethereum/contract
     network: ropsten

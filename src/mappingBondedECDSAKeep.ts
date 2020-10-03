@@ -1,8 +1,18 @@
-import {KeepClosed, KeepTerminated, PublicKeyPublished} from "../generated/templates/BondedECDSAKeep/BondedECDSAKeep";
+import {
+  KeepClosed,
+  KeepTerminated,
+  PublicKeyPublished,
+  SubmitPublicKeyCall
+} from "../generated/templates/BondedECDSAKeep/BondedECDSAKeep";
 import {BondedECDSAKeep} from "../generated/schema";
 import {getOrCreateOperator} from "./helpers";
 import {Address} from "@graphprotocol/graph-ts/index";
 
+/**
+ * Event: PublicKeyPublished.
+ *
+ * Emitted after a threshold of signers has called submitPublicKey().
+ */
 export function handlePublicKeyPublished(event: PublicKeyPublished): void {
   let keep = BondedECDSAKeep.load(event.address.toHexString())!;
   keep.publicKey = event.params.publicKey;
