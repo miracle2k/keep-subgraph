@@ -4,7 +4,7 @@ import {
   ProvideFundingECDSAFraudProofCall
 } from "../generated/templates/DepositContract/DepositContract";
 import {SetupFailedEvent} from "../generated/schema";
-import {completeLogEventRaw, getDepositIdFromAddress, setDepositState} from "./mapping";
+import {completeLogEventRaw, getDepositIdFromAddress, getDepositSetup, setDepositState} from "./mapping";
 import { Address, log } from "@graphprotocol/graph-ts";
 import {ethereum} from "@graphprotocol/graph-ts/index";
 
@@ -31,7 +31,11 @@ export function handleNotifyFundingTimedOut(call: NotifyFundingTimedOutCall): vo
   log.info("foobar", []);
   let contractAddress = call.to;
   setDepositState(contractAddress, "FAILED_SETUP");
-  newSetupFailedEvent(contractAddress, "FUNDING_TIMEOUT", call)
+  newSetupFailedEvent(contractAddress, "FUNDING_TIMEOUT", call);
+
+  let setup = getDepositSetup(contractAddress);
+  setup.failureReason = 'FUNDING_TIMEOUT';
+  setup.save()
 }
 
 export function handleNotifySignerSetupFailed(call: NotifySignerSetupFailedCall): void {
@@ -39,10 +43,18 @@ export function handleNotifySignerSetupFailed(call: NotifySignerSetupFailedCall)
   let contractAddress = call.to;
   setDepositState(contractAddress, "FAILED_SETUP");
   newSetupFailedEvent(contractAddress, "SIGNER_SETUP_FAILED", call)
+
+  let setup = getDepositSetup(contractAddress);
+  setup.failureReason = 'SIGNER_SETUP_FAILED';
+  setup.save()
 }
 
 export function handleProvideFundingECDSAFraudProof(call: ProvideFundingECDSAFraudProofCall): void {
   let contractAddress = call.to;
   setDepositState(contractAddress, "FAILED_SETUP");
   newSetupFailedEvent(contractAddress, "FUNDING_ECDSA_FRAUD", call)
+
+  let setup = getDepositSetup(contractAddress);
+  setup.failureReason = 'FUNDING_ECDSA_FRAUD';
+  setup.save()
 }

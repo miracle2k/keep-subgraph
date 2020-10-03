@@ -148,6 +148,7 @@ type Deposit @entity {
 
   depositLiquidation: DepositLiquidation
   depositRedemption: DepositRedemption
+  depositSetup: DepositSetup
 
   # Because TheGraph does not support complex filters (and/or), we pre-calculate some useful ones here.
   filter_liquidationLikeState: Boolean!,
@@ -180,6 +181,13 @@ enum DepositState {
   FRAUD_LIQUIDATION_IN_PROGRESS
   LIQUIDATION_IN_PROGRESS
   LIQUIDATED
+}
+
+type DepositSetup @entity {
+  id: ID!
+  deposit: Deposit!
+
+  failureReason: SetupFailedReason
 }
 
 type DepositLiquidation @entity {

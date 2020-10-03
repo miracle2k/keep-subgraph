@@ -30,7 +30,7 @@ import {
   CourtesyCalledEvent,
   LiquidatedEvent,
   StartedLiquidationEvent,
-  CreatedEvent,
+  CreatedEvent, DepositSetup,
 } from "../generated/schema";
 import {getIDFromEvent} from "./utils";
 import {Value} from "@graphprotocol/graph-ts/index";
@@ -48,6 +48,7 @@ export {handleKeepFactoriesUpdated} from './mappingGovernance';
 
 
 const DPL = 'dpl-';
+const DPS = 'dps-';
 const DPR = 'dpr-';
 const DP = 'dp-';
 
@@ -73,6 +74,17 @@ function getDepositTokenIdFromTokenID(tokenID: BigInt): string {
 }
 function getDepositTokenIdFromDepositAddress(address: Address): string {
   return address.toHexString();
+}
+
+
+export function getDepositSetup(depositAddress: Address): DepositSetup {
+  let id = DPS+depositAddress.toHexString();
+  let setup = DepositSetup.load(id);
+  if (setup == null) {
+    setup = new DepositSetup(id)!;
+    setup.deposit = getDepositIdFromAddress(depositAddress);
+  }
+  return setup;
 }
 
 
@@ -130,6 +142,9 @@ export function handleCreatedEvent(event: Created): void {
   let logEvent = new CreatedEvent(getIDFromEvent(event))
   logEvent.deposit = getDepositIdFromAddress(event.params._depositContractAddress);
   completeLogEvent(logEvent, event); logEvent.save()
+
+  let setup = getDepositSetup(contractAddress);
+  setup.save()
 }
 
 // Do not save a deposit directly. There are certain denormalized values which need to be recalculated
@@ -167,7 +182,6 @@ function saveDeposit(deposit: Deposit): void {
   else {
     deposit.filter_redeemableAsOf = deposit.endOfTerm ? deposit.endOfTerm! : BIGINT_ZERO;
   }
-
 
   deposit!.save();
 }

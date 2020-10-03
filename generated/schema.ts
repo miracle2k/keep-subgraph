@@ -1252,6 +1252,23 @@ export class Deposit extends Entity {
     }
   }
 
+  get depositSetup(): string | null {
+    let value = this.get("depositSetup");
+    if (value === null) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set depositSetup(value: string | null) {
+    if (value === null) {
+      this.unset("depositSetup");
+    } else {
+      this.set("depositSetup", Value.fromString(value as string));
+    }
+  }
+
   get filter_liquidationLikeState(): boolean {
     let value = this.get("filter_liquidationLikeState");
     return value.toBoolean();
@@ -1286,6 +1303,63 @@ export class Deposit extends Entity {
 
   set filter_redeemableAsOf(value: BigInt) {
     this.set("filter_redeemableAsOf", Value.fromBigInt(value));
+  }
+}
+
+export class DepositSetup extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id !== null, "Cannot save DepositSetup entity without an ID");
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save DepositSetup entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("DepositSetup", id.toString(), this);
+  }
+
+  static load(id: string): DepositSetup | null {
+    return store.get("DepositSetup", id) as DepositSetup | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get deposit(): string {
+    let value = this.get("deposit");
+    return value.toString();
+  }
+
+  set deposit(value: string) {
+    this.set("deposit", Value.fromString(value));
+  }
+
+  get failureReason(): string | null {
+    let value = this.get("failureReason");
+    if (value === null) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set failureReason(value: string | null) {
+    if (value === null) {
+      this.unset("failureReason");
+    } else {
+      this.set("failureReason", Value.fromString(value as string));
+    }
   }
 }
 
