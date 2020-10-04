@@ -55,6 +55,7 @@ export function handleSubmitPublicKey(call: SubmitPublicKeyCall): void {
   let array = keep.pubkeySubmissions;
   array.push(call.from.toHexString())
   keep.pubkeySubmissions = array;
+  keep.save()
 
   // TODO: This could also be a log entry, but probably one that we want to show as "lesser", and possible
   // hide it in some cases where it is not important (give it a `important=low` property).
