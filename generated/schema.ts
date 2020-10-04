@@ -2849,7 +2849,7 @@ export class Governance extends Entity {
   }
 }
 
-export class Stats extends Entity {
+export class StatsRecord extends Entity {
   constructor(id: string) {
     super();
     this.set("id", Value.fromString(id));
@@ -2857,17 +2857,17 @@ export class Stats extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id !== null, "Cannot save Stats entity without an ID");
+    assert(id !== null, "Cannot save StatsRecord entity without an ID");
     assert(
       id.kind == ValueKind.STRING,
-      "Cannot save Stats entity with non-string ID. " +
+      "Cannot save StatsRecord entity with non-string ID. " +
         'Considering using .toHex() to convert the "id" to a string.'
     );
-    store.set("Stats", id.toString(), this);
+    store.set("StatsRecord", id.toString(), this);
   }
 
-  static load(id: string): Stats | null {
-    return store.get("Stats", id) as Stats | null;
+  static load(id: string): StatsRecord | null {
+    return store.get("StatsRecord", id) as StatsRecord | null;
   }
 
   get id(): string {
@@ -2906,13 +2906,13 @@ export class Stats extends Entity {
     this.set("totalBondsSeized", Value.fromBigDecimal(value));
   }
 
-  get btcUnderDeposit(): BigDecimal {
+  get btcUnderDeposit(): BigInt {
     let value = this.get("btcUnderDeposit");
-    return value.toBigDecimal();
+    return value.toBigInt();
   }
 
-  set btcUnderDeposit(value: BigDecimal) {
-    this.set("btcUnderDeposit", Value.fromBigDecimal(value));
+  set btcUnderDeposit(value: BigInt) {
+    this.set("btcUnderDeposit", Value.fromBigInt(value));
   }
 }
 
@@ -2962,5 +2962,36 @@ export class RandomBeaconGroup extends Entity {
 
   set members(value: Array<string>) {
     this.set("members", Value.fromStringArray(value));
+  }
+}
+
+export class RelayEntry extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id !== null, "Cannot save RelayEntry entity without an ID");
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save RelayEntry entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("RelayEntry", id.toString(), this);
+  }
+
+  static load(id: string): RelayEntry | null {
+    return store.get("RelayEntry", id) as RelayEntry | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
   }
 }

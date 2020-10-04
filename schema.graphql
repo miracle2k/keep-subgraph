@@ -380,14 +380,14 @@ type Governance @entity {
   pendingCollateralizationThresholdsChange: GovernanceChange,
 }
 
-type Stats @entity {
+type StatsRecord @entity {
   id: ID!
 
   availableToBeBonded: BigDecimal!
   totalBonded: BigDecimal!
   totalBondsSeized: BigDecimal!
 
-  btcUnderDeposit: BigDecimal!
+  btcUnderDeposit: BigInt!
 }
 
 type RandomBeaconGroup @entity {
@@ -395,4 +395,8 @@ type RandomBeaconGroup @entity {
 
   createdAt: BigInt!
   members: [Operator!]!
+}
+
+type RelayEntry @entity {
+  id: ID!
 }
