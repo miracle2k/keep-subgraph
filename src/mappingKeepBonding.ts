@@ -11,7 +11,7 @@ import { toDecimal } from "./decimalUtils";
 import {getOrCreateOperator} from "./helpers";
 import { Address, BigDecimal, BigInt, log } from "@graphprotocol/graph-ts";
 import {Bond, Stats} from "../generated/schema";
-import {BIGDECIMAL_ZERO} from "./constants";
+import {BIGDECIMAL_ZERO, BIGINT_ZERO} from "./constants";
 
 
 // TODO: Consider whether, instead of doing the math ourselves, we should/can call inot the contract to get the
@@ -29,7 +29,7 @@ export function getStats(): Stats {
     stats.availableToBeBonded = BIGDECIMAL_ZERO
     stats.totalBonded = BIGDECIMAL_ZERO;
     stats.totalBondsSeized = BIGDECIMAL_ZERO;
-    stats.btcUnderDeposit = BIGDECIMAL_ZERO;
+    stats.btcUnderDeposit = BIGINT_ZERO;
   }
   return stats!;
 }

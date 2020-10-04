@@ -193,10 +193,11 @@ export function saveDeposit(deposit: Deposit, block: ethereum.Block): void {
 /**
  * Helper to change the deposit state & save. Useful if you don't have to do anything else.
  */
-export function setDepositState(contractAddress: Address, newState: string, block: ethereum.Block): void {
+export function setDepositState(contractAddress: Address, newState: string, block: ethereum.Block): Deposit {
   let deposit = Deposit.load(getDepositIdFromAddress(contractAddress))!;
   deposit.currentState = newState;
   saveDeposit(deposit, block);
+  return deposit
 }
 
 function newBondedECDSAKeep(
@@ -282,11 +283,15 @@ export function handleLiquidatedEvent(event: Liquidated): void {
   depositLiquidation.isLiquidated = true;
   depositLiquidation.save();
 
-  setDepositState(contractAddress, "LIQUIDATED", event.block);
+  let deposit = setDepositState(contractAddress, "LIQUIDATED", event.block);
 
   let logEvent = new LiquidatedEvent(getIDFromEvent(event))
   logEvent.deposit = getDepositIdFromAddress(event.params._depositContractAddress);
   completeLogEvent(logEvent, event); logEvent.save()
+
+  let stats = getStats()
+  stats.btcUnderDeposit = stats.btcUnderDeposit.minus(deposit.lotSizeSatoshis!);
+  stats.save()
 }
 
 export function handleRedemptionRequestedEvent(
@@ -330,8 +335,7 @@ export function handleGotRedemptionSignatureEvent(
 
 export function handleRedeemedEvent(event: Redeemed): void {
   let contractAddress = event.params._depositContractAddress;
-  let deposit = Deposit.load(getDepositIdFromAddress(contractAddress))!;
-  setDepositState(contractAddress, "REDEEMED", event.block);
+  let deposit = setDepositState(contractAddress, "REDEEMED", event.block);
 
   let depositRedemption = DepositRedemption.load(DPR+contractAddress.toHexString())!;
   depositRedemption.txid = event.params._txid;
@@ -344,7 +348,7 @@ export function handleRedeemedEvent(event: Redeemed): void {
   completeLogEvent(logEvent, event); logEvent.save()
 
   let stats = getStats()
-  stats.btcUnderDeposit = stats.btcUnderDeposit.minus(toDecimal(deposit.lotSizeSatoshis!));
+  stats.btcUnderDeposit = stats.btcUnderDeposit.minus(deposit.lotSizeSatoshis!);
   stats.save()
 }
 
@@ -365,7 +369,7 @@ export function handleFundedEvent(event: Funded): void {
   completeLogEvent(logEvent, event); logEvent.save()
 
   let stats = getStats()
-  stats.btcUnderDeposit = stats.btcUnderDeposit.plus(toDecimal(deposit.lotSizeSatoshis!));
+  stats.btcUnderDeposit = stats.btcUnderDeposit.plus(deposit.lotSizeSatoshis!);
   stats.save()
 }
 
