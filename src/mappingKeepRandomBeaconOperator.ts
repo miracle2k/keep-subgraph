@@ -1,7 +1,7 @@
 import { Address } from "@graphprotocol/graph-ts";
 import {
   DkgResultSubmittedEvent,
-  GroupSelectionStarted, KeepRandomBeaconOperator
+  GroupSelectionStarted, KeepRandomBeaconOperator, RelayEntryRequested
 } from "../generated/KeepRandomBeaconOperator/KeepRandomBeaconOperator";
 import {RandomBeaconGroup} from "../generated/schema";
 
@@ -32,3 +32,15 @@ export function handleDkgResultSubmittedEvent(event: DkgResultSubmittedEvent): v
 }
 
 // NB: Expiring old groups has no event it seems, is done via selectGroup() which is called by signRelayEntry().
+
+
+export function handleRelayEntryRequested(event: RelayEntryRequested): void {
+
+}
+
+export function handleRelayEntrySubmitted(event: RelayEntryRequested): void {
+
+}
+
+// support KeepRandomBeaconServiceImplV1 and it's two events which give the requestId
+// RelayEntryGenerated
