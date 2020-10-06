@@ -1,13 +1,22 @@
 import {
-  NotifyFundingTimedOutCall,
-  NotifySignerSetupFailedCall,
+  NotifyFundingTimedOutCall, NotifyRedemptionProofTimedOutCall, NotifyRedemptionSignatureTimedOutCall,
+  NotifySignerSetupFailedCall, NotifyUndercollateralizedLiquidationCall, ProvideECDSAFraudProofCall,
   ProvideFundingECDSAFraudProofCall
 } from "../generated/templates/DepositContract/DepositContract";
-import {BondedECDSAKeep, Deposit, DepositSetup, SetupFailedEvent} from "../generated/schema";
-import {completeLogEventRaw, getDepositIdFromAddress, getDepositSetup, saveDeposit, setDepositState} from "./mapping";
+import {BondedECDSAKeep, Deposit, DepositSetup, SetupFailedEvent, StartedLiquidationEvent} from "../generated/schema";
+import {
+  completeLogEvent,
+  completeLogEventRaw,
+  getDepositIdFromAddress,
+  getDepositLiquidation,
+  getDepositSetup,
+  saveDeposit,
+  setDepositState
+} from "./mapping";
 import { Address, log } from "@graphprotocol/graph-ts";
 import {ethereum} from "@graphprotocol/graph-ts/index";
 import {getOrCreateOperator} from "./helpers";
+import {getIDFromEvent} from "./utils";
 
 
 function newSetupFailedEvent(depositAddress: Address, reason: string, call: ethereum.Call): SetupFailedEvent {
@@ -24,6 +33,23 @@ function newSetupFailedEvent(depositAddress: Address, reason: string, call: ethe
 
   return logEvent;
 }
+
+
+function newStartedLiquidationEvent(depositAddress: Address, cause: string, call: ethereum.Call): StartedLiquidationEvent {
+  // All other LogEvent objects are generated from TheGraph "event handlers", and can use `txHash-logIndex` as the
+  // format for the Graph object id. We do not have access to this here. Since there should only ever be a single
+  // successful `failedSetup` call per deposit, we use this.
+
+  let logEvent = new StartedLiquidationEvent(depositAddress.toHexString() + "-startedLiquidation");
+  logEvent.deposit = getDepositIdFromAddress(depositAddress);
+  logEvent.cause = cause;
+
+  completeLogEventRaw(logEvent, call.transaction, call.block);
+  logEvent.save()
+
+  return logEvent;
+}
+
 
 // It seems call handlers only run for successful transactions, so we can assume this succeeded and a SetupFailed
 // event was raised. We have to look into the call handlers directly to figure out *why* a SetupFailed event
@@ -62,7 +88,8 @@ export function handleNotifySignerSetupFailed(call: NotifySignerSetupFailedCall)
       let address = members[i]!;
       if (keep.pubkeySubmissions.indexOf(address) == -1) {
         let operator = getOrCreateOperator(Address.fromString(address));
-        operator.faultCount += 1
+        operator.attributableFaultCount += 1
+        operator.totalFaultCount += 1
         operator.save()
       }
     }
@@ -73,6 +100,9 @@ export function handleNotifySignerSetupFailed(call: NotifySignerSetupFailedCall)
   setup.save()
 }
 
+/**
+ * Fraud is reported during funding.
+ */
 export function handleProvideFundingECDSAFraudProof(call: ProvideFundingECDSAFraudProofCall): void {
   let contractAddress = call.to;
   setDepositState(contractAddress, "FAILED_SETUP", call.block);
@@ -81,4 +111,64 @@ export function handleProvideFundingECDSAFraudProof(call: ProvideFundingECDSAFra
   let setup = getDepositSetup(contractAddress);
   setup.failureReason = 'FUNDING_ECDSA_FRAUD';
   setup.save()
+}
+
+/**
+ * Fraud is reported during redemption.
+ */
+export function handleProvideECDSAFraudProof(call: ProvideECDSAFraudProofCall): void {
+  let contractAddress = call.to;
+  let liq = getDepositLiquidation(contractAddress, call.block, call.transaction);
+  liq.cause = 'FRAUD'
+  liq.save();
+
+  // It seems we do not know who submitted the fraudulent signature?
+  faultAllMembers(contractAddress);
+
+  newStartedLiquidationEvent(contractAddress, 'FRAUD', call);
+}
+
+export function handleNotifyUndercollateralizedLiquidation(call: NotifyUndercollateralizedLiquidationCall): void {
+  let contractAddress = call.to;
+  let liq = getDepositLiquidation(contractAddress, call.block, call.transaction);
+  liq.cause = 'UNDERCOLLATERIZED'
+  liq.save();
+
+  faultAllMembers(contractAddress);
+
+  newStartedLiquidationEvent(contractAddress, 'UNDERCOLLATERIZED', call);
+}
+
+export function handleNotifyRedemptionSignatureTimedOut(call: NotifyRedemptionSignatureTimedOutCall): void {
+  let contractAddress = call.to;
+  let liq = getDepositLiquidation(contractAddress, call.block, call.transaction);
+  liq.cause = 'SIGNATURE_TIMEOUT'
+  liq.save();
+
+  faultAllMembers(contractAddress);
+  newStartedLiquidationEvent(contractAddress, 'SIGNATURE_TIMEOUT', call);
+}
+
+export function handleNotifyRedemptionProofTimedOut(call: NotifyRedemptionProofTimedOutCall): void {
+  let contractAddress = call.to;
+  let liq = getDepositLiquidation(contractAddress, call.block, call.transaction);
+  liq.cause = 'PROOF_TIMEOUT'
+  liq.save();
+
+  faultAllMembers(contractAddress);
+  newStartedLiquidationEvent(contractAddress, 'PROOF_TIMEOUT', call);
+}
+
+
+function faultAllMembers(depositAddress: Address): void {
+  let deposit = Deposit.load(getDepositIdFromAddress(depositAddress))!;
+  let keep = BondedECDSAKeep.load(deposit.bondedECDSAKeep!)!
+
+  let members = keep.members;
+  for (let i=0; i<members.length; i++) {
+    let operator = getOrCreateOperator(Address.fromString(members[i]!));
+    operator.involvedInFaultCount += 1
+    operator.totalFaultCount += 1
+    operator.save()
+  }
 }

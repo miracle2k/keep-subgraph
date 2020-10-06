@@ -85,6 +85,20 @@ export function getDepositSetup(depositAddress: Address): DepositSetup {
   return setup!;
 }
 
+export function getDepositLiquidation(depositAddress: Address, block: ethereum.Block, tx: ethereum.Transaction): DepositLiquidation {
+  let id = DPL+depositAddress.toHexString();
+  let liq = DepositLiquidation.load(id);
+  if (liq == null) {
+    liq = new DepositLiquidation(id);
+    liq.deposit = getDepositIdFromAddress(depositAddress);
+    liq.isLiquidated = false;
+    liq.liquidationInitiated = block.timestamp;
+    liq.initiateTxhash = tx.hash;
+    liq.liquidationInitiator = tx.from;
+  }
+  return liq!;
+}
+
 
 export function completeLogEvent<T extends Entity>(log: T, event: ethereum.Event): void {
   completeLogEventRaw(log, event.transaction, event.block)
@@ -231,22 +245,24 @@ function newBondedECDSAKeep(
 }
 
 
+/**
+ * Event: StartedLiquidation
+ *
+ * We also have call handlers for all functions that may cause a liquidation to start, and for now, those and
+ * this one work in concert.
+ */
 export function handleStartedLiquidationEvent(event: StartedLiquidation): void {
   let contractAddress = event.params._depositContractAddress;
-  let depositLiquidation = new DepositLiquidation(DPL+contractAddress.toHexString());
-  let deposit = Deposit.load(getDepositIdFromAddress(contractAddress))!;
 
-  depositLiquidation.deposit = deposit.id;
-  depositLiquidation.isLiquidated = false;
-  depositLiquidation.wasFraud = event.params._wasFraud;
-  depositLiquidation.liquidationInitiated = event.block.timestamp;
-  depositLiquidation.initiateTxhash = event.transaction.hash;
-  depositLiquidation.liquidationInitiator = event.transaction.from;
+  let depositLiquidation = getDepositLiquidation(contractAddress, event.block, event.transaction);
   depositLiquidation.save();
 
+  let deposit = Deposit.load(getDepositIdFromAddress(contractAddress))!;
   deposit.updatedAt = event.block.timestamp;
   deposit.depositLiquidation = depositLiquidation.id;
 
+  // We keep both of those states to make the status values in the contract, but we really track the
+  // liquidation reason in LiquidationCause.
   if (event.params._wasFraud) {
     deposit.currentState = "FRAUD_LIQUIDATION_IN_PROGRESS";
   } else {
@@ -254,11 +270,6 @@ export function handleStartedLiquidationEvent(event: StartedLiquidation): void {
   }
 
   saveDeposit(deposit, event.block);
-
-  let logEvent = new StartedLiquidationEvent(getIDFromEvent(event))
-  logEvent.deposit = getDepositIdFromAddress(event.params._depositContractAddress);
-  logEvent.wasFraud = event.params._wasFraud
-  completeLogEvent(logEvent, event); logEvent.save()
 }
 
 export function handleCourtesyCalledEvent(event: CourtesyCalled): void {

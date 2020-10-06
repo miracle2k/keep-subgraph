@@ -247,7 +247,6 @@ dataSources:
           handler: handleGroupSelectionStarted
       file: ./src/mappingKeepRandomBeaconOperator.ts
 
-
 templates:
   - name: DepositContract
     kind: ethereum/contract
@@ -269,8 +268,40 @@ templates:
           handler: handleNotifyFundingTimedOut
         - function: notifySignerSetupFailed()
           handler: handleNotifySignerSetupFailed
-        - function: provideFundingECDdSAFraudProof(uint8, bytes32, bytes32, bytes32, memory)
+        - function: provideFundingECDSAFraudProof(uint8,bytes32,bytes32,bytes32,bytes)
           handler: handleProvideFundingECDSAFraudProof
+
+        - function: provideECDSAFraudProof(uint8,bytes32,bytes32,bytes32,bytes)
+          handler: handleProvideECDSAFraudProof
+        - function: notifyUndercollateralizedLiquidation()
+          handler: handleNotifyUndercollateralizedLiquidation
+        - function: notifyRedemptionSignatureTimedOut()
+          handler: handleNotifyRedemptionSignatureTimedOut
+        - function: notifyRedemptionProofTimedOut()
+          handler: handleNotifyRedemptionProofTimedOut
+    #  - <default>()
+    #  - exitCourtesyCall()
+    #  - increaseRedemptionFee(bytes8,bytes8)
+    #  - initialize(address)
+    #  - initializeDeposit(address,address,address,address,address,uint64)
+    #  - notifyCourtesyCall()
+    #  - notifyCourtesyCallExpired()
+    #  - notifyFundingTimedOut()
+    #  - notifyRedemptionProofTimedOut()
+    #  - notifyRedemptionSignatureTimedOut()
+    #  - notifySignerSetupFailed()
+    #  - notifyUndercollateralizedLiquidation()
+    #  - provideBTCFundingProof(bytes4,bytes,bytes,bytes4,uint8,bytes,uint256,bytes)
+    #  - provideECDSAFraudProof(uint8,bytes32,bytes32,bytes32,bytes)
+    #  - provideFundingECDSAFraudProof(uint8,bytes32,bytes32,bytes32,bytes)
+    #  - provideRedemptionProof(bytes4,bytes,bytes,bytes4,bytes,uint256,bytes)
+    #  - provideRedemptionSignature(uint8,bytes32,bytes32)
+    #  - purchaseSignerBondsAtAuction()
+    #  - requestFunderAbort(bytes)
+    #  - requestRedemption(bytes8,bytes)
+    #  - retrieveSignerPubkey()
+    #  - transferAndRequestRedemption(bytes8,bytes,address)
+    #  - withdrawFunds()
 
   - name: BondedECDSAKeep
     kind: ethereum/contract

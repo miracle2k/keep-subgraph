@@ -976,13 +976,21 @@ export class StartedLiquidationEvent extends Entity {
     }
   }
 
-  get wasFraud(): boolean {
-    let value = this.get("wasFraud");
-    return value.toBoolean();
+  get cause(): string | null {
+    let value = this.get("cause");
+    if (value === null) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  set wasFraud(value: boolean) {
-    this.set("wasFraud", Value.fromBoolean(value));
+  set cause(value: string | null) {
+    if (value === null) {
+      this.unset("cause");
+    } else {
+      this.set("cause", Value.fromString(value as string));
+    }
   }
 }
 
@@ -1530,13 +1538,21 @@ export class DepositLiquidation extends Entity {
     }
   }
 
-  get wasFraud(): boolean {
-    let value = this.get("wasFraud");
-    return value.toBoolean();
+  get cause(): string | null {
+    let value = this.get("cause");
+    if (value === null) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  set wasFraud(value: boolean) {
-    this.set("wasFraud", Value.fromBoolean(value));
+  set cause(value: string | null) {
+    if (value === null) {
+      this.unset("cause");
+    } else {
+      this.set("cause", Value.fromString(value as string));
+    }
   }
 }
 
@@ -1920,13 +1936,31 @@ export class Operator extends Entity {
     this.set("stakedAmount", Value.fromBigDecimal(value));
   }
 
-  get faultCount(): i32 {
-    let value = this.get("faultCount");
+  get attributableFaultCount(): i32 {
+    let value = this.get("attributableFaultCount");
     return value.toI32();
   }
 
-  set faultCount(value: i32) {
-    this.set("faultCount", Value.fromI32(value));
+  set attributableFaultCount(value: i32) {
+    this.set("attributableFaultCount", Value.fromI32(value));
+  }
+
+  get involvedInFaultCount(): i32 {
+    let value = this.get("involvedInFaultCount");
+    return value.toI32();
+  }
+
+  set involvedInFaultCount(value: i32) {
+    this.set("involvedInFaultCount", Value.fromI32(value));
+  }
+
+  get totalFaultCount(): i32 {
+    let value = this.get("totalFaultCount");
+    return value.toI32();
+  }
+
+  set totalFaultCount(value: i32) {
+    this.set("totalFaultCount", Value.fromI32(value));
   }
 }
 

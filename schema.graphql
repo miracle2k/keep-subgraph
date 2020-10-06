@@ -127,7 +127,8 @@ type StartedLiquidationEvent implements Event @entity {
   timestamp: BigInt!
   deposit: Deposit
 
-  wasFraud: Boolean!
+  "The cause of this deposit going into liquidation"
+  cause: LiquidationCause
 }
 
 # from https://github.com/keep-network/tbtc/blob/master/solidity/contracts/deposit/DepositUtils.sol
@@ -198,6 +199,13 @@ type DepositSetup @entity {
   failureReason: SetupFailedReason
 }
 
+enum LiquidationCause {
+  FRAUD
+  UNDERCOLLATERIZED,
+  SIGNATURE_TIMEOUT,
+  PROOF_TIMEOUT
+}
+
 type DepositLiquidation @entity {
   id: ID!
   deposit: Deposit!
@@ -208,14 +216,14 @@ type DepositLiquidation @entity {
   isLiquidated: Boolean!
   liquidatedAt: BigInt
   liquidationInitiator: Bytes
-  wasFraud: Boolean
+  cause: LiquidationCause
 }
 
 type DepositRedemption @entity {
   id: ID!
   deposit: Deposit!
   redeemerOutputScript: Bytes # The redeemer output script
-  requestedFee: BigInt # the initial fee as requested
+  requestedFee: BigInt # the finitial fee as requested
   latestRedemptionFee: BigInt # the fee currently required by a redemption transaction
   withdrawalRequestAt: BigInt # the most recent withdrawal request timestamp
   redeemedAt: BigInt
@@ -255,9 +263,16 @@ type Operator @entity {
   activeKeepCount: Int!
   stakedAmount: BigDecimal!
 
-  "How often this operator was either involved in a fault, attributable to them or sharing responsibility with others."
-  faultCount: Int!
+  "How often this operator was involved in a fault, attributable to them."
+  attributableFaultCount: Int!
+  "How often this operator was involved in a fault, attributable to them."
+  involvedInFaultCount: Int!
+  "How often this operator was involved in a fault, either attributable or not."
+  totalFaultCount: Int!
 }
+
+# can I overtake the withdrawal stakers
+# what was the bug they had initially?
 
 """
 A lock on an operator stake.
