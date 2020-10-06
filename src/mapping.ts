@@ -394,6 +394,10 @@ export function handleFundedEvent(event: Funded): void {
 export function handleRegisteredPubkey(event: RegisteredPubkey): void {
   setDepositState(event.params._depositContractAddress, "AWAITING_BTC_FUNDING_PROOF", event.block);
 
+  let setup = getDepositSetup(event.params._depositContractAddress)
+  setup.fundingProofTimerStartedAt = event.block.timestamp
+  setup.save();
+
   let logEvent = new RegisteredPubKeyEvent(getIDFromEvent(event))
   logEvent.deposit = getDepositIdFromAddress(event.params._depositContractAddress);
   logEvent.signingGroupPubkeyX = event.params._signingGroupPubkeyX;

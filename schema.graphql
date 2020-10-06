@@ -196,7 +196,8 @@ type DepositSetup @entity {
   id: ID!
   deposit: Deposit!
 
-  failureReason: SetupFailedReason
+  failureReason: SetupFailedReason,
+  fundingProofTimerStartedAt: BigInt
 }
 
 enum LiquidationCause {

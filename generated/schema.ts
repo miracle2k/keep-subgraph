@@ -1386,6 +1386,23 @@ export class DepositSetup extends Entity {
       this.set("failureReason", Value.fromString(value as string));
     }
   }
+
+  get fundingProofTimerStartedAt(): BigInt | null {
+    let value = this.get("fundingProofTimerStartedAt");
+    if (value === null) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set fundingProofTimerStartedAt(value: BigInt | null) {
+    if (value === null) {
+      this.unset("fundingProofTimerStartedAt");
+    } else {
+      this.set("fundingProofTimerStartedAt", Value.fromBigInt(value as BigInt));
+    }
+  }
 }
 
 export class DepositLiquidation extends Entity {
