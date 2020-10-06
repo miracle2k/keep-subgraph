@@ -30,6 +30,7 @@ export function getStats(): StatsRecord {
     stats.totalBonded = BIGDECIMAL_ZERO;
     stats.totalBondsSeized = BIGDECIMAL_ZERO;
     stats.btcUnderDeposit = BIGINT_ZERO;
+    stats.btcInActiveDeposits = BIGINT_ZERO;
   }
   return stats!;
 }

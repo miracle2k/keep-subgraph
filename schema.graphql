@@ -405,7 +405,10 @@ type StatsRecord @entity {
   totalBonded: BigDecimal!
   totalBondsSeized: BigDecimal!
 
+  "The total amount of BTC currently deposited, measured from funding proof received to redemption proof received."
   btcUnderDeposit: BigInt!
+  "The total amount of BTC currently deposited, measured from funding proof received to redemption requested"
+  btcInActiveDeposits: BigInt!
 }
 
 type RandomBeaconGroup @entity {

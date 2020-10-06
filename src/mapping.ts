@@ -270,6 +270,10 @@ export function handleStartedLiquidationEvent(event: StartedLiquidation): void {
   }
 
   saveDeposit(deposit, event.block);
+
+  let stats = getStats()
+  stats.btcInActiveDeposits = stats.btcInActiveDeposits.minus(deposit.lotSizeSatoshis!);
+  stats.save()
 }
 
 export function handleCourtesyCalledEvent(event: CourtesyCalled): void {
@@ -330,6 +334,10 @@ export function handleRedemptionRequestedEvent(
   logEvent.utxoOutpoint = event.params._outpoint;
   logEvent.sigHashDigest = event.params._digest;
   completeLogEvent(logEvent, event); logEvent.save()
+
+  let stats = getStats()
+  stats.btcInActiveDeposits = stats.btcInActiveDeposits.minus(deposit.lotSizeSatoshis!);
+  stats.save()
 }
 
 export function handleGotRedemptionSignatureEvent(
@@ -379,6 +387,7 @@ export function handleFundedEvent(event: Funded): void {
 
   let stats = getStats()
   stats.btcUnderDeposit = stats.btcUnderDeposit.plus(deposit.lotSizeSatoshis!);
+  stats.btcInActiveDeposits = stats.btcInActiveDeposits.plus(deposit.lotSizeSatoshis!);
   stats.save()
 }
 

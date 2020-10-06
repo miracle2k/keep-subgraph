@@ -2957,6 +2957,15 @@ export class StatsRecord extends Entity {
   set btcUnderDeposit(value: BigInt) {
     this.set("btcUnderDeposit", Value.fromBigInt(value));
   }
+
+  get btcInActiveDeposits(): BigInt {
+    let value = this.get("btcInActiveDeposits");
+    return value.toBigInt();
+  }
+
+  set btcInActiveDeposits(value: BigInt) {
+    this.set("btcInActiveDeposits", Value.fromBigInt(value));
+  }
 }
 
 export class RandomBeaconGroup extends Entity {
