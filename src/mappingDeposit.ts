@@ -3,10 +3,11 @@ import {
   NotifySignerSetupFailedCall,
   ProvideFundingECDSAFraudProofCall
 } from "../generated/templates/DepositContract/DepositContract";
-import {BondedECDSAKeep, Deposit, SetupFailedEvent} from "../generated/schema";
+import {BondedECDSAKeep, Deposit, DepositSetup, SetupFailedEvent} from "../generated/schema";
 import {completeLogEventRaw, getDepositIdFromAddress, getDepositSetup, saveDeposit, setDepositState} from "./mapping";
 import { Address, log } from "@graphprotocol/graph-ts";
 import {ethereum} from "@graphprotocol/graph-ts/index";
+import {getOrCreateOperator} from "./helpers";
 
 
 function newSetupFailedEvent(depositAddress: Address, reason: string, call: ethereum.Call): SetupFailedEvent {
@@ -54,6 +55,17 @@ export function handleNotifySignerSetupFailed(call: NotifySignerSetupFailedCall)
     failureReason = 'SIGNER_SETUP_FAILED_DEPOSITOR';
   } else {
     failureReason = 'SIGNER_SETUP_FAILED';
+
+    // Credit this failure to the operators which did not submit.
+    let members = keep.members;
+    for (let i=0; i<members.length; i++) {
+      let address = members[i]!;
+      if (keep.pubkeySubmissions.indexOf(address) == -1) {
+        let operator = getOrCreateOperator(Address.fromString(address));
+        operator.faultCount += 1
+        operator.save()
+      }
+    }
   }
 
   let setup = getDepositSetup(contractAddress);

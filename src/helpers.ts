@@ -1,5 +1,5 @@
 import {BIGDECIMAL_ZERO} from "./constants";
-import {Address, BigInt} from "@graphprotocol/graph-ts/index";
+import {Address} from "@graphprotocol/graph-ts/index";
 import {Operator} from "../generated/schema";
 
 export function getOrCreateOperator(keeperAddress: Address): Operator {
@@ -11,6 +11,7 @@ export function getOrCreateOperator(keeperAddress: Address): Operator {
     member.activeKeepCount = 0;
     member.bonded = BIGDECIMAL_ZERO;
     member.unboundAvailable = BIGDECIMAL_ZERO;
+    member.faultCount = 0;
   }
   return member!;
 }

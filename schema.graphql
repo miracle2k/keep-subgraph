@@ -254,6 +254,9 @@ type Operator @entity {
   totalKeepCount: Int!
   activeKeepCount: Int!
   stakedAmount: BigDecimal!
+
+  "How often this operator was either involved in a fault, attributable to them or sharing responsibility with others."
+  faultCount: Int!
 }
 
 """

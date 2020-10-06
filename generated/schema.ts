@@ -1919,6 +1919,15 @@ export class Operator extends Entity {
   set stakedAmount(value: BigDecimal) {
     this.set("stakedAmount", Value.fromBigDecimal(value));
   }
+
+  get faultCount(): i32 {
+    let value = this.get("faultCount");
+    return value.toI32();
+  }
+
+  set faultCount(value: i32) {
+    this.set("faultCount", Value.fromI32(value));
+  }
 }
 
 export class Lock extends Entity {

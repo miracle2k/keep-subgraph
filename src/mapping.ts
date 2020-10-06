@@ -26,7 +26,6 @@ import {
   GotRedemptionSignatureEvent,
   RedemptionRequestedEvent,
   RegisteredPubKeyEvent,
-  SetupFailedEvent,
   CourtesyCalledEvent,
   LiquidatedEvent,
   StartedLiquidationEvent,
@@ -37,7 +36,6 @@ import {Value} from "@graphprotocol/graph-ts/index";
 import {getOrCreateOperator} from "./helpers";
 import {BIGINT_ZERO} from "./constants";
 import {getStats} from "./mappingKeepBonding";
-import {toDecimal} from "./decimalUtils";
 
 
 // Wild-card re-export compiles but then does not find the functions at runtime.
