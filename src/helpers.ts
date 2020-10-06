@@ -14,6 +14,7 @@ export function getOrCreateOperator(keeperAddress: Address): Operator {
     member.attributableFaultCount = 0;
     member.involvedInFaultCount = 0;
     member.totalFaultCount = 0;
+    member.totalTBTCRewards = BIGDECIMAL_ZERO;
   }
   return member!;
 }

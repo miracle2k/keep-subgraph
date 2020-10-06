@@ -326,6 +326,10 @@ templates:
           handler: handleKeepClosed
         - event: KeepTerminated()
           handler: handleKeepTerminated
+        - event: ERC20RewardDistributed(indexed address,uint256)
+          handler: handleERC20RewardDistributed
+        - event: ETHRewardDistributed(uint256)
+          handler: handleETHRewardDistributed
       callHandlers:
         - function: submitPublicKey(bytes)
           handler: handleSubmitPublicKey

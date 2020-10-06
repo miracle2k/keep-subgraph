@@ -1953,6 +1953,15 @@ export class Operator extends Entity {
     this.set("stakedAmount", Value.fromBigDecimal(value));
   }
 
+  get totalTBTCRewards(): BigDecimal {
+    let value = this.get("totalTBTCRewards");
+    return value.toBigDecimal();
+  }
+
+  set totalTBTCRewards(value: BigDecimal) {
+    this.set("totalTBTCRewards", Value.fromBigDecimal(value));
+  }
+
   get attributableFaultCount(): i32 {
     let value = this.get("attributableFaultCount");
     return value.toI32();

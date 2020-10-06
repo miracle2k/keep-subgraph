@@ -264,6 +264,8 @@ type Operator @entity {
   activeKeepCount: Int!
   stakedAmount: BigDecimal!
 
+  totalTBTCRewards: BigDecimal!
+
   "How often this operator was involved in a fault, attributable to them."
   attributableFaultCount: Int!
   "How often this operator was involved in a fault, attributable to them."

@@ -1,12 +1,15 @@
 import {
+  ERC20RewardDistributed, ETHRewardDistributed,
   KeepClosed,
   KeepTerminated,
   PublicKeyPublished,
   SubmitPublicKeyCall
 } from "../generated/templates/BondedECDSAKeep/BondedECDSAKeep";
-import {BondedECDSAKeep} from "../generated/schema";
+import {BondedECDSAKeep, Deposit} from "../generated/schema";
 import {getOrCreateOperator} from "./helpers";
 import {Address} from "@graphprotocol/graph-ts/index";
+import {getDepositIdFromAddress} from "./mapping";
+import {toDecimal} from "./decimalUtils";
 
 /**
  * Event: PublicKeyPublished.
@@ -59,4 +62,25 @@ export function handleSubmitPublicKey(call: SubmitPublicKeyCall): void {
 
   // TODO: This could also be a log entry, but probably one that we want to show as "lesser", and possible
   // hide it in some cases where it is not important (give it a `important=low` property).
+}
+
+
+// Call path: Deposit.provideRedemptionProof() -> Deposit.distributeSignerFee() -> Keep.distributeERC20Reward().
+export function handleERC20RewardDistributed(event: ERC20RewardDistributed): void {
+  // We don't get the keep address in this event, but so have to assume that this tx was a provideRedemptionProof()
+  // call to the deposit, and then we get the keep from there.
+  let depositAddress = event.transaction.to!;
+  let deposit = Deposit.load(getDepositIdFromAddress(depositAddress))!;
+
+  let keep = BondedECDSAKeep.load(deposit.bondedECDSAKeep!)!;
+  let members = keep.members;
+  for (let i=0; i<members.length; i++) {
+    let operator = getOrCreateOperator(Address.fromString(members[i]!));
+    operator.totalTBTCRewards = operator.totalTBTCRewards.plus(toDecimal(event.params.amount));
+  }
+
+}
+
+export function handleETHRewardDistributed(event: ETHRewardDistributed): void {
+
 }
