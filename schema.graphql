@@ -444,4 +444,9 @@ type RandomBeaconGroup @entity {
 
 type RelayEntry @entity {
   id: ID!
+  requestId: BigInt!
+  value: BigInt
+  requestedAt: BigInt!
+  requestedBy: Bytes
+  generatedAt: BigInt
 }

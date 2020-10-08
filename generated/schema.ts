@@ -3166,4 +3166,73 @@ export class RelayEntry extends Entity {
   set id(value: string) {
     this.set("id", Value.fromString(value));
   }
+
+  get requestId(): BigInt {
+    let value = this.get("requestId");
+    return value.toBigInt();
+  }
+
+  set requestId(value: BigInt) {
+    this.set("requestId", Value.fromBigInt(value));
+  }
+
+  get value(): BigInt | null {
+    let value = this.get("value");
+    if (value === null) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set value(value: BigInt | null) {
+    if (value === null) {
+      this.unset("value");
+    } else {
+      this.set("value", Value.fromBigInt(value as BigInt));
+    }
+  }
+
+  get requestedAt(): BigInt {
+    let value = this.get("requestedAt");
+    return value.toBigInt();
+  }
+
+  set requestedAt(value: BigInt) {
+    this.set("requestedAt", Value.fromBigInt(value));
+  }
+
+  get requestedBy(): Bytes | null {
+    let value = this.get("requestedBy");
+    if (value === null) {
+      return null;
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set requestedBy(value: Bytes | null) {
+    if (value === null) {
+      this.unset("requestedBy");
+    } else {
+      this.set("requestedBy", Value.fromBytes(value as Bytes));
+    }
+  }
+
+  get generatedAt(): BigInt | null {
+    let value = this.get("generatedAt");
+    if (value === null) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set generatedAt(value: BigInt | null) {
+    if (value === null) {
+      this.unset("generatedAt");
+    } else {
+      this.set("generatedAt", Value.fromBigInt(value as BigInt));
+    }
+  }
 }

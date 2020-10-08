@@ -26,6 +26,10 @@ const mainNetVars = {
   'KeepRandomBeaconOperator': {
     'address': '0xdF708431162Ba247dDaE362D2c919e0fbAfcf9DE',
     'startBlock': '10834116'
+  },
+  'KeepRandomBeaconService': {
+    'address': '0x50510E691c90EA098e3fdd23C311731BF394aAFd',
+    'startBlock': '10834104'
   }
 }
 
@@ -54,6 +58,10 @@ const ropstenVars = {
   'KeepRandomBeaconOperator': {
     'address': '0xC8337a94a50d16191513dEF4D1e61A6886BF410f',
     'startBlock': '8580806'
+  },
+  'KeepRandomBeaconService': {
+    'address': '0x6c04499B595efdc28CdbEd3f9ed2E83d7dCCC717',
+    'startBlock': '8580802'
   }
 }
 
