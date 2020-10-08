@@ -90,9 +90,14 @@ export function handleNotifySignerSetupFailed(call: NotifySignerSetupFailedCall)
       let address = members[i]!;
       if (keep.pubkeySubmissions.indexOf(address) == -1) {
         let operator = getOrCreateOperator(Address.fromString(address));
-        operator.attributableFaultCount += 1
         operator.totalFaultCount += 1
-        operator.save()
+
+        // We can blame this operator personally for this failure to respond, unless none of the operators
+        // responded, in which case we assume instead blame cannot be assigned.
+        if (keep.pubkeySubmissions.length > 0) {
+          operator.attributableFaultCount += 1
+          operator.save()
+        }
       }
     }
   }
