@@ -3,9 +3,8 @@ import {
   NotifySignerSetupFailedCall, NotifyUndercollateralizedLiquidationCall, ProvideECDSAFraudProofCall,
   ProvideFundingECDSAFraudProofCall
 } from "../generated/templates/DepositContract/DepositContract";
-import {BondedECDSAKeep, Deposit, DepositSetup, SetupFailedEvent, StartedLiquidationEvent} from "../generated/schema";
+import {BondedECDSAKeep, Deposit, SetupFailedEvent, StartedLiquidationEvent} from "../generated/schema";
 import {
-  completeLogEvent,
   completeLogEventRaw,
   getDepositIdFromAddress,
   getDepositLiquidation,
@@ -16,7 +15,6 @@ import {
 import { Address, log } from "@graphprotocol/graph-ts";
 import {ethereum} from "@graphprotocol/graph-ts/index";
 import {getOrCreateOperator, getOrCreateUser} from "./helpers";
-import {getIDFromEvent} from "./utils";
 
 
 function newSetupFailedEvent(depositAddress: Address, reason: string, call: ethereum.Call): SetupFailedEvent {
@@ -71,7 +69,6 @@ export function handleNotifyFundingTimedOut(call: NotifyFundingTimedOutCall): vo
 
 export function handleNotifySignerSetupFailed(call: NotifySignerSetupFailedCall): void {
   let contractAddress = call.to;
-  newSetupFailedEvent(contractAddress, "SIGNER_SETUP_FAILED", call)
 
   let deposit = Deposit.load(getDepositIdFromAddress(contractAddress))!;
   deposit.currentState = 'FAILED_SETUP';
@@ -99,6 +96,8 @@ export function handleNotifySignerSetupFailed(call: NotifySignerSetupFailedCall)
       }
     }
   }
+
+  newSetupFailedEvent(contractAddress, failureReason, call)
 
   let setup = getDepositSetup(contractAddress);
   setup.failureReason = failureReason;
