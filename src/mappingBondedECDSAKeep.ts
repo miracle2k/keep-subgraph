@@ -7,7 +7,7 @@ import {
 } from "../generated/templates/BondedECDSAKeep/BondedECDSAKeep";
 import {BondedECDSAKeep, Deposit} from "../generated/schema";
 import {getOrCreateOperator} from "./helpers";
-import {Address, log} from "@graphprotocol/graph-ts/index";
+import {Address, log, BigInt} from "@graphprotocol/graph-ts/index";
 import {getDepositIdFromAddress} from "./mapping";
 import {toDecimal} from "./decimalUtils";
 
@@ -77,7 +77,7 @@ export function handleERC20RewardDistributed(event: ERC20RewardDistributed): voi
   let members = keep.members;
   for (let i=0; i<members.length; i++) {
     let operator = getOrCreateOperator(Address.fromString(members[i]!));
-    operator.totalTBTCRewards = operator.totalTBTCRewards.plus(toDecimal(event.params.amount));
+    operator.totalTBTCRewards = operator.totalTBTCRewards.plus(toDecimal(event.params.amount).div(toDecimal(BigInt.fromI32(members.length))));
     operator.save()
   }
 
