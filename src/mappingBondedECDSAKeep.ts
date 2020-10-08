@@ -7,7 +7,7 @@ import {
 } from "../generated/templates/BondedECDSAKeep/BondedECDSAKeep";
 import {BondedECDSAKeep, Deposit} from "../generated/schema";
 import {getOrCreateOperator} from "./helpers";
-import {Address} from "@graphprotocol/graph-ts/index";
+import {Address, log} from "@graphprotocol/graph-ts/index";
 import {getDepositIdFromAddress} from "./mapping";
 import {toDecimal} from "./decimalUtils";
 
@@ -69,6 +69,7 @@ export function handleSubmitPublicKey(call: SubmitPublicKeyCall): void {
 export function handleERC20RewardDistributed(event: ERC20RewardDistributed): void {
   // We don't get the keep address in this event, but so have to assume that this tx was a provideRedemptionProof()
   // call to the deposit, and then we get the keep from there.
+  // NB: It is an event triggered by the keep contract, but called through the deposit.
   let depositAddress = event.transaction.to!;
   let deposit = Deposit.load(getDepositIdFromAddress(depositAddress))!;
 
@@ -77,10 +78,11 @@ export function handleERC20RewardDistributed(event: ERC20RewardDistributed): voi
   for (let i=0; i<members.length; i++) {
     let operator = getOrCreateOperator(Address.fromString(members[i]!));
     operator.totalTBTCRewards = operator.totalTBTCRewards.plus(toDecimal(event.params.amount));
+    operator.save()
   }
 
 }
 
 export function handleETHRewardDistributed(event: ETHRewardDistributed): void {
-
+  log.info('foobar handleETHRewardDistributed',[] )
 }

@@ -28,10 +28,11 @@ export function handleDkgResultSubmittedEvent(event: DkgResultSubmittedEvent): v
   let contract = KeepRandomBeaconOperator.bind(event.address);
   let members = contract.getGroupMembers(event.params.groupPubKey);
   group.members = members.map<string>(address => address.toHexString());
+  group.memberCount = members.length;
   group.save()
 }
 
-// NB: Expiring old groups has no event it seems, is done via selectGroup() which is called by signRelayEntry().
+// NB: Expiring old groups has no event so far, it seems, is done via selectGroup() which is called by signRelayEntry().
 
 
 export function handleRelayEntryRequested(event: RelayEntryRequested): void {

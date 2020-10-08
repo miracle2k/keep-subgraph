@@ -1111,6 +1111,15 @@ export class Deposit extends Entity {
     this.set("owner", Value.fromBytes(value));
   }
 
+  get creator(): Bytes {
+    let value = this.get("creator");
+    return value.toBytes();
+  }
+
+  set creator(value: Bytes) {
+    this.set("creator", Value.fromBytes(value));
+  }
+
   get keepAddress(): Bytes | null {
     let value = this.get("keepAddress");
     if (value === null) {
@@ -1763,6 +1772,82 @@ export class DepositRedemption extends Entity {
     } else {
       this.set("txid", Value.fromBytes(value as Bytes));
     }
+  }
+}
+
+export class User extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id !== null, "Cannot save User entity without an ID");
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save User entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("User", id.toString(), this);
+  }
+
+  static load(id: string): User | null {
+    return store.get("User", id) as User | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get address(): Bytes {
+    let value = this.get("address");
+    return value.toBytes();
+  }
+
+  set address(value: Bytes) {
+    this.set("address", Value.fromBytes(value));
+  }
+
+  get numDepositsCreated(): i32 {
+    let value = this.get("numDepositsCreated");
+    return value.toI32();
+  }
+
+  set numDepositsCreated(value: i32) {
+    this.set("numDepositsCreated", Value.fromI32(value));
+  }
+
+  get numDepositsUnfunded(): i32 {
+    let value = this.get("numDepositsUnfunded");
+    return value.toI32();
+  }
+
+  set numDepositsUnfunded(value: i32) {
+    this.set("numDepositsUnfunded", Value.fromI32(value));
+  }
+
+  get numDepositsRedeemed(): i32 {
+    let value = this.get("numDepositsRedeemed");
+    return value.toI32();
+  }
+
+  set numDepositsRedeemed(value: i32) {
+    this.set("numDepositsRedeemed", Value.fromI32(value));
+  }
+
+  get numOwnDepositsRedeemed(): i32 {
+    let value = this.get("numOwnDepositsRedeemed");
+    return value.toI32();
+  }
+
+  set numOwnDepositsRedeemed(value: i32) {
+    this.set("numOwnDepositsRedeemed", Value.fromI32(value));
   }
 }
 
@@ -3040,6 +3125,15 @@ export class RandomBeaconGroup extends Entity {
 
   set members(value: Array<string>) {
     this.set("members", Value.fromStringArray(value));
+  }
+
+  get memberCount(): i32 {
+    let value = this.get("memberCount");
+    return value.toI32();
+  }
+
+  set memberCount(value: i32) {
+    this.set("memberCount", Value.fromI32(value));
   }
 }
 

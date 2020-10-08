@@ -15,7 +15,7 @@ import {
 } from "./mapping";
 import { Address, log } from "@graphprotocol/graph-ts";
 import {ethereum} from "@graphprotocol/graph-ts/index";
-import {getOrCreateOperator} from "./helpers";
+import {getOrCreateOperator, getOrCreateUser} from "./helpers";
 import {getIDFromEvent} from "./utils";
 
 
@@ -56,12 +56,17 @@ function newStartedLiquidationEvent(depositAddress: Address, cause: string, call
 // was raised.
 export function handleNotifyFundingTimedOut(call: NotifyFundingTimedOutCall): void {
   let contractAddress = call.to;
-  setDepositState(contractAddress, "FAILED_SETUP", call.block);
+  let deposit = setDepositState(contractAddress, "FAILED_SETUP", call.block);
   newSetupFailedEvent(contractAddress, "FUNDING_TIMEOUT", call);
 
   let setup = getDepositSetup(contractAddress);
   setup.failureReason = 'FUNDING_TIMEOUT';
-  setup.save()
+  setup.save();
+
+  // Strike against the deposit creator.
+  let user = getOrCreateUser(deposit.creator as Address);
+  user.numDepositsUnfunded += 1;
+  user.save();
 }
 
 export function handleNotifySignerSetupFailed(call: NotifySignerSetupFailedCall): void {

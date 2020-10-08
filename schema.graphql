@@ -145,6 +145,9 @@ type Deposit @entity {
   # it makes our code easier!
   owner: Bytes!
 
+  "The address which created the deposit initially. In contrast to the owner, this cannot change."
+  creator: Bytes!
+
   keepAddress: Bytes
   lotSizeSatoshis: BigInt
   initialCollateralizedPercent: Int
@@ -232,6 +235,23 @@ type DepositRedemption @entity {
   outpoint: Bytes
   utxoSize: BigInt
   txid: Bytes
+}
+
+"""
+An actor using the minting and redeeming facilities.
+"""
+type User @entity {
+  id: ID!
+  address: Bytes!
+
+  "The number of deposits the user initiated."
+  numDepositsCreated: Int!
+  "The number of deposits the user initiated, then did not complete the funding process of. Excludes any deposits which failed due to signer issues."
+  numDepositsUnfunded: Int!
+  "The number of deposits the user requested to be redeemed."
+  numDepositsRedeemed: Int!
+  "The number of deposits the user requested to be redeemed, where the deposit was also created by them."
+  numOwnDepositsRedeemed: Int!
 }
 
 """
@@ -419,6 +439,7 @@ type RandomBeaconGroup @entity {
 
   createdAt: BigInt!
   members: [Operator!]!
+  memberCount: Int!
 }
 
 type RelayEntry @entity {

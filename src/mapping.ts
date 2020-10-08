@@ -28,12 +28,11 @@ import {
   RegisteredPubKeyEvent,
   CourtesyCalledEvent,
   LiquidatedEvent,
-  StartedLiquidationEvent,
   CreatedEvent, DepositSetup,
 } from "../generated/schema";
 import {getIDFromEvent} from "./utils";
 import {Value} from "@graphprotocol/graph-ts/index";
-import {getOrCreateOperator} from "./helpers";
+import {getOrCreateOperator, getOrCreateUser} from "./helpers";
 import {BIGINT_ZERO} from "./constants";
 import {getStats} from "./mappingKeepBonding";
 
@@ -134,6 +133,7 @@ export function handleCreatedEvent(event: Created): void {
   deposit.updatedAt = event.block.timestamp;
   deposit.tdtToken = getDepositTokenIdFromDepositAddress(contractAddress)
   deposit.owner = event.transaction.from;
+  deposit.creator = event.transaction.from;
 
   // Instantiate the graph templates: this indexes the newly created contracts for events
   let context = new DataSourceContext()
@@ -156,8 +156,14 @@ export function handleCreatedEvent(event: Created): void {
   logEvent.deposit = getDepositIdFromAddress(event.params._depositContractAddress);
   completeLogEvent(logEvent, event); logEvent.save()
 
+  // Deposit setup record
   let setup = getDepositSetup(contractAddress);
   setup.save()
+
+  // User who created it. We are assuming here the tx went to the contract directly, from the user.
+  let user = getOrCreateUser(event.transaction.from);
+  user.numDepositsCreated += 1;
+  user.save();
 }
 
 // Do not save a deposit directly. There are certain denormalized values which need to be recalculated
@@ -338,6 +344,14 @@ export function handleRedemptionRequestedEvent(
   let stats = getStats()
   stats.btcInActiveDeposits = stats.btcInActiveDeposits.minus(deposit.lotSizeSatoshis!);
   stats.save()
+
+  // Update the redeeming user.
+  let user = getOrCreateUser(event.transaction.from);
+  user.numDepositsRedeemed += 1;
+  if (deposit.creator == event.transaction.from) {
+    user.numOwnDepositsRedeemed += 1;
+  }
+  user.save();
 }
 
 export function handleGotRedemptionSignatureEvent(

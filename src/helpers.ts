@@ -1,12 +1,12 @@
 import {BIGDECIMAL_ZERO} from "./constants";
 import {Address} from "@graphprotocol/graph-ts/index";
-import {Operator} from "../generated/schema";
+import {Operator, User} from "../generated/schema";
 
-export function getOrCreateOperator(keeperAddress: Address): Operator {
-  let member = Operator.load(keeperAddress.toHexString());
+export function getOrCreateOperator(address: Address): Operator {
+  let member = Operator.load(address.toHexString());
   if (member == null) {
-    member = new Operator(keeperAddress.toHexString());
-    member.address = keeperAddress;
+    member = new Operator(address.toHexString());
+    member.address = address;
     member.totalKeepCount = 0;
     member.activeKeepCount = 0;
     member.bonded = BIGDECIMAL_ZERO;
@@ -17,4 +17,19 @@ export function getOrCreateOperator(keeperAddress: Address): Operator {
     member.totalTBTCRewards = BIGDECIMAL_ZERO;
   }
   return member!;
+}
+
+
+export function getOrCreateUser(address: Address): User {
+  let id = "u_" + address.toHexString();
+  let user = User.load(id);
+  if (user == null) {
+    user = new User(id);
+    user.address = address;
+    user.numDepositsCreated = 0
+    user.numDepositsRedeemed = 0
+    user.numOwnDepositsRedeemed = 0
+    user.numDepositsUnfunded = 0
+  }
+  return user!;
 }
