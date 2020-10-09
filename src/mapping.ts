@@ -342,7 +342,8 @@ export function handleRedemptionRequestedEvent(
 
   deposit.redemptionStartedAt = event.block.timestamp;
   deposit.currentStateTimesOutAt = event.block.timestamp.plus(REDEMPTION_SIGNATURE_TIMEOUT);
-  setDepositState(contractAddress, "AWAITING_WITHDRAWAL_SIGNATURE", event.block);
+  deposit.currentState = "AWAITING_WITHDRAWAL_SIGNATURE"
+  saveDeposit(deposit, event.block);
 
   let logEvent = new RedemptionRequestedEvent(getIDFromEvent(event))
   logEvent.deposit = getDepositIdFromAddress(event.params._depositContractAddress);
