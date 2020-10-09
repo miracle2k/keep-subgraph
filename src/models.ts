@@ -1,6 +1,6 @@
 import {BIGDECIMAL_ZERO, BIGINT_ZERO} from "./constants";
 import {Address} from "@graphprotocol/graph-ts/index";
-import {Operator, StatsRecord, User} from "../generated/schema";
+import {Operator, StatsRecord, StatusRecord, User} from "../generated/schema";
 
 export function getOrCreateOperator(address: Address): Operator {
   let member = Operator.load(address.toHexString());
@@ -45,4 +45,16 @@ export function getStats(): StatsRecord {
     stats.btcInActiveDeposits = BIGINT_ZERO;
   }
   return stats!;
+}
+
+/**
+ * The StatusRecord entity is a singleton. Return the existing one, or create it the first time.
+ */
+export function getStatus(): StatusRecord {
+  let status = StatusRecord.load("current");
+  if (status == null) {
+    status = new StatusRecord("current")
+    status.currentRequestedRelayEntry = null;
+  }
+  return status!;
 }

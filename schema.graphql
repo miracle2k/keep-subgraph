@@ -434,19 +434,36 @@ type StatsRecord @entity {
   btcInActiveDeposits: BigInt!
 }
 
+"""
+Exposes some global system status data. Only a single record with the id "current" is available.
+"""
+type StatusRecord @entity {
+  id: ID!
+
+  "The currently requested RandomBeacon relay entry, if any. Only a single request can exist at a time."
+  currentRequestedRelayEntry: RelayEntry
+}
+
 type RandomBeaconGroup @entity {
   id: ID!
+  pubKey: Bytes!
 
   createdAt: BigInt!
   members: [Operator!]!
   memberCount: Int!
+  rewardPerMember: BigInt!
+
+  relayEntries: [RelayEntry!]! @derivedFrom(field: "group")
 }
 
 type RelayEntry @entity {
   id: ID!
-  requestId: BigInt!
-  value: BigInt
   requestedAt: BigInt!
-  requestedBy: Bytes
+  requestedBy: Bytes!
+  group: RandomBeaconGroup!
+
+  requestId: BigInt
+  value: BigInt
   generatedAt: BigInt
+  rewardPerMember: BigInt
 }
