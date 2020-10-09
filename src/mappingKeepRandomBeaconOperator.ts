@@ -1,11 +1,16 @@
 import {
   DkgResultSubmittedEvent,
-  GroupSelectionStarted, KeepRandomBeaconOperator, RelayEntryRequested, RelayEntrySubmitted
+  GroupSelectionStarted,
+  KeepRandomBeaconOperator,
+  RelayEntryRequested,
+  RelayEntrySubmitted
 } from "../generated/KeepRandomBeaconOperator/KeepRandomBeaconOperator";
 import {RandomBeaconGroup, RelayEntry} from "../generated/schema";
 import {getIDFromEvent} from "./utils";
-import {getStatus} from "./models";
+import {getOrCreateOperator, getStatus} from "./models";
 import {BIGINT_ZERO} from "./constants";
+import {Address, BigDecimal, BigInt} from "@graphprotocol/graph-ts/index";
+import {toDecimal} from "./decimalUtils";
 
 /**
  * Event: GroupSelectionStarted
@@ -83,13 +88,20 @@ export function handleRelayEntrySubmitted(event: RelayEntrySubmitted): void {
   // particular RelayEntry as well. Another option would be calling things such as `entryVerificationFee()`
   // when the entry is being requested.
 
-  let operatorContract = KeepRandomBeaconOperator.bind(event.address)
+  let operatorContract = KeepRandomBeaconOperator.bind(event.address);
   let rewardPerMember = operatorContract.getGroupMemberRewards(group.pubKey);
-  let rewardForThisEntry = rewardPerMember.minus(group.rewardPerMember);
 
-  entry.rewardPerMember = rewardForThisEntry;
-  entry.save()
-
+  entry.rewardPerMember = rewardPerMember.minus(group.rewardPerMember);
   group.rewardPerMember = rewardPerMember;
   entry.save();
+  group.save();
+
+  // Finally, we want to update every operator with this reward.
+  let members = group.members;
+  for (let i=0; i<members.length; i++) {
+    let operator = getOrCreateOperator(Address.fromString(members[i]!));
+    operator.totalETHRewards = operator.totalETHRewards.plus(rewardPerMember);
+    operator.totalBeaconRewards = operator.totalBeaconRewards.plus(rewardPerMember);
+    operator.save()
+  }
 }

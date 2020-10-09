@@ -2039,13 +2039,31 @@ export class Operator extends Entity {
     this.set("stakedAmount", Value.fromBigDecimal(value));
   }
 
-  get totalTBTCRewards(): BigDecimal {
+  get totalTBTCRewards(): BigInt {
     let value = this.get("totalTBTCRewards");
-    return value.toBigDecimal();
+    return value.toBigInt();
   }
 
-  set totalTBTCRewards(value: BigDecimal) {
-    this.set("totalTBTCRewards", Value.fromBigDecimal(value));
+  set totalTBTCRewards(value: BigInt) {
+    this.set("totalTBTCRewards", Value.fromBigInt(value));
+  }
+
+  get totalETHRewards(): BigInt {
+    let value = this.get("totalETHRewards");
+    return value.toBigInt();
+  }
+
+  set totalETHRewards(value: BigInt) {
+    this.set("totalETHRewards", Value.fromBigInt(value));
+  }
+
+  get totalBeaconRewards(): BigInt {
+    let value = this.get("totalBeaconRewards");
+    return value.toBigInt();
+  }
+
+  set totalBeaconRewards(value: BigInt) {
+    this.set("totalBeaconRewards", Value.fromBigInt(value));
   }
 
   get attributableFaultCount(): i32 {
