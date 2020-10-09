@@ -100,8 +100,8 @@ export function handleRelayEntrySubmitted(event: RelayEntrySubmitted): void {
   let members = group.members;
   for (let i=0; i<members.length; i++) {
     let operator = getOrCreateOperator(Address.fromString(members[i]!));
-    operator.totalETHRewards = operator.totalETHRewards.plus(rewardPerMember);
-    operator.totalBeaconRewards = operator.totalBeaconRewards.plus(rewardPerMember);
+    operator.totalETHRewards = operator.totalETHRewards.plus(entry.rewardPerMember);
+    operator.totalBeaconRewards = operator.totalBeaconRewards.plus(entry.rewardPerMember);
     operator.save()
   }
 }

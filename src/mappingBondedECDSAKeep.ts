@@ -85,6 +85,5 @@ export function handleERC20RewardDistributed(event: ERC20RewardDistributed): voi
 
 }
 
-export function handleETHRewardDistributed(event: ETHRewardDistributed): void {
-  log.info('foobar handleETHRewardDistributed',[] )
-}
+// Seems like this is never used in the contracts.
+export function handleETHRewardDistributed(event: ETHRewardDistributed): void {}
