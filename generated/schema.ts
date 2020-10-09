@@ -1103,6 +1103,23 @@ export class Deposit extends Entity {
     }
   }
 
+  get currentStateTimesOutAt(): BigInt | null {
+    let value = this.get("currentStateTimesOutAt");
+    if (value === null) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set currentStateTimesOutAt(value: BigInt | null) {
+    if (value === null) {
+      this.unset("currentStateTimesOutAt");
+    } else {
+      this.set("currentStateTimesOutAt", Value.fromBigInt(value as BigInt));
+    }
+  }
+
   get owner(): Bytes {
     let value = this.get("owner");
     return value.toBytes();
@@ -1924,6 +1941,15 @@ export class Operator extends Entity {
 
   set locks(value: Array<string>) {
     this.set("locks", Value.fromStringArray(value));
+  }
+
+  get randomBeaconGroups(): Array<string> {
+    let value = this.get("randomBeaconGroups");
+    return value.toStringArray();
+  }
+
+  set randomBeaconGroups(value: Array<string>) {
+    this.set("randomBeaconGroups", Value.fromStringArray(value));
   }
 
   get owner(): Bytes | null {

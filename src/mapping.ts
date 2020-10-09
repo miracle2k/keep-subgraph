@@ -33,7 +33,13 @@ import {
 import {getIDFromEvent} from "./utils";
 import {Value} from "@graphprotocol/graph-ts/index";
 import {getOrCreateOperator, getOrCreateUser} from "./models";
-import {BIGINT_ZERO} from "./constants";
+import {
+  BIGINT_ZERO,
+  FORMATION_TIMEOUT,
+  FUNDING_PROOF_TIMEOUT,
+  REDEMPTION_PROOF_TIMEOUT,
+  REDEMPTION_SIGNATURE_TIMEOUT
+} from "./constants";
 import {getStats} from "./models";
 
 
@@ -134,6 +140,7 @@ export function handleCreatedEvent(event: Created): void {
   deposit.tdtToken = getDepositTokenIdFromDepositAddress(contractAddress)
   deposit.owner = event.transaction.from;
   deposit.creator = event.transaction.from;
+  deposit.currentStateTimesOutAt = event.block.timestamp.plus(FORMATION_TIMEOUT);
 
   // Instantiate the graph templates: this indexes the newly created contracts for events
   let context = new DataSourceContext()
@@ -267,6 +274,7 @@ export function handleStartedLiquidationEvent(event: StartedLiquidation): void {
   deposit.updatedAt = event.block.timestamp;
   deposit.redemptionStartedAt = event.block.timestamp;
   deposit.depositLiquidation = depositLiquidation.id;
+  deposit.currentStateTimesOutAt = null;
 
   // We keep both of those states to make the status values in the contract, but we really track the
   // liquidation reason in LiquidationCause.
@@ -314,6 +322,8 @@ export function handleLiquidatedEvent(event: Liquidated): void {
   stats.save()
 }
 
+// XXX: handle increaseRedemptionFee.
+
 export function handleRedemptionRequestedEvent(
   event: RedemptionRequested
 ): void {
@@ -331,6 +341,7 @@ export function handleRedemptionRequestedEvent(
   depositRedemption.save();
 
   deposit.redemptionStartedAt = event.block.timestamp;
+  deposit.currentStateTimesOutAt = event.block.timestamp.plus(REDEMPTION_SIGNATURE_TIMEOUT);
   setDepositState(contractAddress, "AWAITING_WITHDRAWAL_SIGNATURE", event.block);
 
   let logEvent = new RedemptionRequestedEvent(getIDFromEvent(event))
@@ -359,7 +370,10 @@ export function handleRedemptionRequestedEvent(
 export function handleGotRedemptionSignatureEvent(
   event: GotRedemptionSignature
 ): void {
-  setDepositState(event.params._depositContractAddress, "AWAITING_WITHDRAWAL_PROOF", event.block);
+  let deposit = Deposit.load(getDepositIdFromAddress(event.params._depositContractAddress))!;
+  deposit.currentState = "AWAITING_WITHDRAWAL_PROOF";
+  deposit.currentStateTimesOutAt = event.block.timestamp.plus(REDEMPTION_PROOF_TIMEOUT);
+  saveDeposit(deposit, event.block);
 
   let logEvent = new GotRedemptionSignatureEvent(getIDFromEvent(event))
   logEvent.deposit = getDepositIdFromAddress(event.params._depositContractAddress);
@@ -368,7 +382,11 @@ export function handleGotRedemptionSignatureEvent(
 
 export function handleRedeemedEvent(event: Redeemed): void {
   let contractAddress = event.params._depositContractAddress;
-  let deposit = setDepositState(contractAddress, "REDEEMED", event.block);
+
+  let deposit = Deposit.load(getDepositIdFromAddress(contractAddress))!;
+  deposit.currentState = "REDEEMED";
+  deposit.currentStateTimesOutAt = null;
+  saveDeposit(deposit, event.block);
 
   let depositRedemption = DepositRedemption.load(DPR+contractAddress.toHexString())!;
   depositRedemption.txid = event.params._txid;
@@ -388,6 +406,7 @@ export function handleRedeemedEvent(event: Redeemed): void {
 export function handleFundedEvent(event: Funded): void {
   let deposit = Deposit.load(getDepositIdFromAddress(event.params._depositContractAddress))!;
   deposit.currentState = "ACTIVE";
+  deposit.currentStateTimesOutAt = null;
 
   // At this point those values will be set
   let depositSmartContract = DepositSmartContract.bind(event.params._depositContractAddress);
@@ -408,7 +427,10 @@ export function handleFundedEvent(event: Funded): void {
 }
 
 export function handleRegisteredPubkey(event: RegisteredPubkey): void {
-  setDepositState(event.params._depositContractAddress, "AWAITING_BTC_FUNDING_PROOF", event.block);
+  let deposit = Deposit.load(getDepositIdFromAddress(event.params._depositContractAddress))!;
+  deposit.currentState = "AWAITING_BTC_FUNDING_PROOF";
+  deposit.currentStateTimesOutAt = event.block.timestamp.plus(FUNDING_PROOF_TIMEOUT);
+  saveDeposit(deposit, event.block);
 
   let setup = getDepositSetup(event.params._depositContractAddress)
   setup.fundingProofTimerStartedAt = event.block.timestamp

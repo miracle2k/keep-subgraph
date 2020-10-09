@@ -146,6 +146,9 @@ type Deposit @entity {
   "Timestamp of when the deposit redemption was requested, if any. This includes the start of liquidation due to undercollateralization."
   redemptionStartedAt: BigInt
 
+  "The timeout after which the current state can be notified, if any. This does not include non-timeout actions that are time-locked, such as courtesy calls or liquidation auctions."
+  currentStateTimesOutAt: BigInt
+
   # owner is the owner of the TDT token, will match tdtToken.owner (shortcut). we have this mostly because
   # it makes our code easier!
   owner: Bytes!
