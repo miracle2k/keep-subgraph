@@ -54,7 +54,12 @@ function newStartedLiquidationEvent(depositAddress: Address, cause: string, call
 // was raised.
 export function handleNotifyFundingTimedOut(call: NotifyFundingTimedOutCall): void {
   let contractAddress = call.to;
-  let deposit = setDepositState(contractAddress, "FAILED_SETUP", call.block);
+
+  let deposit = Deposit.load(getDepositIdFromAddress(contractAddress))!;
+  deposit.currentState = "FAILED_SETUP";
+  deposit.currentStateTimesOutAt = null;
+  saveDeposit(deposit, call.block);
+
   newSetupFailedEvent(contractAddress, "FUNDING_TIMEOUT", call);
 
   let setup = getDepositSetup(contractAddress);
@@ -72,6 +77,7 @@ export function handleNotifySignerSetupFailed(call: NotifySignerSetupFailedCall)
 
   let deposit = Deposit.load(getDepositIdFromAddress(contractAddress))!;
   deposit.currentState = 'FAILED_SETUP';
+  deposit.currentStateTimesOutAt = null;
   saveDeposit(deposit, call.block);
 
   // To figure out who actually is at fault here, we have to see if the signers managed to publish a PublicKey
@@ -114,8 +120,12 @@ export function handleNotifySignerSetupFailed(call: NotifySignerSetupFailedCall)
  */
 export function handleProvideFundingECDSAFraudProof(call: ProvideFundingECDSAFraudProofCall): void {
   let contractAddress = call.to;
-  setDepositState(contractAddress, "FAILED_SETUP", call.block);
   newSetupFailedEvent(contractAddress, "FUNDING_ECDSA_FRAUD", call)
+
+  let deposit = Deposit.load(getDepositIdFromAddress(contractAddress))!;
+  deposit.currentState = 'FAILED_SETUP';
+  deposit.currentStateTimesOutAt = null;
+  saveDeposit(deposit, call.block);
 
   let setup = getDepositSetup(contractAddress);
   setup.failureReason = 'FUNDING_ECDSA_FRAUD';
@@ -124,9 +134,12 @@ export function handleProvideFundingECDSAFraudProof(call: ProvideFundingECDSAFra
 
 /**
  * Fraud is reported during redemption.
+ *
+ * NOTE: We also catch the StartedLiquidation event, those two handlers work together.
  */
 export function handleProvideECDSAFraudProof(call: ProvideECDSAFraudProofCall): void {
   let contractAddress = call.to;
+
   let liq = getDepositLiquidation(contractAddress, call.block, call.transaction);
   liq.cause = 'FRAUD'
   liq.save();
@@ -137,6 +150,9 @@ export function handleProvideECDSAFraudProof(call: ProvideECDSAFraudProofCall): 
   newStartedLiquidationEvent(contractAddress, 'FRAUD', call);
 }
 
+/**
+ * NOTE: We also catch the StartedLiquidation event, those two handlers work together.
+ */
 export function handleNotifyUndercollateralizedLiquidation(call: NotifyUndercollateralizedLiquidationCall): void {
   let contractAddress = call.to;
   let liq = getDepositLiquidation(contractAddress, call.block, call.transaction);
@@ -148,6 +164,9 @@ export function handleNotifyUndercollateralizedLiquidation(call: NotifyUndercoll
   newStartedLiquidationEvent(contractAddress, 'UNDERCOLLATERIZED', call);
 }
 
+/**
+ * NOTE: We also catch the StartedLiquidation event, those two handlers work together.
+ */
 export function handleNotifyRedemptionSignatureTimedOut(call: NotifyRedemptionSignatureTimedOutCall): void {
   let contractAddress = call.to;
   let liq = getDepositLiquidation(contractAddress, call.block, call.transaction);
@@ -158,6 +177,9 @@ export function handleNotifyRedemptionSignatureTimedOut(call: NotifyRedemptionSi
   newStartedLiquidationEvent(contractAddress, 'SIGNATURE_TIMEOUT', call);
 }
 
+/**
+ * NOTE: We also catch the StartedLiquidation event, those two handlers work together.
+ */
 export function handleNotifyRedemptionProofTimedOut(call: NotifyRedemptionProofTimedOutCall): void {
   let contractAddress = call.to;
   let liq = getDepositLiquidation(contractAddress, call.block, call.transaction);
