@@ -32,9 +32,9 @@ import {
 } from "../generated/schema";
 import {getIDFromEvent} from "./utils";
 import {Value} from "@graphprotocol/graph-ts/index";
-import {getOrCreateOperator, getOrCreateUser} from "./helpers";
+import {getOrCreateOperator, getOrCreateUser} from "./models";
 import {BIGINT_ZERO} from "./constants";
-import {getStats} from "./mappingKeepBonding";
+import {getStats} from "./models";
 
 
 // Wild-card re-export compiles but then does not find the functions at runtime.

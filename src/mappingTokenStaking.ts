@@ -12,7 +12,7 @@ import {
   TopUpInitiated,
   Undelegated,
 } from "../generated/StakingContract/StakingContract"
-import {getOrCreateOperator} from "./helpers";
+import {getOrCreateOperator} from "./models";
 import {toDecimal} from "./decimalUtils";
 import { Lock } from "../generated/schema";
 import { store } from "@graphprotocol/graph-ts";

@@ -14,7 +14,7 @@ import {
 } from "./mapping";
 import { Address, log } from "@graphprotocol/graph-ts";
 import {ethereum} from "@graphprotocol/graph-ts/index";
-import {getOrCreateOperator, getOrCreateUser} from "./helpers";
+import {getOrCreateOperator, getOrCreateUser} from "./models";
 
 
 function newSetupFailedEvent(depositAddress: Address, reason: string, call: ethereum.Call): SetupFailedEvent {

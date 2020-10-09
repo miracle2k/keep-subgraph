@@ -5,11 +5,8 @@ import {
 } from "../generated/KeepRandomBeaconService/KeepRandomBeaconServiceImplV1";
 import {RelayEntry} from "../generated/schema";
 import {log} from "@graphprotocol/graph-ts/index";
+import {getRelayEntryId} from "./modelsRandomBeacon";
 
-
-function getRelayEntryId(requestId: BigInt): string {
-  return 're_' + requestId.toString()
-}
 
 export function handleRelayEntryGenerated(event: RelayEntryGenerated): void {
   let entry = new RelayEntry(getRelayEntryId(event.params.requestId));

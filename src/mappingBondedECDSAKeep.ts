@@ -6,7 +6,7 @@ import {
   SubmitPublicKeyCall
 } from "../generated/templates/BondedECDSAKeep/BondedECDSAKeep";
 import {BondedECDSAKeep, Deposit} from "../generated/schema";
-import {getOrCreateOperator} from "./helpers";
+import {getOrCreateOperator} from "./models";
 import {Address, log, BigInt, BigDecimal} from "@graphprotocol/graph-ts/index";
 import {getDepositIdFromAddress} from "./mapping";
 import {toDecimal} from "./decimalUtils";

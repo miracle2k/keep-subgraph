@@ -8,7 +8,7 @@ import {
 } from "../generated/KeepBonding/KeepBondingContract"
 
 import { toDecimal } from "./decimalUtils";
-import {getOrCreateOperator} from "./helpers";
+import {getOrCreateOperator, getStats} from "./models";
 import { Address, BigDecimal, BigInt, log } from "@graphprotocol/graph-ts";
 import {Bond, StatsRecord} from "../generated/schema";
 import {BIGDECIMAL_ZERO, BIGINT_ZERO} from "./constants";
@@ -20,19 +20,6 @@ import {BIGDECIMAL_ZERO, BIGINT_ZERO} from "./constants";
 
 function getBondId(operator: Address,  referenceId: BigInt): string {
   return operator.toHex()  + "-" + referenceId.toString();
-}
-
-export function getStats(): StatsRecord {
-  let stats = StatsRecord.load("current");
-  if (stats == null) {
-    stats = new StatsRecord("current")
-    stats.availableToBeBonded = BIGDECIMAL_ZERO
-    stats.totalBonded = BIGDECIMAL_ZERO;
-    stats.totalBondsSeized = BIGDECIMAL_ZERO;
-    stats.btcUnderDeposit = BIGINT_ZERO;
-    stats.btcInActiveDeposits = BIGINT_ZERO;
-  }
-  return stats!;
 }
 
 
