@@ -265,6 +265,7 @@ export function handleStartedLiquidationEvent(event: StartedLiquidation): void {
 
   let deposit = Deposit.load(getDepositIdFromAddress(contractAddress))!;
   deposit.updatedAt = event.block.timestamp;
+  deposit.redemptionStartedAt = event.block.timestamp;
   deposit.depositLiquidation = depositLiquidation.id;
 
   // We keep both of those states to make the status values in the contract, but we really track the
@@ -329,6 +330,7 @@ export function handleRedemptionRequestedEvent(
   depositRedemption.utxoSize = event.params._utxoValue;
   depositRedemption.save();
 
+  deposit.redemptionStartedAt = event.block.timestamp;
   setDepositState(contractAddress, "AWAITING_WITHDRAWAL_SIGNATURE", event.block);
 
   let logEvent = new RedemptionRequestedEvent(getIDFromEvent(event))

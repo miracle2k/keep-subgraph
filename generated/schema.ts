@@ -1068,25 +1068,26 @@ export class Deposit extends Entity {
     }
   }
 
-  get createdAt(): BigInt | null {
+  get createdAt(): BigInt {
     let value = this.get("createdAt");
-    if (value === null) {
-      return null;
-    } else {
-      return value.toBigInt();
-    }
+    return value.toBigInt();
   }
 
-  set createdAt(value: BigInt | null) {
-    if (value === null) {
-      this.unset("createdAt");
-    } else {
-      this.set("createdAt", Value.fromBigInt(value as BigInt));
-    }
+  set createdAt(value: BigInt) {
+    this.set("createdAt", Value.fromBigInt(value));
   }
 
-  get updatedAt(): BigInt | null {
+  get updatedAt(): BigInt {
     let value = this.get("updatedAt");
+    return value.toBigInt();
+  }
+
+  set updatedAt(value: BigInt) {
+    this.set("updatedAt", Value.fromBigInt(value));
+  }
+
+  get redemptionStartedAt(): BigInt | null {
+    let value = this.get("redemptionStartedAt");
     if (value === null) {
       return null;
     } else {
@@ -1094,11 +1095,11 @@ export class Deposit extends Entity {
     }
   }
 
-  set updatedAt(value: BigInt | null) {
+  set redemptionStartedAt(value: BigInt | null) {
     if (value === null) {
-      this.unset("updatedAt");
+      this.unset("redemptionStartedAt");
     } else {
-      this.set("updatedAt", Value.fromBigInt(value as BigInt));
+      this.set("redemptionStartedAt", Value.fromBigInt(value as BigInt));
     }
   }
 

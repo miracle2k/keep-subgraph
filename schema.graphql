@@ -138,8 +138,13 @@ type Deposit @entity {
   contractAddress: Bytes!
   tdtToken: TBTCDepositToken!
   currentState: DepositState
-  createdAt: BigInt
-  updatedAt: BigInt
+
+  "Timestamp of when this deposit was created."
+  createdAt: BigInt!
+  "Timestamp of the last state change of this deposit. Initialized to the same value as createdAt."
+  updatedAt: BigInt!
+  "Timestamp of when the deposit redemption was requested, if any. This includes the start of liquidation due to undercollateralization."
+  redemptionStartedAt: BigInt
 
   # owner is the owner of the TDT token, will match tdtToken.owner (shortcut). we have this mostly because
   # it makes our code easier!
