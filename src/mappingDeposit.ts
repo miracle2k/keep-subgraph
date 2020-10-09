@@ -58,6 +58,7 @@ export function handleNotifyFundingTimedOut(call: NotifyFundingTimedOutCall): vo
   let deposit = Deposit.load(getDepositIdFromAddress(contractAddress))!;
   deposit.currentState = "FAILED_SETUP";
   deposit.currentStateTimesOutAt = null;
+  deposit.failureReason = "FUNDING_TIMEOUT";
   saveDeposit(deposit, call.block);
 
   newSetupFailedEvent(contractAddress, "FUNDING_TIMEOUT", call);
@@ -76,9 +77,6 @@ export function handleNotifySignerSetupFailed(call: NotifySignerSetupFailedCall)
   let contractAddress = call.to;
 
   let deposit = Deposit.load(getDepositIdFromAddress(contractAddress))!;
-  deposit.currentState = 'FAILED_SETUP';
-  deposit.currentStateTimesOutAt = null;
-  saveDeposit(deposit, call.block);
 
   // To figure out who actually is at fault here, we have to see if the signers managed to publish a PublicKey
   // to the keep. If they did, it was the depositor who failed to call `retrieveSignerPubKey()` to advance the
@@ -89,7 +87,9 @@ export function handleNotifySignerSetupFailed(call: NotifySignerSetupFailedCall)
     failureReason = 'SIGNER_SETUP_FAILED_DEPOSITOR';
   } else {
     failureReason = 'SIGNER_SETUP_FAILED';
+  }
 
+  if (failureReason == 'SIGNER_SETUP_FAILED') {
     // Credit this failure to the operators which did not submit.
     let members = keep.members;
     for (let i=0; i<members.length; i++) {
@@ -108,6 +108,11 @@ export function handleNotifySignerSetupFailed(call: NotifySignerSetupFailedCall)
     }
   }
 
+  deposit.currentState = 'FAILED_SETUP';
+  deposit.currentStateTimesOutAt = null;
+  deposit.failureReason = failureReason;
+  saveDeposit(deposit, call.block);
+
   newSetupFailedEvent(contractAddress, failureReason, call)
 
   let setup = getDepositSetup(contractAddress);
@@ -125,6 +130,7 @@ export function handleProvideFundingECDSAFraudProof(call: ProvideFundingECDSAFra
   let deposit = Deposit.load(getDepositIdFromAddress(contractAddress))!;
   deposit.currentState = 'FAILED_SETUP';
   deposit.currentStateTimesOutAt = null;
+  deposit.failureReason = 'FUNDING_ECDSA_FRAUD';
   saveDeposit(deposit, call.block);
 
   let setup = getDepositSetup(contractAddress);

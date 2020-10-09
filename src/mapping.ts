@@ -185,7 +185,13 @@ export function saveDeposit(deposit: Deposit, block: ethereum.Block): void {
       deposit.currentState === "FRAUD_LIQUIDATION_IN_PROGRESS" ||
       deposit.currentState === "LIQUIDATION_IN_PROGRESS" ||
       deposit.currentState === "LIQUIDATED"
-  )
+  );
+  deposit.filter_liquidationLikeOrSignerFailureState = deposit.filter_liquidationLikeState || (
+      deposit.currentState === "FAILED_SETUP" && (
+          deposit.failureReason === "SIGNER_SETUP_FAILED" ||
+          deposit.failureReason === "FUNDING_ECDSA_FRAUD"
+      )
+  );
 
   let ownedByVendingMachine = deposit.owner.toHexString() == '0x526c08e5532a9308b3fb33b7968ef78a5005d2ac';
 

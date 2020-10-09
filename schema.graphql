@@ -152,6 +152,8 @@ type Deposit @entity {
   # owner is the owner of the TDT token, will match tdtToken.owner (shortcut). we have this mostly because
   # it makes our code easier!
   owner: Bytes!
+  # simililary, our code becomes easier if we denorm this here.
+  failureReason: SetupFailedReason,
 
   "The address which created the deposit initially. In contrast to the owner, this cannot change."
   creator: Bytes!
@@ -171,7 +173,11 @@ type Deposit @entity {
   depositSetup: DepositSetup @derivedFrom(field: "deposit")
 
   # Because TheGraph does not support complex filters (and/or), we pre-calculate some useful ones here.
+
+  "True if the deposit state is LIQUIDATED, LIQUIDATION_IN_PROGRESS, FRAUD_LIQUIDATION_IN_PROGRESS or COURTESY_CALL."
   filter_liquidationLikeState: Boolean!,
+  "True if the deposit state is either liquidation like, or a signer setup failure."
+  filter_liquidationLikeOrSignerFailureState: Boolean!,
   filter_activeLikeState: Boolean!,
   filter_unmintedTDT: Boolean!,
   # will be the endOfTerm, or, if the deposit is already reeemable before that, will be maxInt. If not redeemable because closed, will be 0

@@ -1129,6 +1129,23 @@ export class Deposit extends Entity {
     this.set("owner", Value.fromBytes(value));
   }
 
+  get failureReason(): string | null {
+    let value = this.get("failureReason");
+    if (value === null) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set failureReason(value: string | null) {
+    if (value === null) {
+      this.unset("failureReason");
+    } else {
+      this.set("failureReason", Value.fromString(value as string));
+    }
+  }
+
   get creator(): Bytes {
     let value = this.get("creator");
     return value.toBytes();
@@ -1328,6 +1345,18 @@ export class Deposit extends Entity {
 
   set filter_liquidationLikeState(value: boolean) {
     this.set("filter_liquidationLikeState", Value.fromBoolean(value));
+  }
+
+  get filter_liquidationLikeOrSignerFailureState(): boolean {
+    let value = this.get("filter_liquidationLikeOrSignerFailureState");
+    return value.toBoolean();
+  }
+
+  set filter_liquidationLikeOrSignerFailureState(value: boolean) {
+    this.set(
+      "filter_liquidationLikeOrSignerFailureState",
+      Value.fromBoolean(value)
+    );
   }
 
   get filter_activeLikeState(): boolean {
