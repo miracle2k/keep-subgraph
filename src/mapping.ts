@@ -277,6 +277,7 @@ export function handleStartedLiquidationEvent(event: StartedLiquidation): void {
   depositLiquidation.save();
 
   let deposit = Deposit.load(getDepositIdFromAddress(contractAddress))!;
+  let oldState = deposit.currentState;
   deposit.updatedAt = event.block.timestamp;
   deposit.redemptionStartedAt = event.block.timestamp;
   deposit.depositLiquidation = depositLiquidation.id;
@@ -292,9 +293,12 @@ export function handleStartedLiquidationEvent(event: StartedLiquidation): void {
 
   saveDeposit(deposit, event.block);
 
-  let stats = getStats()
-  stats.btcInActiveDeposits = stats.btcInActiveDeposits.minus(deposit.lotSizeSatoshis!);
-  stats.save()
+  // If this liquidation started from a withdrawal state, do not update stats again, we already did so.
+  if (oldState == 'COURTESY_CALL' || oldState == 'ACTIVE') {
+    let stats = getStats()
+    stats.btcInActiveDeposits = stats.btcInActiveDeposits.minus(deposit.lotSizeSatoshis!);
+    stats.save()
+  }
 }
 
 export function handleCourtesyCalledEvent(event: CourtesyCalled): void {
