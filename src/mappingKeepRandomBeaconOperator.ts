@@ -9,8 +9,7 @@ import {RandomBeaconGroup, RelayEntry} from "../generated/schema";
 import {getIDFromEvent} from "./utils";
 import {getOrCreateOperator, getStatus} from "./models";
 import {BIGINT_ZERO} from "./constants";
-import {Address, BigDecimal, BigInt} from "@graphprotocol/graph-ts/index";
-import {toDecimal} from "./decimalUtils";
+import {Address, BigDecimal, BigInt, log} from "@graphprotocol/graph-ts/index";
 
 /**
  * Event: GroupSelectionStarted
@@ -29,7 +28,8 @@ export function handleGroupSelectionStarted(event: GroupSelectionStarted): void 
  * Emitted when submitDkgResult() is called. Complete the group creation process.
  */
 export function handleDkgResultSubmittedEvent(event: DkgResultSubmittedEvent): void {
-  let group = new RandomBeaconGroup(event.params.groupPubKey.toHexString());
+  // Cut off the group pub key, we don't want the ids to to be unreasonably long.
+  let group = new RandomBeaconGroup(event.params.groupPubKey.toHexString().slice(62));
   group.createdAt = event.block.timestamp;
   group.pubKey = event.params.groupPubKey;
   group.rewardPerMember = BIGINT_ZERO;
@@ -37,12 +37,26 @@ export function handleDkgResultSubmittedEvent(event: DkgResultSubmittedEvent): v
   let contract = KeepRandomBeaconOperator.bind(event.address);
   let members = contract.getGroupMembers(event.params.groupPubKey);
   group.members = members.map<string>(address => address.toHexString());
-  group.memberCount = members.length;
+  group.memberCount = members.length; // do we have dups?
+  log.info('handleDkgResultSubmittedEvent, length={}', [group.memberCount as string])
+  log.info('handleDkgResultSubmittedEvent, members={}', [group.members.join(", ")])
   group.save()
 }
 
-// NB: Expiring old groups has no event so far, it seems, is done via selectGroup() which is called by signRelayEntry().
+// Group status:
+// active: Group has a fixed length in blocks, set at init (groupActiveTimeOf) -> no longer given jobs
+// stale: after it is no longer active + relayEntryTimeout (to make sure no active request is served)
+// a pointer is used to mark non-active groups as permanently expired (expireOldGroups, done via selectGroup() which is called by signRelayEntry().)
+// groups can be terminated early in case of misbehaviour
 
+// so we can change the status manually when an entry is requested
+// or, we can handle it via block height.
+
+// functions we may want to catch:
+// - reportRelayEntryTimeout()
+// - reportUnauthorizedSigning()
+// - relayEntryTimeoutPunishment()
+// - which operator reported the result? who failed to report?
 
 /**
  * Note: This event is emitted *before* the event with the same name from the `RandomBeaconService` contract.
