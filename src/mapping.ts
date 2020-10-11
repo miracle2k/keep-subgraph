@@ -301,6 +301,7 @@ export function handleStartedLiquidationEvent(event: StartedLiquidation): void {
   }
 }
 
+
 export function handleCourtesyCalledEvent(event: CourtesyCalled): void {
   let contractAddress = event.params._depositContractAddress;
   let depositLiquidation = DepositLiquidation.load(DPL+contractAddress.toHexString())!;
@@ -332,14 +333,26 @@ export function handleLiquidatedEvent(event: Liquidated): void {
   stats.save()
 }
 
-// XXX: handle increaseRedemptionFee.
-
+/**
+ * Event: RedemptionRequested
+ *
+ * Note that this can be emitted in two ways: By requestRedemption() or increaseRedemptionFee(). The latter
+ * can be emitted multiple times.
+ *
+ * // XXX: handle increaseRedemptionFee better!
+ */
 export function handleRedemptionRequestedEvent(
   event: RedemptionRequested
 ): void {
   let contractAddress = event.params._depositContractAddress;
   let depositRedemption = new DepositRedemption(DPR+contractAddress.toHexString());
   let deposit = Deposit.load(getDepositIdFromAddress(contractAddress))!;
+
+  // This indicates that this is from `increaseRedemptionFee`. Don't do anything for now, but we want to support
+  // this better.
+  if (deposit.currentState == 'AWAITING_WITHDRAWAL_SIGNATURE' || deposit.currentState == 'AWAITING_WITHDRAWAL_PROOF') {
+    return;
+  }
 
   depositRedemption.deposit = deposit.id;
   depositRedemption.redeemerOutputScript = event.params._redeemerOutputScript;
