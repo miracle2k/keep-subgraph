@@ -127,10 +127,15 @@ function getOrCreateDeposit(depositID: string): Deposit {
 }
 
 export function handleCreatedEvent(event: Created): void {
+  let stats = getStats();
+  stats.depositCount += 1;
+  stats.save()
+
   let contractAddress = event.params._depositContractAddress;
   let keepAddress = event.params._keepAddress;
   
   let deposit = getOrCreateDeposit(getDepositIdFromAddress(contractAddress));
+  deposit.index = stats.depositCount;
   deposit.tbtcSystem = event.address;
   deposit.contractAddress = contractAddress;
   deposit.currentState = "AWAITING_SIGNER_SETUP";

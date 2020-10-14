@@ -134,6 +134,10 @@ type StartedLiquidationEvent implements Event @entity {
 # from https://github.com/keep-network/tbtc/blob/master/solidity/contracts/deposit/DepositUtils.sol
 type Deposit @entity {
   id: ID!
+
+  "An incrementing unique number for this deposit, starting at 1."
+  index: Int!
+
   tbtcSystem: Bytes! # address of the system contract
   contractAddress: Bytes!
   tdtToken: TBTCDepositToken!
@@ -437,8 +441,14 @@ type Governance @entity {
   pendingCollateralizationThresholdsChange: GovernanceChange,
 }
 
+"""
+Exposes some global system statistics. Only a single record with the id "current" is available.
+"""
 type StatsRecord @entity {
   id: ID!
+
+  "Total number of deposits ever created, regardless of their current state."
+  depositCount: Int!
 
   availableToBeBonded: BigDecimal!
   totalBonded: BigDecimal!
