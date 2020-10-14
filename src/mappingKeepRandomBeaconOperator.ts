@@ -150,15 +150,15 @@ export function handleRelayEntrySubmitted(event: RelayEntrySubmitted): void {
   entry.save();
   group.save();
 
-  // // Finally, we want to update every operator with this reward.
+  // Finally, we want to update every operator with this reward.
   let memberships = group.memberships;
   for (let i=0; i<memberships.length; i++) {
     let membership = RandomBeaconGroupMembership.load(memberships[i])!;
 
     //  An operator can appear multiple times in a group, and will receive a reward multiple times!
     let realReward = rewardForThisEntry.times(BigInt.fromI32(membership.count));
-
     membership.reward = membership.reward.plus(realReward);
+    membership.save()
 
     let operator = getOrCreateOperator(Address.fromString(membership.operator));
     operator.totalETHRewards = operator.totalETHRewards.plus(realReward);
