@@ -3510,4 +3510,13 @@ export class RandomBeaconGroupMembership extends Entity {
   set reward(value: BigInt) {
     this.set("reward", Value.fromBigInt(value));
   }
+
+  get groupCreatedAt(): BigInt {
+    let value = this.get("groupCreatedAt");
+    return value.toBigInt();
+  }
+
+  set groupCreatedAt(value: BigInt) {
+    this.set("groupCreatedAt", Value.fromBigInt(value));
+  }
 }

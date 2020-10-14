@@ -516,4 +516,7 @@ type RandomBeaconGroupMembership @entity {
 
   "ETH reward amount (in wei) earned by this operator through membership in this group."
   reward: BigInt!
+
+  # These are denormalized fields from the group & operator, to allow sorting memberships by these fields.
+  groupCreatedAt: BigInt!
 }

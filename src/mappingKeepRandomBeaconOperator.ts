@@ -69,6 +69,7 @@ export function handleDkgResultSubmittedEvent(event: DkgResultSubmittedEvent): v
     membership.operator = memberAddress;
     membership.count = memberCounts.get(memberAddress)!;
     membership.reward = BIGINT_ZERO;
+    membership.groupCreatedAt = group.createdAt;
     membership.save()
 
     memberships.push(membership.id);
