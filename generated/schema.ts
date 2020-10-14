@@ -1024,6 +1024,15 @@ export class Deposit extends Entity {
     this.set("id", Value.fromString(value));
   }
 
+  get index(): i32 {
+    let value = this.get("index");
+    return value.toI32();
+  }
+
+  set index(value: i32) {
+    this.set("index", Value.fromI32(value));
+  }
+
   get tbtcSystem(): Bytes {
     let value = this.get("tbtcSystem");
     return value.toBytes();
@@ -1972,13 +1981,13 @@ export class Operator extends Entity {
     this.set("locks", Value.fromStringArray(value));
   }
 
-  get randomBeaconGroups(): Array<string> {
-    let value = this.get("randomBeaconGroups");
+  get beaconGroupMemberships(): Array<string> {
+    let value = this.get("beaconGroupMemberships");
     return value.toStringArray();
   }
 
-  set randomBeaconGroups(value: Array<string>) {
-    this.set("randomBeaconGroups", Value.fromStringArray(value));
+  set beaconGroupMemberships(value: Array<string>) {
+    this.set("beaconGroupMemberships", Value.fromStringArray(value));
   }
 
   get owner(): Bytes | null {
@@ -3107,6 +3116,15 @@ export class StatsRecord extends Entity {
     this.set("id", Value.fromString(value));
   }
 
+  get depositCount(): i32 {
+    let value = this.get("depositCount");
+    return value.toI32();
+  }
+
+  set depositCount(value: i32) {
+    this.set("depositCount", Value.fromI32(value));
+  }
+
   get availableToBeBonded(): BigDecimal {
     let value = this.get("availableToBeBonded");
     return value.toBigDecimal();
@@ -3249,22 +3267,31 @@ export class RandomBeaconGroup extends Entity {
     this.set("createdAt", Value.fromBigInt(value));
   }
 
-  get members(): Array<string> {
-    let value = this.get("members");
+  get memberships(): Array<string> {
+    let value = this.get("memberships");
     return value.toStringArray();
   }
 
-  set members(value: Array<string>) {
-    this.set("members", Value.fromStringArray(value));
+  set memberships(value: Array<string>) {
+    this.set("memberships", Value.fromStringArray(value));
   }
 
-  get memberCount(): i32 {
-    let value = this.get("memberCount");
+  get size(): i32 {
+    let value = this.get("size");
     return value.toI32();
   }
 
-  set memberCount(value: i32) {
-    this.set("memberCount", Value.fromI32(value));
+  set size(value: i32) {
+    this.set("size", Value.fromI32(value));
+  }
+
+  get uniqueMemberCount(): i32 {
+    let value = this.get("uniqueMemberCount");
+    return value.toI32();
+  }
+
+  set uniqueMemberCount(value: i32) {
+    this.set("uniqueMemberCount", Value.fromI32(value));
   }
 
   get rewardPerMember(): BigInt {
@@ -3409,5 +3436,78 @@ export class RelayEntry extends Entity {
     } else {
       this.set("rewardPerMember", Value.fromBigInt(value as BigInt));
     }
+  }
+}
+
+export class RandomBeaconGroupMembership extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(
+      id !== null,
+      "Cannot save RandomBeaconGroupMembership entity without an ID"
+    );
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save RandomBeaconGroupMembership entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("RandomBeaconGroupMembership", id.toString(), this);
+  }
+
+  static load(id: string): RandomBeaconGroupMembership | null {
+    return store.get(
+      "RandomBeaconGroupMembership",
+      id
+    ) as RandomBeaconGroupMembership | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get group(): string {
+    let value = this.get("group");
+    return value.toString();
+  }
+
+  set group(value: string) {
+    this.set("group", Value.fromString(value));
+  }
+
+  get operator(): string {
+    let value = this.get("operator");
+    return value.toString();
+  }
+
+  set operator(value: string) {
+    this.set("operator", Value.fromString(value));
+  }
+
+  get count(): i32 {
+    let value = this.get("count");
+    return value.toI32();
+  }
+
+  set count(value: i32) {
+    this.set("count", Value.fromI32(value));
+  }
+
+  get reward(): BigInt {
+    let value = this.get("reward");
+    return value.toBigInt();
+  }
+
+  set reward(value: BigInt) {
+    this.set("reward", Value.fromBigInt(value));
   }
 }
