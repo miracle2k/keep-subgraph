@@ -5,10 +5,11 @@ import {
   RelayEntryRequested,
   RelayEntrySubmitted
 } from "../generated/KeepRandomBeaconOperator/KeepRandomBeaconOperator";
-import {RandomBeaconGroup, RelayEntry} from "../generated/schema";
+import {RandomBeaconGroup, RandomBeaconGroupMembership, RelayEntry} from "../generated/schema";
 import {getIDFromEvent} from "./utils";
 import {getOrCreateOperator, getStatus} from "./models";
 import {BIGINT_ZERO} from "./constants";
+import {getBeaconGroupId} from "./modelsRandomBeacon";
 import {Address, BigDecimal, BigInt, log} from "@graphprotocol/graph-ts/index";
 
 /**
@@ -21,25 +22,61 @@ export function handleGroupSelectionStarted(event: GroupSelectionStarted): void 
     // TODO: A single group selection can be in progress, we may indicate this somewhere.
 }
 
-
 /**
  * Event: DkgResultSubmittedEvent
  *
  * Emitted when submitDkgResult() is called. Complete the group creation process.
  */
-export function handleDkgResultSubmittedEvent(event: DkgResultSubmittedEvent): void {
-  // Cut off the group pub key, we don't want the ids to to be unreasonably long.
-  let group = new RandomBeaconGroup(event.params.groupPubKey.toHexString().slice(62));
+export function handleDkgResultSubmittedEvent(event: DkgResultSubmittedEvent): void {  
+  let group = new RandomBeaconGroup(getBeaconGroupId(event.params.groupPubKey));
   group.createdAt = event.block.timestamp;
   group.pubKey = event.params.groupPubKey;
+  group.memberships = [];
   group.rewardPerMember = BIGINT_ZERO;
+
+  // Get the operators assigned to this group.
+  // NB: There are always 64 members, and a single can be assigned multiple times to a group!
+  // While we can absolutely can store duplicate operators in a Operator[] array in `TheGraph`, querying
+  // such an array will only return each operator once. Likely related to their SQL query for table-relationships.
+  // So, in order to expose the information how often one operator is part of the group, we either have to do
+  // a simple string array (rather than an array of Operator references), or we use a `GroupMembership` entity.
+  // I prefer the latter, since it means less work for querying clients.
 
   let contract = KeepRandomBeaconOperator.bind(event.address);
   let members = contract.getGroupMembers(event.params.groupPubKey);
-  group.members = members.map<string>(address => address.toHexString());
-  group.memberCount = members.length; // do we have dups?
-  log.info('handleDkgResultSubmittedEvent, length={}', [group.memberCount as string])
-  log.info('handleDkgResultSubmittedEvent, members={}', [group.members.join(", ")])
+
+  // Count how often each member occurs
+  // @ts-ignore: Link to assemblyscript library for i32.
+  let memberCounts: Map<string, i32> = new Map();
+  let uniqueAddresses: string[] = []; // Map does not allow us to list entries?
+  for (let i=0; i<members.length; i++) {
+    let memberAddress = members[i].toHexString();
+    if (!memberCounts.has(memberAddress)) {
+      memberCounts.set(memberAddress, 1)
+      uniqueAddresses.push(memberAddress);
+    } else {
+      memberCounts.set(memberAddress, memberCounts.get(memberAddress)! + 1)
+    }
+  }
+
+  // Create a group membership object for each member
+  let memberships = group.memberships;
+  for (let i=0; i<uniqueAddresses.length; i++) {
+    let memberAddress = uniqueAddresses[i];
+
+    let membership = new RandomBeaconGroupMembership('rbgm_' + getBeaconGroupId(group.pubKey) + '_' + memberAddress);
+    membership.group = group.id;
+    membership.operator = memberAddress;
+    membership.count = memberCounts.get(memberAddress)!;
+    membership.reward = BIGINT_ZERO;
+    membership.save()
+
+    memberships.push(membership.id);
+  }
+  group.memberships = memberships;
+
+  group.size = members.length;
+  group.uniqueMemberCount = uniqueAddresses.length;
   group.save()
 }
 
@@ -69,7 +106,7 @@ export function handleRelayEntryRequested(event: RelayEntryRequested): void {
   let entry = new RelayEntry(getIDFromEvent(event));
   entry.requestedAt = event.block.timestamp;
   entry.requestedBy = event.transaction.from;
-  entry.group = event.params.groupPublicKey.toHexString();
+  entry.group = getBeaconGroupId(event.params.groupPublicKey);
   entry.save();
 
   let status = getStatus();
@@ -105,17 +142,28 @@ export function handleRelayEntrySubmitted(event: RelayEntrySubmitted): void {
   let operatorContract = KeepRandomBeaconOperator.bind(event.address);
   let rewardPerMember = operatorContract.getGroupMemberRewards(group.pubKey);
 
-  entry.rewardPerMember = rewardPerMember.minus(group.rewardPerMember);
+  // We figure out the reward for this entry by doing: current reward total - last known reward total.
+  let rewardForThisEntry = rewardPerMember.minus(group.rewardPerMember);
+
+  entry.rewardPerMember = rewardForThisEntry;
   group.rewardPerMember = rewardPerMember;
   entry.save();
   group.save();
 
-  // Finally, we want to update every operator with this reward.
-  let members = group.members;
-  for (let i=0; i<members.length; i++) {
-    let operator = getOrCreateOperator(Address.fromString(members[i]!));
-    operator.totalETHRewards = operator.totalETHRewards.plus(entry.rewardPerMember!);
-    operator.totalBeaconRewards = operator.totalBeaconRewards.plus(entry.rewardPerMember!);
+  // // Finally, we want to update every operator with this reward.
+  let memberships = group.memberships;
+  for (let i=0; i<memberships.length; i++) {
+    let membership = RandomBeaconGroupMembership.load(memberships[i])!;
+
+    //  An operator can appear multiple times in a group, and will receive a reward multiple times!
+    let realReward = rewardForThisEntry.times(BigInt.fromI32(membership.count));
+
+    membership.reward = membership.reward.plus(realReward);
+
+    let operator = getOrCreateOperator(Address.fromString(membership.operator));
+    operator.totalETHRewards = operator.totalETHRewards.plus(realReward);
+    operator.totalBeaconRewards = operator.totalBeaconRewards.plus(realReward);
     operator.save()
+
   }
 }

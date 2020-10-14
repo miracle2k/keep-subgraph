@@ -283,7 +283,7 @@ type Operator @entity {
   keeps: [BondedECDSAKeep!] @derivedFrom(field: "members")
   bonds: [Bond!]! @derivedFrom(field: "operator")
   locks: [Lock!]! @derivedFrom(field: "operator")
-  randomBeaconGroups: [RandomBeaconGroup!]! @derivedFrom(field: "members")
+  beaconGroupMemberships: [RandomBeaconGroupMembership!]! @derivedFrom(field: "operator")
 
   # The other "staker" roles.
   owner: Bytes
@@ -463,10 +463,19 @@ type StatusRecord @entity {
 type RandomBeaconGroup @entity {
   id: ID!
   pubKey: Bytes!
-
   createdAt: BigInt!
-  members: [Operator!]!
-  memberCount: Int!
+
+  # Note: This field cannot use @derivedFrom(). It seems that such fields are not accessible from within AssemblyScript
+  # themselves (crash with an error ala "not an array" + Value.kind=STRING). However, we have to be able to iterate
+  # over group membership records during processing.
+  "A membership record for each unique member in the group."
+  memberships: [RandomBeaconGroupMembership!]!
+
+  "The total number of slots. Since operators may appear multiple times, this is distinct from the unique number count of the group."
+  size: Int!
+  "How many unique operators are in this group - the number of membership records."
+  uniqueMemberCount: Int!
+
   rewardPerMember: BigInt!
 
   relayEntries: [RelayEntry!]! @derivedFrom(field: "group")
@@ -482,4 +491,19 @@ type RelayEntry @entity {
   value: BigInt
   generatedAt: BigInt
   rewardPerMember: BigInt
+}
+
+"""
+Represents the membership of an operator in a beacon group.
+"""
+type RandomBeaconGroupMembership @entity {
+  id: ID!
+  group: RandomBeaconGroup!
+  operator: Operator!
+
+  "The same operator can fill multiple membership slots within a group."
+  count: Int!
+
+  "ETH reward amount (in wei) earned by this operator through membership in this group."
+  reward: BigInt!
 }
