@@ -19,6 +19,13 @@ import { store } from "@graphprotocol/graph-ts";
 import {BIGDECIMAL_ZERO} from "./constants";
 
 
+/**
+ * Event: OperatorStaked.
+ *
+ * Always emitted together with `StakeDelegated`.
+ *
+ * This is really where a owner/operator/authorizer/beneficiary group (collectively called a "Staker") is created.
+ */
 export function handleOperatorStaked(event: OperatorStaked): void {
   let member = getOrCreateOperator(event.params.operator);
   member.stakedAmount = toDecimal(event.params.value);
@@ -36,6 +43,17 @@ export function handleOperatorStaked(event: OperatorStaked): void {
   // tokenStaking.undelegationPeriod = contract.undelegationPeriod();
   // tokenStaking.totalStaker = tokenStaking.totalStaker.plus(BIGINT_ONE);
   // tokenStaking.totalTokenStaking = toDecimal(mainContract.balanceOf(event.address));
+}
+
+/**
+ * Event: StakeDelegated.
+ *
+ * Only ever raised together with OperatorStaked, we might only need one of them.
+ */
+export function handleStakeDelegated(event: StakeDelegated): void {
+  // let member = getOrCreateOperator(event.params.operator);
+  // member.stakingState = "DELEGATED";
+  // member.save()
 }
 
 export function handleStakeLocked(event: StakeLocked): void {
@@ -110,13 +128,6 @@ export function handleUndelegated(event: Undelegated): void {
   // tokenStaking.save()
 }
 
-
-// Only raised together with OperatorStaked, we might only need one of them.
-export function handleStakeDelegated(event: StakeDelegated): void {
-  // let member = getOrCreateOperator(event.params.operator);
-  // member.stakingState = "DELEGATED";
-  // member.save()
-}
 
 export function handleStakeOwnershipTransferred(
     event: StakeOwnershipTransferred
