@@ -56,6 +56,10 @@ export function handleStakeDelegated(event: StakeDelegated): void {
   // member.save()
 }
 
+/**
+ * Certain authorized contracts can place a hold on the stake (for example, when the operator becomes part of a
+ * signing group, then their full stake will be locked. We keep track of each lock placed on the stake.
+ */
 export function handleStakeLocked(event: StakeLocked): void {
   let lock = new Lock(`lock-${event.params.operator}-${event.params.lockCreator}`);
   lock.until = event.params.until;
@@ -64,6 +68,9 @@ export function handleStakeLocked(event: StakeLocked): void {
   lock.save()
 }
 
+/**
+ * Event: LockReleased
+ */
 export function handleLockReleased(event: LockReleased): void {
   store.remove("Lock", `lock-${event.params.operator}-${event.params.lockCreator}`)
 }
@@ -82,7 +89,12 @@ export function handleRecoveredStake(event: RecoveredStake): void{
   // tokenStaking.save()
 }
 
-// Apparently releaseExpiredLock() needs to be called manually after until expires
+/**
+ * Apparently releaseExpiredLock() needs to be called manually after a lock's "until" expires (or, may
+ * only necessary in same cases, not sure).
+ *
+ * This will find all expired locks, and then `LockRelease` will be emitted for all of them.
+ */
 export function handleExpiredLockReleased(event: ExpiredLockReleased): void {
   // let member = getOrCreateOperator(event.params.operator);
   // member.stakingState = "EXPIRED_LOCK_RELEASED";
