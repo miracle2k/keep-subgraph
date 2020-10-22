@@ -6,8 +6,10 @@
     "view:local": "cd graphiql && httpserver",
     "codegen": "graph codegen",
     "build": "graph build",
-    "deploy": "graph deploy miracle2k/all-the-keeps --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
+    "deploy": "yarn run deploy:ropsten && yarn run deploy:main",
+    "deploy:main": "graph deploy miracle2k/all-the-keeps --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
     "deploy:ropsten": "graph deploy miracle2k/all-the-keeps-ropsten --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ subgraph.ropsten.yaml",
+    "deploy:staging": "graph deploy miracle2k/keep-network --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
     "deploy:local": "graph deploy miracle2k/keep-network --ipfs http://localhost:5001 --node http://127.0.0.1:8020"
   },
   "devDependencies": {
