@@ -270,6 +270,29 @@ dataSources:
           handler: handleRelayEntryRequested
       file: ./src/mappingKeepRandomBeaconService.ts
 
+
+  - kind: ethereum/contract
+    name: MedianETHBTC
+    network: mainnet
+    source:
+      address: "0x81a679f98b63b3ddf2f17cb5619f4d6775b3c5ed"
+      abi: MedianETHBTC
+      startBlock: 10941427
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - PriceFeed
+      abis:
+        - name: MedianETHBTC
+          file: ./abis/MedianETHBTC.json
+      eventHandlers:
+        - event: LogMedianPrice(uint256,uint256)
+          handler: handleLogMedianPrice
+      file: ./src/mappingPriceFeed.ts
+
+
 templates:
   - name: DepositContract
     kind: ethereum/contract

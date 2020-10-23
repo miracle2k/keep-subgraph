@@ -520,3 +520,14 @@ type RandomBeaconGroupMembership @entity {
   # These are denormalized fields from the group & operator, to allow sorting memberships by these fields.
   groupCreatedAt: BigInt!
 }
+
+
+type PriceFeed @entity {
+  id: ID!
+  val: BigInt!
+  age: BigInt!
+
+  transactionHash: Bytes!
+  blockNumber: BigInt!
+  timestamp: BigInt!
+}

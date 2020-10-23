@@ -270,6 +270,8 @@ dataSources:
           handler: handleRelayEntryRequested
       file: ./src/mappingKeepRandomBeaconService.ts
 
+
+
 templates:
   - name: DepositContract
     kind: ethereum/contract

@@ -30,6 +30,10 @@ const mainNetVars = {
   'KeepRandomBeaconService': {
     'address': '0x50510E691c90EA098e3fdd23C311731BF394aAFd',
     'startBlock': '10834104'
+  },
+  "MedianETHBTC": {
+    'address': '0x81a679f98b63b3ddf2f17cb5619f4d6775b3c5ed',
+    'startBlock': '10941427'
   }
 }
 
