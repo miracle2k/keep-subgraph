@@ -1,20 +1,33 @@
-import { BigInt, Address, Bytes } from "@graphprotocol/graph-ts";
-import {
-  StakingContractAuthorized as StakingContractAuthorizedEvent,
-  TokenGrantCreated as TokenGrantCreatedEvent,
-  TokenGrantRevoked as TokenGrantRevokedEvent,
-  TokenGrantStaked as TokenGrantStakedEvent,
-  TokenGrantWithdrawn as TokenGrantWithdrawnEvent,
-  TokenGrant,
-} from "../generated/TokenGrant/TokenGrant";
-import { Grant } from "../generated/schema";
+import { BigInt, Address, Bytes, ethereum } from "@graphprotocol/graph-ts";
+import { Grant, StakingContractAuthorizedEvent, TokenGrantCreatedEvent, TokenGrantRevokedEvent, TokenGrantStakedEvent, TokenGrantWithdrawnEvent } from "../generated/schema";
 import { getStats } from "./models";
+import {
+  StakingContractAuthorized,
+  TokenGrant,
+  TokenGrantCreated,
+  TokenGrantRevoked,
+  TokenGrantStaked,
+  TokenGrantWithdrawn,
+} from "../generated/TokenGrant/TokenGrant";
+import { getIDFromEvent } from "./utils";
+import { completeLogEvent } from "./mapping";
 
 export function handleStakingContractAuthorized(
-  event: StakingContractAuthorizedEvent
-): void {}
+  event: StakingContractAuthorized
+): void {
+  let logEvent = new StakingContractAuthorizedEvent(getIDFromEvent(event));
+  logEvent.grantManager = event.params.grantManager;
+  logEvent.stakingContract = event.params.stakingContract;
+  completeLogEvent(logEvent, event);
+  logEvent.save();
+}
 
-export function handleTokenGrantCreated(event: TokenGrantCreatedEvent): void {
+export function handleTokenGrantCreated(event: TokenGrantCreated): void {
+  let logEvent = new TokenGrantCreatedEvent(getIDFromEvent(event));
+  logEvent.grantID = event.params.id;
+  completeLogEvent(logEvent, event);
+  logEvent.save();
+
   let grant = createOrUpdateGrant(
     event.address,
     event.params.id,
@@ -26,10 +39,15 @@ export function handleTokenGrantCreated(event: TokenGrantCreatedEvent): void {
   let stats = getStats();
   stats.totalGrantCount += 1;
   stats.totalGrantIssued = stats.totalGrantIssued.plus(grant.amount);
-  stats.save()
+  stats.save();
 }
 
-export function handleTokenGrantRevoked(event: TokenGrantRevokedEvent): void {
+export function handleTokenGrantRevoked(event: TokenGrantRevoked): void {
+  let logEvent = new TokenGrantRevokedEvent(getIDFromEvent(event));
+  logEvent.grantID = event.params.id;
+  completeLogEvent(logEvent, event);
+  logEvent.save();
+
   createOrUpdateGrant(
     event.address,
     event.params.id,
@@ -39,7 +57,14 @@ export function handleTokenGrantRevoked(event: TokenGrantRevokedEvent): void {
   );
 }
 
-export function handleTokenGrantStaked(event: TokenGrantStakedEvent): void {
+export function handleTokenGrantStaked(event: TokenGrantStaked): void {
+  let logEvent = new TokenGrantStakedEvent(getIDFromEvent(event));
+  logEvent.amount = event.params.amount;
+  logEvent.grantID = event.params.grantId;
+  logEvent.operator = event.params.operator;
+  completeLogEvent(logEvent, event);
+  logEvent.save();
+
   createOrUpdateGrant(
     event.address,
     event.params.grantId,
@@ -49,9 +74,13 @@ export function handleTokenGrantStaked(event: TokenGrantStakedEvent): void {
   );
 }
 
-export function handleTokenGrantWithdrawn(
-  event: TokenGrantWithdrawnEvent
-): void {
+export function handleTokenGrantWithdrawn(event: TokenGrantWithdrawn): void {
+  let logEvent = new TokenGrantWithdrawnEvent(getIDFromEvent(event));
+  logEvent.amount = event.params.amount;
+  logEvent.grantID = event.params.grantId;
+  completeLogEvent(logEvent, event);
+  logEvent.save();
+
   createOrUpdateGrant(
     event.address,
     event.params.grantId,

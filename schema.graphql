@@ -544,3 +544,57 @@ type Grant @entity {
   transactionHash: Bytes!
   timestamp: BigInt
 }
+
+type StakingContractAuthorizedEvent implements Event @entity {
+  id: ID!
+  submitter: Bytes!
+  transactionHash: String!
+  timestamp: BigInt!
+  deposit: Deposit
+
+  grantManager: Bytes!
+  stakingContract: Bytes!
+}
+
+type TokenGrantCreatedEvent implements Event @entity {
+  id: ID!
+  submitter: Bytes!
+  transactionHash: String!
+  timestamp: BigInt!
+  deposit: Deposit
+
+  grantID: BigInt!
+}
+
+type TokenGrantWithdrawnEvent implements Event @entity {
+  id: ID!
+  submitter: Bytes!
+  transactionHash: String!
+  timestamp: BigInt!
+  deposit: Deposit
+
+  grantID: BigInt!
+  amount: BigInt!
+}
+
+type TokenGrantStakedEvent implements Event @entity {
+  id: ID!
+  submitter: Bytes!
+  transactionHash: String!
+  timestamp: BigInt!
+  deposit: Deposit
+
+  grantID: BigInt!
+  amount: BigInt!
+  operator: Bytes!
+}
+
+type TokenGrantRevokedEvent implements Event @entity {
+  id: ID!
+  submitter: Bytes!
+  transactionHash: String!
+  timestamp: BigInt!
+  deposit: Deposit
+
+  grantID: BigInt!
+}
