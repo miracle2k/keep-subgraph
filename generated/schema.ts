@@ -44,7 +44,7 @@ export class TBTCDepositToken extends Entity {
 
   get deposit(): string | null {
     let value = this.get("deposit");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toString();
@@ -155,7 +155,7 @@ export class CreatedEvent extends Entity {
 
   get deposit(): string | null {
     let value = this.get("deposit");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toString();
@@ -230,7 +230,7 @@ export class FundedEvent extends Entity {
 
   get deposit(): string | null {
     let value = this.get("deposit");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toString();
@@ -320,7 +320,7 @@ export class RegisteredPubKeyEvent extends Entity {
 
   get deposit(): string | null {
     let value = this.get("deposit");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toString();
@@ -413,7 +413,7 @@ export class RedeemedEvent extends Entity {
 
   get deposit(): string | null {
     let value = this.get("deposit");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toString();
@@ -503,7 +503,7 @@ export class GotRedemptionSignatureEvent extends Entity {
 
   get deposit(): string | null {
     let value = this.get("deposit");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toString();
@@ -584,7 +584,7 @@ export class RedemptionRequestedEvent extends Entity {
 
   get deposit(): string | null {
     let value = this.get("deposit");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toString();
@@ -713,7 +713,7 @@ export class SetupFailedEvent extends Entity {
 
   get deposit(): string | null {
     let value = this.get("deposit");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toString();
@@ -730,7 +730,7 @@ export class SetupFailedEvent extends Entity {
 
   get reason(): string | null {
     let value = this.get("reason");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toString();
@@ -805,7 +805,7 @@ export class LiquidatedEvent extends Entity {
 
   get deposit(): string | null {
     let value = this.get("deposit");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toString();
@@ -880,7 +880,7 @@ export class CourtesyCalledEvent extends Entity {
 
   get deposit(): string | null {
     let value = this.get("deposit");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toString();
@@ -961,7 +961,7 @@ export class StartedLiquidationEvent extends Entity {
 
   get deposit(): string | null {
     let value = this.get("deposit");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toString();
@@ -978,7 +978,7 @@ export class StartedLiquidationEvent extends Entity {
 
   get cause(): string | null {
     let value = this.get("cause");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toString();
@@ -1062,7 +1062,7 @@ export class Deposit extends Entity {
 
   get currentState(): string | null {
     let value = this.get("currentState");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toString();
@@ -1097,7 +1097,7 @@ export class Deposit extends Entity {
 
   get redemptionStartedAt(): BigInt | null {
     let value = this.get("redemptionStartedAt");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toBigInt();
@@ -1114,7 +1114,7 @@ export class Deposit extends Entity {
 
   get currentStateTimesOutAt(): BigInt | null {
     let value = this.get("currentStateTimesOutAt");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toBigInt();
@@ -1140,7 +1140,7 @@ export class Deposit extends Entity {
 
   get failureReason(): string | null {
     let value = this.get("failureReason");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toString();
@@ -1166,7 +1166,7 @@ export class Deposit extends Entity {
 
   get keepAddress(): Bytes | null {
     let value = this.get("keepAddress");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toBytes();
@@ -1183,7 +1183,7 @@ export class Deposit extends Entity {
 
   get lotSizeSatoshis(): BigInt | null {
     let value = this.get("lotSizeSatoshis");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toBigInt();
@@ -1230,7 +1230,7 @@ export class Deposit extends Entity {
 
   get signerFee(): BigInt | null {
     let value = this.get("signerFee");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toBigInt();
@@ -1247,7 +1247,7 @@ export class Deposit extends Entity {
 
   get utxoSize(): BigInt | null {
     let value = this.get("utxoSize");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toBigInt();
@@ -1264,7 +1264,7 @@ export class Deposit extends Entity {
 
   get endOfTerm(): BigInt | null {
     let value = this.get("endOfTerm");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toBigInt();
@@ -1281,7 +1281,7 @@ export class Deposit extends Entity {
 
   get bondedECDSAKeep(): string | null {
     let value = this.get("bondedECDSAKeep");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toString();
@@ -1298,7 +1298,7 @@ export class Deposit extends Entity {
 
   get depositLiquidation(): string | null {
     let value = this.get("depositLiquidation");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toString();
@@ -1315,7 +1315,7 @@ export class Deposit extends Entity {
 
   get depositRedemption(): string | null {
     let value = this.get("depositRedemption");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toString();
@@ -1332,7 +1332,7 @@ export class Deposit extends Entity {
 
   get depositSetup(): string | null {
     let value = this.get("depositSetup");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toString();
@@ -1437,7 +1437,7 @@ export class DepositSetup extends Entity {
 
   get failureReason(): string | null {
     let value = this.get("failureReason");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toString();
@@ -1454,7 +1454,7 @@ export class DepositSetup extends Entity {
 
   get fundingProofTimerStartedAt(): BigInt | null {
     let value = this.get("fundingProofTimerStartedAt");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toBigInt();
@@ -1511,7 +1511,7 @@ export class DepositLiquidation extends Entity {
 
   get initiateTxhash(): Bytes | null {
     let value = this.get("initiateTxhash");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toBytes();
@@ -1528,7 +1528,7 @@ export class DepositLiquidation extends Entity {
 
   get courtesyCallTxhash(): Bytes | null {
     let value = this.get("courtesyCallTxhash");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toBytes();
@@ -1545,7 +1545,7 @@ export class DepositLiquidation extends Entity {
 
   get liquidationInitiated(): BigInt | null {
     let value = this.get("liquidationInitiated");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toBigInt();
@@ -1562,7 +1562,7 @@ export class DepositLiquidation extends Entity {
 
   get courtesyCallInitiated(): BigInt | null {
     let value = this.get("courtesyCallInitiated");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toBigInt();
@@ -1588,7 +1588,7 @@ export class DepositLiquidation extends Entity {
 
   get liquidatedAt(): BigInt | null {
     let value = this.get("liquidatedAt");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toBigInt();
@@ -1605,7 +1605,7 @@ export class DepositLiquidation extends Entity {
 
   get liquidationInitiator(): Bytes | null {
     let value = this.get("liquidationInitiator");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toBytes();
@@ -1622,7 +1622,7 @@ export class DepositLiquidation extends Entity {
 
   get cause(): string | null {
     let value = this.get("cause");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toString();
@@ -1679,7 +1679,7 @@ export class DepositRedemption extends Entity {
 
   get redeemerOutputScript(): Bytes | null {
     let value = this.get("redeemerOutputScript");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toBytes();
@@ -1696,7 +1696,7 @@ export class DepositRedemption extends Entity {
 
   get requestedFee(): BigInt | null {
     let value = this.get("requestedFee");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toBigInt();
@@ -1713,7 +1713,7 @@ export class DepositRedemption extends Entity {
 
   get latestRedemptionFee(): BigInt | null {
     let value = this.get("latestRedemptionFee");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toBigInt();
@@ -1730,7 +1730,7 @@ export class DepositRedemption extends Entity {
 
   get withdrawalRequestAt(): BigInt | null {
     let value = this.get("withdrawalRequestAt");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toBigInt();
@@ -1747,7 +1747,7 @@ export class DepositRedemption extends Entity {
 
   get redeemedAt(): BigInt | null {
     let value = this.get("redeemedAt");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toBigInt();
@@ -1764,7 +1764,7 @@ export class DepositRedemption extends Entity {
 
   get lastRequestedDigest(): Bytes | null {
     let value = this.get("lastRequestedDigest");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toBytes();
@@ -1781,7 +1781,7 @@ export class DepositRedemption extends Entity {
 
   get outpoint(): Bytes | null {
     let value = this.get("outpoint");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toBytes();
@@ -1798,7 +1798,7 @@ export class DepositRedemption extends Entity {
 
   get utxoSize(): BigInt | null {
     let value = this.get("utxoSize");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toBigInt();
@@ -1815,7 +1815,7 @@ export class DepositRedemption extends Entity {
 
   get txid(): Bytes | null {
     let value = this.get("txid");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toBytes();
@@ -1948,7 +1948,7 @@ export class Operator extends Entity {
 
   get keeps(): Array<string> | null {
     let value = this.get("keeps");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toStringArray();
@@ -1992,7 +1992,7 @@ export class Operator extends Entity {
 
   get owner(): Bytes | null {
     let value = this.get("owner");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toBytes();
@@ -2009,7 +2009,7 @@ export class Operator extends Entity {
 
   get operator(): Bytes | null {
     let value = this.get("operator");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toBytes();
@@ -2026,7 +2026,7 @@ export class Operator extends Entity {
 
   get beneficiary(): Bytes | null {
     let value = this.get("beneficiary");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toBytes();
@@ -2043,7 +2043,7 @@ export class Operator extends Entity {
 
   get authorizer(): Bytes | null {
     let value = this.get("authorizer");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toBytes();
@@ -2360,7 +2360,7 @@ export class BondedECDSAKeep extends Entity {
 
   get totalBondAmount(): BigInt | null {
     let value = this.get("totalBondAmount");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toBigInt();
@@ -2377,7 +2377,7 @@ export class BondedECDSAKeep extends Entity {
 
   get publicKey(): Bytes | null {
     let value = this.get("publicKey");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toBytes();
@@ -2394,7 +2394,7 @@ export class BondedECDSAKeep extends Entity {
 
   get status(): string | null {
     let value = this.get("status");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toString();
@@ -2514,7 +2514,7 @@ export class GovernanceLogEntry extends Entity {
 
   get change(): string | null {
     let value = this.get("change");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toString();
@@ -2607,7 +2607,7 @@ export class GovernanceChange extends Entity {
 
   get finalizeBlock(): BigInt | null {
     let value = this.get("finalizeBlock");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toBigInt();
@@ -2624,7 +2624,7 @@ export class GovernanceChange extends Entity {
 
   get finalizeTransactionHash(): string | null {
     let value = this.get("finalizeTransactionHash");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toString();
@@ -2641,7 +2641,7 @@ export class GovernanceChange extends Entity {
 
   get newLotSizes(): Array<BigInt> | null {
     let value = this.get("newLotSizes");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toBigIntArray();
@@ -2667,7 +2667,7 @@ export class GovernanceChange extends Entity {
 
   get newFactorySelector(): Bytes | null {
     let value = this.get("newFactorySelector");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toBytes();
@@ -2684,7 +2684,7 @@ export class GovernanceChange extends Entity {
 
   get newFullyBackedFactory(): Bytes | null {
     let value = this.get("newFullyBackedFactory");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toBytes();
@@ -2701,7 +2701,7 @@ export class GovernanceChange extends Entity {
 
   get newKeepStakedFactory(): Bytes | null {
     let value = this.get("newKeepStakedFactory");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toBytes();
@@ -2718,7 +2718,7 @@ export class GovernanceChange extends Entity {
 
   get newPriceFeed(): Bytes | null {
     let value = this.get("newPriceFeed");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toBytes();
@@ -2765,7 +2765,7 @@ export class GovernanceChange extends Entity {
 
   get prevLotSizes(): Array<BigInt> | null {
     let value = this.get("prevLotSizes");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toBigIntArray();
@@ -2791,7 +2791,7 @@ export class GovernanceChange extends Entity {
 
   get prevFactorySelector(): Bytes | null {
     let value = this.get("prevFactorySelector");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toBytes();
@@ -2808,7 +2808,7 @@ export class GovernanceChange extends Entity {
 
   get prevFullyBackedFactory(): Bytes | null {
     let value = this.get("prevFullyBackedFactory");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toBytes();
@@ -2825,7 +2825,7 @@ export class GovernanceChange extends Entity {
 
   get prevKeepStakedFactory(): Bytes | null {
     let value = this.get("prevKeepStakedFactory");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toBytes();
@@ -2921,7 +2921,7 @@ export class Governance extends Entity {
 
   get pendingSignerFeeDivisorChange(): string | null {
     let value = this.get("pendingSignerFeeDivisorChange");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toString();
@@ -2950,7 +2950,7 @@ export class Governance extends Entity {
 
   get pendingLotSizeChange(): string | null {
     let value = this.get("pendingLotSizeChange");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toString();
@@ -2994,7 +2994,7 @@ export class Governance extends Entity {
 
   get pendingFactoriesChange(): string | null {
     let value = this.get("pendingFactoriesChange");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toString();
@@ -3020,7 +3020,7 @@ export class Governance extends Entity {
 
   get pendingPriceFeedAddition(): string | null {
     let value = this.get("pendingPriceFeedAddition");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toString();
@@ -3067,7 +3067,7 @@ export class Governance extends Entity {
 
   get pendingCollateralizationThresholdsChange(): string | null {
     let value = this.get("pendingCollateralizationThresholdsChange");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toString();
@@ -3169,6 +3169,24 @@ export class StatsRecord extends Entity {
   set btcInActiveDeposits(value: BigInt) {
     this.set("btcInActiveDeposits", Value.fromBigInt(value));
   }
+
+  get totalGrantCount(): i32 {
+    let value = this.get("totalGrantCount");
+    return value.toI32();
+  }
+
+  set totalGrantCount(value: i32) {
+    this.set("totalGrantCount", Value.fromI32(value));
+  }
+
+  get totalGrantIssued(): BigInt {
+    let value = this.get("totalGrantIssued");
+    return value.toBigInt();
+  }
+
+  set totalGrantIssued(value: BigInt) {
+    this.set("totalGrantIssued", Value.fromBigInt(value));
+  }
 }
 
 export class StatusRecord extends Entity {
@@ -3203,7 +3221,7 @@ export class StatusRecord extends Entity {
 
   get currentRequestedRelayEntry(): string | null {
     let value = this.get("currentRequestedRelayEntry");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toString();
@@ -3372,7 +3390,7 @@ export class RelayEntry extends Entity {
 
   get requestId(): BigInt | null {
     let value = this.get("requestId");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toBigInt();
@@ -3389,7 +3407,7 @@ export class RelayEntry extends Entity {
 
   get value(): BigInt | null {
     let value = this.get("value");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toBigInt();
@@ -3406,7 +3424,7 @@ export class RelayEntry extends Entity {
 
   get generatedAt(): BigInt | null {
     let value = this.get("generatedAt");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toBigInt();
@@ -3423,7 +3441,7 @@ export class RelayEntry extends Entity {
 
   get rewardPerMember(): BigInt | null {
     let value = this.get("rewardPerMember");
-    if (value === null) {
+    if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toBigInt();
@@ -3518,5 +3536,179 @@ export class RandomBeaconGroupMembership extends Entity {
 
   set groupCreatedAt(value: BigInt) {
     this.set("groupCreatedAt", Value.fromBigInt(value));
+  }
+}
+
+export class Grant extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id !== null, "Cannot save Grant entity without an ID");
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save Grant entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("Grant", id.toString(), this);
+  }
+
+  static load(id: string): Grant | null {
+    return store.get("Grant", id) as Grant | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get grantManager(): Bytes {
+    let value = this.get("grantManager");
+    return value.toBytes();
+  }
+
+  set grantManager(value: Bytes) {
+    this.set("grantManager", Value.fromBytes(value));
+  }
+
+  get grantee(): Bytes {
+    let value = this.get("grantee");
+    return value.toBytes();
+  }
+
+  set grantee(value: Bytes) {
+    this.set("grantee", Value.fromBytes(value));
+  }
+
+  get revokedAt(): BigInt {
+    let value = this.get("revokedAt");
+    return value.toBigInt();
+  }
+
+  set revokedAt(value: BigInt) {
+    this.set("revokedAt", Value.fromBigInt(value));
+  }
+
+  get revokedAmount(): BigInt {
+    let value = this.get("revokedAmount");
+    return value.toBigInt();
+  }
+
+  set revokedAmount(value: BigInt) {
+    this.set("revokedAmount", Value.fromBigInt(value));
+  }
+
+  get revokedWithdrawn(): BigInt {
+    let value = this.get("revokedWithdrawn");
+    return value.toBigInt();
+  }
+
+  set revokedWithdrawn(value: BigInt) {
+    this.set("revokedWithdrawn", Value.fromBigInt(value));
+  }
+
+  get revocable(): boolean {
+    let value = this.get("revocable");
+    return value.toBoolean();
+  }
+
+  set revocable(value: boolean) {
+    this.set("revocable", Value.fromBoolean(value));
+  }
+
+  get amount(): BigInt {
+    let value = this.get("amount");
+    return value.toBigInt();
+  }
+
+  set amount(value: BigInt) {
+    this.set("amount", Value.fromBigInt(value));
+  }
+
+  get duration(): BigInt {
+    let value = this.get("duration");
+    return value.toBigInt();
+  }
+
+  set duration(value: BigInt) {
+    this.set("duration", Value.fromBigInt(value));
+  }
+
+  get start(): BigInt {
+    let value = this.get("start");
+    return value.toBigInt();
+  }
+
+  set start(value: BigInt) {
+    this.set("start", Value.fromBigInt(value));
+  }
+
+  get cliff(): BigInt {
+    let value = this.get("cliff");
+    return value.toBigInt();
+  }
+
+  set cliff(value: BigInt) {
+    this.set("cliff", Value.fromBigInt(value));
+  }
+
+  get withdrawn(): BigInt {
+    let value = this.get("withdrawn");
+    return value.toBigInt();
+  }
+
+  set withdrawn(value: BigInt) {
+    this.set("withdrawn", Value.fromBigInt(value));
+  }
+
+  get staked(): BigInt {
+    let value = this.get("staked");
+    return value.toBigInt();
+  }
+
+  set staked(value: BigInt) {
+    this.set("staked", Value.fromBigInt(value));
+  }
+
+  get stakingPolicy(): Bytes {
+    let value = this.get("stakingPolicy");
+    return value.toBytes();
+  }
+
+  set stakingPolicy(value: Bytes) {
+    this.set("stakingPolicy", Value.fromBytes(value));
+  }
+
+  get transactionHash(): Bytes {
+    let value = this.get("transactionHash");
+    return value.toBytes();
+  }
+
+  set transactionHash(value: Bytes) {
+    this.set("transactionHash", Value.fromBytes(value));
+  }
+
+  get timestamp(): BigInt | null {
+    let value = this.get("timestamp");
+    if (value === null || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set timestamp(value: BigInt | null) {
+    if (value === null) {
+      this.unset("timestamp");
+    } else {
+      this.set("timestamp", Value.fromBigInt(value as BigInt));
+    }
   }
 }

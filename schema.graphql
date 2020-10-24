@@ -458,6 +458,11 @@ type StatsRecord @entity {
   btcUnderDeposit: BigInt!
   "The total amount of BTC currently deposited, measured from funding proof received to redemption requested"
   btcInActiveDeposits: BigInt!
+
+  "Total number of grants ever created, regardless of their current state." 
+  totalGrantCount: Int!
+  "Total amount of grants issued."
+  totalGrantIssued: BigInt!
 }
 
 """
@@ -519,4 +524,23 @@ type RandomBeaconGroupMembership @entity {
 
   # These are denormalized fields from the group & operator, to allow sorting memberships by these fields.
   groupCreatedAt: BigInt!
+}
+
+type Grant @entity {
+  id: ID!
+  grantManager: Bytes!
+  grantee: Bytes!
+  revokedAt: BigInt!
+  revokedAmount: BigInt!
+  revokedWithdrawn: BigInt!
+  revocable: Boolean!
+  amount: BigInt!
+  duration: BigInt!
+  start: BigInt!
+  cliff: BigInt!
+  withdrawn: BigInt!
+  staked: BigInt!
+  stakingPolicy: Bytes!
+  transactionHash: Bytes!
+  timestamp: BigInt
 }
