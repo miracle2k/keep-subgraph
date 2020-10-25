@@ -34,7 +34,7 @@ export function handleOperatorStaked(event: OperatorStaked): void {
   member.owner = event.transaction.from;
   member.save()
 
-  // this is
+  // these are like the config arguments of the staking contract. not sure what the best way to store them is.
   //let contract = StakingContract.bind(event.address);
   // let tokenStaking = getTokenStaking();
   // let mainContract = MainContract.bind(Address.fromString(KEEP_CONTRACT));
@@ -75,13 +75,18 @@ export function handleLockReleased(event: LockReleased): void {
   store.remove("Lock", `lock-${event.params.operator}-${event.params.lockCreator}`)
 }
 
-// Triggered by recoverStake(). Must be called after undelegation.
+/**
+ * Event: RecoveredStake.
+ *
+ * Emitted by `recoverStake()`, once called after the undelegation period expired.
+ */
 export function handleRecoveredStake(event: RecoveredStake): void{
   let member = getOrCreateOperator(event.params.operator);
   member.stakedAmount = BIGDECIMAL_ZERO;
   //member.recoveredAt = event.block.timestamp;
   member.save()
 
+  // TODO: This would count how many operators are staking
   //let mainContract = MainContract.bind(Address.fromString(KEEP_CONTRACT));
   // let tokenStaking = getTokenStaking();
   // tokenStaking.totalStaker = tokenStaking.totalStaker.minus(BIGINT_ONE);
