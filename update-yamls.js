@@ -34,6 +34,10 @@ const mainNetVars = {
   "MedianETHBTC": {
     'address': '0x81a679f98b63b3ddf2f17cb5619f4d6775b3c5ed',
     'startBlock': '10941427'
+  },
+  'TokenGrant': {
+    'address': '0x175989c71Fd023D580C65F5dC214002687ff88B7',
+    'startBlock': '9958365'
   }
 }
 
@@ -66,6 +70,10 @@ const ropstenVars = {
   'KeepRandomBeaconService': {
     'address': '0x6c04499B595efdc28CdbEd3f9ed2E83d7dCCC717',
     'startBlock': '8580802'
+  },
+  'TokenGrant': {
+    'address': '0xb64649fe00f8Ef5187d09d109C6F38f13C7CF857',
+    'startBlock': '8580756'
   }
 }
 

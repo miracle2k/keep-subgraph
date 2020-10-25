@@ -293,6 +293,39 @@ dataSources:
       file: ./src/mappingPriceFeed.ts
 {% endif %}
 
+  - kind: ethereum/contract
+    name: TokenGrant
+    network: {{ network }}
+    source:
+      startBlock: {{ TokenGrant.startBlock }}
+      address: "{{ TokenGrant.address }}"
+      abi: TokenGrant
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - StakingContractAuthorized
+        - TokenGrantCreated
+        - TokenGrantRevoked
+        - TokenGrantStaked
+        - TokenGrantWithdrawn
+      abis:
+        - name: TokenGrant
+          file: ./abis/TokenGrant.json
+      eventHandlers:
+        - event: StakingContractAuthorized(indexed address,address)
+          handler: handleStakingContractAuthorized
+        - event: TokenGrantCreated(uint256)
+          handler: handleTokenGrantCreated
+        - event: TokenGrantRevoked(uint256)
+          handler: handleTokenGrantRevoked
+        - event: TokenGrantStaked(indexed uint256,uint256,address)
+          handler: handleTokenGrantStaked
+        - event: TokenGrantWithdrawn(indexed uint256,uint256)
+          handler: handleTokenGrantWithdrawn
+      file: ./src/mappingTokenGrant.ts      
+
 templates:
   - name: DepositContract
     kind: ethereum/contract

@@ -458,6 +458,11 @@ type StatsRecord @entity {
   btcUnderDeposit: BigInt!
   "The total amount of BTC currently deposited, measured from funding proof received to redemption requested"
   btcInActiveDeposits: BigInt!
+
+  "Total number of grants ever created, regardless of their current state." 
+  totalGrantCount: Int!
+  "Total amount of grants issued."
+  totalGrantIssued: BigInt!
 }
 
 """
@@ -530,4 +535,77 @@ type PriceFeed @entity {
   transactionHash: Bytes!
   blockNumber: BigInt!
   timestamp: BigInt!
+}
+
+type Grant @entity {
+  id: ID!
+  grantManager: Bytes!
+  grantee: Bytes!
+  revokedAt: BigInt!
+  revokedAmount: BigInt!
+  revokedWithdrawn: BigInt!
+  revocable: Boolean!
+  amount: BigInt!
+  duration: BigInt!
+  start: BigInt!
+  cliff: BigInt!
+  withdrawn: BigInt!
+  staked: BigInt!
+  stakingPolicy: Bytes!
+  transactionHash: Bytes!
+  timestamp: BigInt
+}
+
+type StakingContractAuthorizedEvent implements Event @entity {
+  id: ID!
+  submitter: Bytes!
+  transactionHash: String!
+  timestamp: BigInt!
+  deposit: Deposit
+
+  grantManager: Bytes!
+  stakingContract: Bytes!
+}
+
+type TokenGrantCreatedEvent implements Event @entity {
+  id: ID!
+  submitter: Bytes!
+  transactionHash: String!
+  timestamp: BigInt!
+  deposit: Deposit
+
+  grantID: BigInt!
+}
+
+type TokenGrantWithdrawnEvent implements Event @entity {
+  id: ID!
+  submitter: Bytes!
+  transactionHash: String!
+  timestamp: BigInt!
+  deposit: Deposit
+
+  grantID: BigInt!
+  amount: BigInt!
+}
+
+type TokenGrantStakedEvent implements Event @entity {
+  id: ID!
+  submitter: Bytes!
+  transactionHash: String!
+  timestamp: BigInt!
+  deposit: Deposit
+
+  grantID: BigInt!
+  amount: BigInt!
+  operator: Bytes!
+}
+
+type TokenGrantRevokedEvent implements Event @entity {
+  id: ID!
+  submitter: Bytes!
+  transactionHash: String!
+  timestamp: BigInt!
+  deposit: Deposit
+
+  grantID: BigInt!
 }
