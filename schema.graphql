@@ -7,6 +7,31 @@ type TBTCDepositToken @entity {
   minter: Bytes!
 }
 
+"""
+A one-month interval in the stakedrop reward program.
+
+The intervals of the Beacon and ECDSA reward programs are not the same (there is about a 14 day difference).
+However, the number of intervals are the same, and the programs are otherwise aligned conceptually, so there
+is only one entity representing the intervals for both reward programs.
+"""
+type StakedropInterval @entity {
+  id: ID!
+  number: Int!
+
+  ecdsaIntervalStart: BigInt!
+  ecdsaIntervalEnd: BigInt!
+  beaconIntervalStart: BigInt!
+  beaconIntervalEnd: BigInt!
+
+  keepCount: Int!
+  beaconGroupCount: Int!
+
+  """Keeps that fall into this interval, and are counted towards the allocated rewards. This includes terminated
+  keeps which are non-the-less not eligable for an reward.
+  """
+  keeps: [BondedECDSAKeep!] @derivedFrom(field: "stakedropInterval")
+}
+
 # A generic event log entry
 interface Event {
   id: ID!
@@ -353,6 +378,9 @@ type BondedECDSAKeep @entity {
   status: BondedECDSAKeepStatus
   honestThreshold: Int
   members: [Operator]!
+
+  "Which stakedrop interval this keep belongs to, if any."
+  stakedropInterval: StakedropInterval
 
   "The nodes which have submitted their pubkey."
   pubkeySubmissions: [Operator]!

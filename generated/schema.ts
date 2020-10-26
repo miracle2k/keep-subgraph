@@ -96,6 +96,117 @@ export class TBTCDepositToken extends Entity {
   }
 }
 
+export class StakedropInterval extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id !== null, "Cannot save StakedropInterval entity without an ID");
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save StakedropInterval entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("StakedropInterval", id.toString(), this);
+  }
+
+  static load(id: string): StakedropInterval | null {
+    return store.get("StakedropInterval", id) as StakedropInterval | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get number(): i32 {
+    let value = this.get("number");
+    return value.toI32();
+  }
+
+  set number(value: i32) {
+    this.set("number", Value.fromI32(value));
+  }
+
+  get ecdsaIntervalStart(): BigInt {
+    let value = this.get("ecdsaIntervalStart");
+    return value.toBigInt();
+  }
+
+  set ecdsaIntervalStart(value: BigInt) {
+    this.set("ecdsaIntervalStart", Value.fromBigInt(value));
+  }
+
+  get ecdsaIntervalEnd(): BigInt {
+    let value = this.get("ecdsaIntervalEnd");
+    return value.toBigInt();
+  }
+
+  set ecdsaIntervalEnd(value: BigInt) {
+    this.set("ecdsaIntervalEnd", Value.fromBigInt(value));
+  }
+
+  get beaconIntervalStart(): BigInt {
+    let value = this.get("beaconIntervalStart");
+    return value.toBigInt();
+  }
+
+  set beaconIntervalStart(value: BigInt) {
+    this.set("beaconIntervalStart", Value.fromBigInt(value));
+  }
+
+  get beaconIntervalEnd(): BigInt {
+    let value = this.get("beaconIntervalEnd");
+    return value.toBigInt();
+  }
+
+  set beaconIntervalEnd(value: BigInt) {
+    this.set("beaconIntervalEnd", Value.fromBigInt(value));
+  }
+
+  get keepCount(): i32 {
+    let value = this.get("keepCount");
+    return value.toI32();
+  }
+
+  set keepCount(value: i32) {
+    this.set("keepCount", Value.fromI32(value));
+  }
+
+  get beaconGroupCount(): i32 {
+    let value = this.get("beaconGroupCount");
+    return value.toI32();
+  }
+
+  set beaconGroupCount(value: i32) {
+    this.set("beaconGroupCount", Value.fromI32(value));
+  }
+
+  get keeps(): Array<string> | null {
+    let value = this.get("keeps");
+    if (value === null || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toStringArray();
+    }
+  }
+
+  set keeps(value: Array<string> | null) {
+    if (value === null) {
+      this.unset("keeps");
+    } else {
+      this.set("keeps", Value.fromStringArray(value as Array<string>));
+    }
+  }
+}
+
 export class CreatedEvent extends Entity {
   constructor(id: string) {
     super();
@@ -2425,6 +2536,23 @@ export class BondedECDSAKeep extends Entity {
 
   set members(value: Array<string | null>) {
     this.set("members", Value.fromStringArray(value));
+  }
+
+  get stakedropInterval(): string | null {
+    let value = this.get("stakedropInterval");
+    if (value === null || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set stakedropInterval(value: string | null) {
+    if (value === null) {
+      this.unset("stakedropInterval");
+    } else {
+      this.set("stakedropInterval", Value.fromString(value as string));
+    }
   }
 
   get pubkeySubmissions(): Array<string | null> {

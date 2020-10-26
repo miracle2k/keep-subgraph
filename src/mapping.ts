@@ -28,7 +28,7 @@ import {
   RegisteredPubKeyEvent,
   CourtesyCalledEvent,
   LiquidatedEvent,
-  CreatedEvent, DepositSetup,
+  CreatedEvent, DepositSetup, StakedropInterval,
 } from "../generated/schema";
 import {getIDFromEvent} from "./utils";
 import {Value} from "@graphprotocol/graph-ts/index";
@@ -41,6 +41,7 @@ import {
   REDEMPTION_SIGNATURE_TIMEOUT
 } from "./constants";
 import {getStats} from "./models";
+import {getOrCreateStakedropInterval} from "./stakeDrop";
 
 
 // Wild-card re-export compiles but then does not find the functions at runtime.
@@ -263,6 +264,17 @@ function newBondedECDSAKeep(
     operator.save()
   }
   bondedECDSAKeep.members = members;
+
+  let interval = getOrCreateStakedropInterval(event);
+  if (interval) {
+    interval.keepCount = 0;
+    interval.save();
+
+    bondedECDSAKeep.stakedropInterval = interval.id;
+    // We then probably want to calculate the allocation for this interval, and can then estimate the
+    // number of keeps in it.
+  }
+
   bondedECDSAKeep.save();
 
   return bondedECDSAKeep;
