@@ -296,7 +296,12 @@ export function handleStartedLiquidationEvent(event: StartedLiquidation): void {
   let deposit = Deposit.load(getDepositIdFromAddress(contractAddress))!;
   let oldState = deposit.currentState;
   deposit.updatedAt = event.block.timestamp;
-  deposit.redemptionStartedAt = event.block.timestamp;
+  // If this is already set, then redemption was already in progress, and the liquidation is due to signers failing
+  // to respond. In that case, redemptionStartedAt is not updated. It is only set if the liquidation begins due to
+  // undercollateralization.
+  if (!deposit.redemptionStartedAt) {
+    deposit.redemptionStartedAt = event.block.timestamp;
+  }
   deposit.depositLiquidation = depositLiquidation.id;
   deposit.currentStateTimesOutAt = null;
 
