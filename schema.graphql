@@ -16,6 +16,8 @@ is only one entity representing the intervals for both reward programs.
 """
 type StakedropInterval @entity {
   id: ID!
+
+  "Nunber of the interval, with the first interval being 1."
   number: Int!
 
   ecdsaIntervalStart: BigInt!

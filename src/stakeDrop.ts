@@ -3,7 +3,7 @@ import {StakedropInterval} from "../generated/schema";
 
 
 // From ECDSARewards.sol
-const ECDSAWeights = [
+const ECDSAWeights: number[] = [
   4,
   8,
   10,
@@ -30,14 +30,14 @@ const ECDSAWeights = [
   15
 ];
 
-const ecdsaFirstIntervalStart = BigInt.fromI32(1600041600);
+let ecdsaFirstIntervalStart = BigInt.fromI32(1600041600);
 
 // In solidity this is 30 days, which seems to be a set number of seconds
 const SECONDS_DAY = 24 * 3600;
-const termLength = BigInt.fromI32(30 * SECONDS_DAY);
+let termLength = BigInt.fromI32(30 * SECONDS_DAY);
 
 // From BeaconRewards.sol
-const BeaconWeights = [
+const BeaconWeights: number[] = [
   4, 8, 10, 12, 15, 15,
   15, 15, 15, 15, 15, 15,
   15, 15, 15, 15, 15, 15,
@@ -45,22 +45,22 @@ const BeaconWeights = [
 ];
 
 // From BeaconRewards.sol
-const beaconFirstIntervalStart = BigInt.fromI32(1600905600);
+let beaconFirstIntervalStart = BigInt.fromI32(1600905600);
 
 
 // Return the interval number the timestamp falls within. Start at index 0. -1 if no interval.
 // From: Rewards.sol
-function intervalOf(timestamp: BigInt, type: 'beacon'|'ecdsa'): number {
-  const programStart = beaconFirstIntervalStart;
-  const maxIntervals = BeaconWeights.length;
+function intervalOf(timestamp: BigInt, type: number): i32 {
+  let programStart = type == 0 ? beaconFirstIntervalStart : ecdsaFirstIntervalStart;
+  let maxIntervals = type == 0 ? BeaconWeights.length : ECDSAWeights.length;
 
   // Should not happen, but the solidity code counts those for the first interval.
   if (timestamp < programStart) {
     return 0;
   }
 
-  const difference = timestamp.minus(programStart);
-  const interval = difference.div(termLength).toI32();
+  let difference = timestamp.minus(programStart);
+  let interval = difference.div(termLength).toI32();
   if (interval >= maxIntervals) {
     return -1;
   }
@@ -72,7 +72,7 @@ function intervalOf(timestamp: BigInt, type: 'beacon'|'ecdsa'): number {
  * The Stakedrop is a program to incentivize the operation of nodes and providing bonding capacity.
  */
 export function getOrCreateStakedropInterval(event: ethereum.Event): StakedropInterval|null {
-  let idx = intervalOf(event.block.timestamp, 'beacon');
+  let idx = intervalOf(event.block.timestamp, 1);
   if (idx == -1) {
     return null;
   }
@@ -87,6 +87,7 @@ export function getOrCreateStakedropInterval(event: ethereum.Event): StakedropIn
     interval = new StakedropInterval(id);
     interval.beaconGroupCount = 0;
     interval.keepCount = 0;
+    interval.number = idx + 1;
     interval.beaconIntervalStart = beaconFirstIntervalStart.plus(termLength.times(BigInt.fromI32(idx)))
     interval.beaconIntervalEnd = beaconFirstIntervalStart.plus(termLength.times(BigInt.fromI32(idx+1)))
     interval.ecdsaIntervalStart = ecdsaFirstIntervalStart.plus(termLength.times(BigInt.fromI32(idx)))
