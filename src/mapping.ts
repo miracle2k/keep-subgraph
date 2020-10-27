@@ -28,7 +28,7 @@ import {
   RegisteredPubKeyEvent,
   CourtesyCalledEvent,
   LiquidatedEvent,
-  CreatedEvent, DepositSetup, StakedropInterval,
+  CreatedEvent, DepositSetup, StakedropInterval, RedemptionFeeIncreasedEvent,
 } from "../generated/schema";
 import {getIDFromEvent} from "./utils";
 import {Value} from "@graphprotocol/graph-ts/index";
@@ -425,6 +425,16 @@ function handleFeeIncrease(deposit: Deposit, event: RedemptionRequested) {
   deposit.withdrawalRequestTimerStart = event.block.timestamp;
   deposit.currentStateTimesOutAt = event.block.timestamp.plus(REDEMPTION_SIGNATURE_TIMEOUT);
   saveDeposit(deposit, event.block);
+
+  let logEvent = new RedemptionFeeIncreasedEvent(getIDFromEvent(event))
+  logEvent.deposit = getDepositIdFromAddress(event.params._depositContractAddress);
+  logEvent.redeemerOutputScript = event.params._redeemerOutputScript;
+  logEvent.requestedFee = event.params._requestedFee;
+  logEvent.utxoValue = event.params._utxoValue;
+  logEvent.redeemer = event.params._requester;
+  logEvent.utxoOutpoint = event.params._outpoint;
+  logEvent.sigHashDigest = event.params._digest;
+  completeLogEvent(logEvent, event); logEvent.save()
 }
 
 export function handleGotRedemptionSignatureEvent(

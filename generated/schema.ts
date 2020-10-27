@@ -765,6 +765,141 @@ export class RedemptionRequestedEvent extends Entity {
   }
 }
 
+export class RedemptionFeeIncreasedEvent extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(
+      id !== null,
+      "Cannot save RedemptionFeeIncreasedEvent entity without an ID"
+    );
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save RedemptionFeeIncreasedEvent entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("RedemptionFeeIncreasedEvent", id.toString(), this);
+  }
+
+  static load(id: string): RedemptionFeeIncreasedEvent | null {
+    return store.get(
+      "RedemptionFeeIncreasedEvent",
+      id
+    ) as RedemptionFeeIncreasedEvent | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get submitter(): Bytes {
+    let value = this.get("submitter");
+    return value.toBytes();
+  }
+
+  set submitter(value: Bytes) {
+    this.set("submitter", Value.fromBytes(value));
+  }
+
+  get transactionHash(): string {
+    let value = this.get("transactionHash");
+    return value.toString();
+  }
+
+  set transactionHash(value: string) {
+    this.set("transactionHash", Value.fromString(value));
+  }
+
+  get timestamp(): BigInt {
+    let value = this.get("timestamp");
+    return value.toBigInt();
+  }
+
+  set timestamp(value: BigInt) {
+    this.set("timestamp", Value.fromBigInt(value));
+  }
+
+  get deposit(): string | null {
+    let value = this.get("deposit");
+    if (value === null || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set deposit(value: string | null) {
+    if (value === null) {
+      this.unset("deposit");
+    } else {
+      this.set("deposit", Value.fromString(value as string));
+    }
+  }
+
+  get redeemerOutputScript(): Bytes {
+    let value = this.get("redeemerOutputScript");
+    return value.toBytes();
+  }
+
+  set redeemerOutputScript(value: Bytes) {
+    this.set("redeemerOutputScript", Value.fromBytes(value));
+  }
+
+  get requestedFee(): BigInt {
+    let value = this.get("requestedFee");
+    return value.toBigInt();
+  }
+
+  set requestedFee(value: BigInt) {
+    this.set("requestedFee", Value.fromBigInt(value));
+  }
+
+  get utxoValue(): BigInt {
+    let value = this.get("utxoValue");
+    return value.toBigInt();
+  }
+
+  set utxoValue(value: BigInt) {
+    this.set("utxoValue", Value.fromBigInt(value));
+  }
+
+  get utxoOutpoint(): Bytes {
+    let value = this.get("utxoOutpoint");
+    return value.toBytes();
+  }
+
+  set utxoOutpoint(value: Bytes) {
+    this.set("utxoOutpoint", Value.fromBytes(value));
+  }
+
+  get redeemer(): Bytes {
+    let value = this.get("redeemer");
+    return value.toBytes();
+  }
+
+  set redeemer(value: Bytes) {
+    this.set("redeemer", Value.fromBytes(value));
+  }
+
+  get sigHashDigest(): Bytes {
+    let value = this.get("sigHashDigest");
+    return value.toBytes();
+  }
+
+  set sigHashDigest(value: Bytes) {
+    this.set("sigHashDigest", Value.fromBytes(value));
+  }
+}
+
 export class SetupFailedEvent extends Entity {
   constructor(id: string) {
     super();

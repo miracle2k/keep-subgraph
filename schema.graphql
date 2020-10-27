@@ -107,6 +107,24 @@ type RedemptionRequestedEvent implements Event @entity {
   sigHashDigest: Bytes!
 }
 
+
+"""If a Bitcoin fee increase is requested during the withdrawal process.
+"""
+type RedemptionFeeIncreasedEvent implements Event @entity {
+  id: ID!
+  submitter: Bytes!
+  transactionHash: String!
+  timestamp: BigInt!
+  deposit: Deposit
+
+  redeemerOutputScript: Bytes!
+  requestedFee: BigInt!
+  utxoValue: BigInt!
+  utxoOutpoint: Bytes!
+  redeemer: Bytes!
+  sigHashDigest: Bytes!
+}
+
 enum SetupFailedReason {
   # Both of those cases are handled the same in the contract, but we want to differentiate
   # between one of the signers failing to publish a key (PublicKeyPublished is never raised)
