@@ -355,8 +355,6 @@ export function handleLiquidatedEvent(event: Liquidated): void {
  *
  * Note that this can be emitted in two ways: By requestRedemption() or increaseRedemptionFee(). The latter
  * can be emitted multiple times.
- *
- * // XXX: handle increaseRedemptionFee better!
  */
 export function handleRedemptionRequestedEvent(
   event: RedemptionRequested
@@ -365,9 +363,10 @@ export function handleRedemptionRequestedEvent(
   let depositRedemption = new DepositRedemption(DPR+contractAddress.toHexString());
   let deposit = Deposit.load(getDepositIdFromAddress(contractAddress))!;
 
-  // This indicates that this is from `increaseRedemptionFee`. Don't do anything for now, but we want to support
-  // this better.
+  // This indicates that this is from `increaseRedemptionFee`. Rather than watching for that contract call
+  // directly, we can be certain that it this was the code path based on these previous states.
   if (deposit.currentState == 'AWAITING_WITHDRAWAL_SIGNATURE' || deposit.currentState == 'AWAITING_WITHDRAWAL_PROOF') {
+    handleFeeIncrease(deposit, event);
     return;
   }
 
@@ -381,6 +380,7 @@ export function handleRedemptionRequestedEvent(
   depositRedemption.save();
 
   deposit.redemptionStartedAt = event.block.timestamp;
+  deposit.withdrawalRequestTimerStart = event.block.timestamp;
   deposit.currentStateTimesOutAt = event.block.timestamp.plus(REDEMPTION_SIGNATURE_TIMEOUT);
   deposit.currentState = "AWAITING_WITHDRAWAL_SIGNATURE"
   saveDeposit(deposit, event.block);
@@ -408,12 +408,26 @@ export function handleRedemptionRequestedEvent(
   user.save();
 }
 
+
+/**
+ * When `increaseRedemptionFee` is called. Called not via an event from the graph, but
+ * by us when the `handleRedemptionRequestedEvent` handler recognizes this scenario.
+ */
+function handleFeeIncrease(deposit: Deposit, event: RedemptionRequested) {
+  // This resets the state from AWAITING_PROOF TO AWAITING_SIGNATURE: another signature needs to be provided.
+  // We also must reset the timers.
+  deposit.currentState = "AWAITING_WITHDRAWAL_SIGNATURE"
+  deposit.withdrawalRequestTimerStart = event.block.timestamp;
+  deposit.currentStateTimesOutAt = event.block.timestamp.plus(REDEMPTION_SIGNATURE_TIMEOUT);
+  saveDeposit(deposit, event.block);
+}
+
 export function handleGotRedemptionSignatureEvent(
   event: GotRedemptionSignature
 ): void {
   let deposit = Deposit.load(getDepositIdFromAddress(event.params._depositContractAddress))!;
   deposit.currentState = "AWAITING_WITHDRAWAL_PROOF";
-  deposit.currentStateTimesOutAt = event.block.timestamp.plus(REDEMPTION_PROOF_TIMEOUT);
+  deposit.currentStateTimesOutAt = deposit.withdrawalRequestTimerStart!.plus(REDEMPTION_PROOF_TIMEOUT);
   saveDeposit(deposit, event.block);
 
   let logEvent = new GotRedemptionSignatureEvent(getIDFromEvent(event))

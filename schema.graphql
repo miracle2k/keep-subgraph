@@ -174,8 +174,10 @@ type Deposit @entity {
   createdAt: BigInt!
   "Timestamp of the last state change of this deposit. Initialized to the same value as createdAt."
   updatedAt: BigInt!
-  "Timestamp of when the deposit redemption was requested, if any. This includes the start of liquidation due to undercollateralization."
+  "Timestamp of when the deposit redemption was requested, if any. This includes the start of liquidation due to undercollateralization. It is not reset if liquidation starts due to withdrawal failure. It does not reset in case of a fee increase."
   redemptionStartedAt: BigInt
+  "Start point of the internal timer which begins with a redemption request. It is initially the same as `redemptionStartedAt` in case of manual redemption, but is reset if there is a fee increase. It is not set or reset when we enter liquidation."
+  withdrawalRequestTimerStart: BigInt
 
   "The timeout after which the current state can be notified, if any. This does not include non-timeout actions that are time-locked, such as courtesy calls or liquidation auctions."
   currentStateTimesOutAt: BigInt

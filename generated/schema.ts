@@ -1223,6 +1223,26 @@ export class Deposit extends Entity {
     }
   }
 
+  get withdrawalRequestTimerStart(): BigInt | null {
+    let value = this.get("withdrawalRequestTimerStart");
+    if (value === null || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set withdrawalRequestTimerStart(value: BigInt | null) {
+    if (value === null) {
+      this.unset("withdrawalRequestTimerStart");
+    } else {
+      this.set(
+        "withdrawalRequestTimerStart",
+        Value.fromBigInt(value as BigInt)
+      );
+    }
+  }
+
   get currentStateTimesOutAt(): BigInt | null {
     let value = this.get("currentStateTimesOutAt");
     if (value === null || value.kind == ValueKind.NULL) {
