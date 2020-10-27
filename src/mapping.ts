@@ -267,7 +267,7 @@ function newBondedECDSAKeep(
 
   let interval = getOrCreateStakedropInterval(event);
   if (interval) {
-    interval.keepCount = 0;
+    interval.keepCount += 1;
     interval.save();
 
     bondedECDSAKeep.stakedropInterval = interval.id;
