@@ -418,7 +418,7 @@ export function handleRedemptionRequestedEvent(
  * When `increaseRedemptionFee` is called. Called not via an event from the graph, but
  * by us when the `handleRedemptionRequestedEvent` handler recognizes this scenario.
  */
-function handleFeeIncrease(deposit: Deposit, event: RedemptionRequested) {
+function handleFeeIncrease(deposit: Deposit, event: RedemptionRequested): void {
   // This resets the state from AWAITING_PROOF TO AWAITING_SIGNATURE: another signature needs to be provided.
   // We also must reset the timers.
   deposit.currentState = "AWAITING_WITHDRAWAL_SIGNATURE"
