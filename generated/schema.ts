@@ -2273,23 +2273,6 @@ export class Operator extends Entity {
     }
   }
 
-  get operator(): Bytes | null {
-    let value = this.get("operator");
-    if (value === null || value.kind == ValueKind.NULL) {
-      return null;
-    } else {
-      return value.toBytes();
-    }
-  }
-
-  set operator(value: Bytes | null) {
-    if (value === null) {
-      this.unset("operator");
-    } else {
-      this.set("operator", Value.fromBytes(value as Bytes));
-    }
-  }
-
   get beneficiary(): Bytes | null {
     let value = this.get("beneficiary");
     if (value === null || value.kind == ValueKind.NULL) {

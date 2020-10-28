@@ -338,7 +338,6 @@ type Operator @entity {
 
   # The other "staker" roles.
   owner: Bytes
-  operator: Bytes
   beneficiary: Bytes
   authorizer: Bytes
 
