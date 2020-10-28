@@ -61,7 +61,7 @@ export function handleStakeDelegated(event: StakeDelegated): void {
  * signing group, then their full stake will be locked. We keep track of each lock placed on the stake.
  */
 export function handleStakeLocked(event: StakeLocked): void {
-  let lock = new Lock(`lock-${event.params.operator}-${event.params.lockCreator}`);
+  let lock = new Lock("lock-" + event.params.operator.toString() + "-" + event.params.lockCreator.toString());
   lock.until = event.params.until;
   lock.operator = event.params.operator.toHexString();
   lock.creator = event.params.lockCreator;
@@ -72,7 +72,7 @@ export function handleStakeLocked(event: StakeLocked): void {
  * Event: LockReleased
  */
 export function handleLockReleased(event: LockReleased): void {
-  store.remove("Lock", `lock-${event.params.operator}-${event.params.lockCreator}`)
+  store.remove("Lock", "lock-" + event.params.operator.toString() + "-" + event.params.lockCreator.toString())
 }
 
 /**
