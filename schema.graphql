@@ -28,6 +28,9 @@ type StakedropInterval @entity {
   keepCount: Int!
   beaconGroupCount: Int!
 
+  allocationBeacon: BigInt
+  allocationECDSA: BigInt
+
   """Keeps that fall into this interval, and are counted towards the allocated rewards. This includes terminated
   keeps which are non-the-less not eligable for an reward.
   """
@@ -522,6 +525,9 @@ type StatusRecord @entity {
 
   "The currently requested RandomBeacon relay entry, if any. Only a single request can exist at a time."
   currentRequestedRelayEntry: RelayEntry
+
+  remainingStakedropBeaconAllocation: BigInt!
+  remainingStakedropECDSAAllocation: BigInt!
 }
 
 type RandomBeaconGroup @entity {

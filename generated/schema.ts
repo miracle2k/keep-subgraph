@@ -189,6 +189,40 @@ export class StakedropInterval extends Entity {
     this.set("beaconGroupCount", Value.fromI32(value));
   }
 
+  get allocationBeacon(): BigInt | null {
+    let value = this.get("allocationBeacon");
+    if (value === null || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set allocationBeacon(value: BigInt | null) {
+    if (value === null) {
+      this.unset("allocationBeacon");
+    } else {
+      this.set("allocationBeacon", Value.fromBigInt(value as BigInt));
+    }
+  }
+
+  get allocationECDSA(): BigInt | null {
+    let value = this.get("allocationECDSA");
+    if (value === null || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set allocationECDSA(value: BigInt | null) {
+    if (value === null) {
+      this.unset("allocationECDSA");
+    } else {
+      this.set("allocationECDSA", Value.fromBigInt(value as BigInt));
+    }
+  }
+
   get keeps(): Array<string> | null {
     let value = this.get("keeps");
     if (value === null || value.kind == ValueKind.NULL) {
@@ -3500,6 +3534,24 @@ export class StatusRecord extends Entity {
     } else {
       this.set("currentRequestedRelayEntry", Value.fromString(value as string));
     }
+  }
+
+  get remainingStakedropBeaconAllocation(): BigInt {
+    let value = this.get("remainingStakedropBeaconAllocation");
+    return value.toBigInt();
+  }
+
+  set remainingStakedropBeaconAllocation(value: BigInt) {
+    this.set("remainingStakedropBeaconAllocation", Value.fromBigInt(value));
+  }
+
+  get remainingStakedropECDSAAllocation(): BigInt {
+    let value = this.get("remainingStakedropECDSAAllocation");
+    return value.toBigInt();
+  }
+
+  set remainingStakedropECDSAAllocation(value: BigInt) {
+    this.set("remainingStakedropECDSAAllocation", Value.fromBigInt(value));
   }
 }
 

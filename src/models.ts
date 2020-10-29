@@ -1,6 +1,7 @@
 import {BIGDECIMAL_ZERO, BIGINT_ZERO} from "./constants";
-import {Address} from "@graphprotocol/graph-ts/index";
+import {Address, BigInt} from "@graphprotocol/graph-ts/index";
 import {Operator, StatsRecord, StatusRecord, User} from "../generated/schema";
+import {BEACON_DISTRIBUTION, ECDSA_DISTRIBUTION} from "./stakeDrop";
 
 export function getOrCreateOperator(address: Address): Operator {
   let member = Operator.load(address.toHexString());
@@ -60,6 +61,8 @@ export function getStatus(): StatusRecord {
   if (status == null) {
     status = new StatusRecord("current")
     status.currentRequestedRelayEntry = null;
+    status.remainingStakedropBeaconAllocation = BigInt.fromI32(BEACON_DISTRIBUTION);
+    status.remainingStakedropECDSAAllocation = BigInt.fromI32(ECDSA_DISTRIBUTION);
   }
   return status!;
 }

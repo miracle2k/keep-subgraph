@@ -41,7 +41,7 @@ import {
   REDEMPTION_SIGNATURE_TIMEOUT
 } from "./constants";
 import {getStats} from "./models";
-import {getOrCreateStakedropInterval} from "./stakeDrop";
+import {ECDSA_TYPE, getOrCreateStakedropInterval} from "./stakeDrop";
 
 
 // Wild-card re-export compiles but then does not find the functions at runtime.
@@ -265,7 +265,7 @@ function newBondedECDSAKeep(
   }
   bondedECDSAKeep.members = members;
 
-  let interval = getOrCreateStakedropInterval(event);
+  let interval = getOrCreateStakedropInterval(event, ECDSA_TYPE);
   if (interval) {
     interval.keepCount += 1;
     interval.save();
