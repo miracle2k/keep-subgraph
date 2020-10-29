@@ -2246,6 +2246,15 @@ export class Operator extends Entity {
     this.set("address", Value.fromBytes(value));
   }
 
+  get stakedAt(): BigInt {
+    let value = this.get("stakedAt");
+    return value.toBigInt();
+  }
+
+  set stakedAt(value: BigInt) {
+    this.set("stakedAt", Value.fromBigInt(value));
+  }
+
   get keeps(): Array<string> | null {
     let value = this.get("keeps");
     if (value === null || value.kind == ValueKind.NULL) {

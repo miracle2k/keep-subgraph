@@ -334,6 +334,9 @@ type Operator @entity {
   id: ID!
   address: Bytes!
 
+  "When this operator had a stake delegated to them. This is like a createdAt, and the operation also assigns the beneficiary/authorizer roles."
+  stakedAt: BigInt!
+
   keeps: [BondedECDSAKeep!] @derivedFrom(field: "members")
   bonds: [Bond!]! @derivedFrom(field: "operator")
   locks: [Lock!]! @derivedFrom(field: "operator")
@@ -382,6 +385,7 @@ enum BondStatus {
   SEIZED
 }
 
+"""Represents a lock on an operators bond, usually held by a keep the operator is collaterializing."""
 type Bond @entity {
   id: ID!
   status: BondStatus!

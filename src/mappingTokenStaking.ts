@@ -28,6 +28,7 @@ import {BIGDECIMAL_ZERO} from "./constants";
  */
 export function handleOperatorStaked(event: OperatorStaked): void {
   let member = getOrCreateOperator(event.params.operator);
+  member.stakedAt = event.block.timestamp;
   member.stakedAmount = toDecimal(event.params.value);
   member.authorizer = event.params.authorizer;
   member.beneficiary = event.params.beneficiary;
