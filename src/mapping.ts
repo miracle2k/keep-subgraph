@@ -223,6 +223,14 @@ export function saveDeposit(deposit: Deposit, block: ethereum.Block): void {
 
   deposit.updatedAt = block.timestamp;
 
+  // The first time we enter a closed state, update the timestamp
+  if (!deposit.closedAt && (
+      deposit.currentState == 'LIQUIDATED' ||
+      deposit.currentState == 'REDEEMED' ||
+      deposit.currentState == 'FAILED_SETUP')) {
+    deposit.closedAt = block.timestamp;
+  }
+
   deposit!.save();
 }
 

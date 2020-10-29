@@ -1366,6 +1366,23 @@ export class Deposit extends Entity {
     this.set("createdAt", Value.fromBigInt(value));
   }
 
+  get closedAt(): BigInt | null {
+    let value = this.get("closedAt");
+    if (value === null || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set closedAt(value: BigInt | null) {
+    if (value === null) {
+      this.unset("closedAt");
+    } else {
+      this.set("closedAt", Value.fromBigInt(value as BigInt));
+    }
+  }
+
   get updatedAt(): BigInt {
     let value = this.get("updatedAt");
     return value.toBigInt();

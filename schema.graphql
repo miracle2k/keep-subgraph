@@ -193,6 +193,8 @@ type Deposit @entity {
 
   "Timestamp of when this deposit was created."
   createdAt: BigInt!
+  "Timestamp of when this deposit was closed, either due to redemption, liquidation, or setup failure."
+  closedAt: BigInt
   "Timestamp of the last state change of this deposit. Initialized to the same value as createdAt."
   updatedAt: BigInt!
   "Timestamp of when the deposit redemption was requested, if any. This includes the start of liquidation due to undercollateralization. It is not reset if liquidation starts due to withdrawal failure. It does not reset in case of a fee increase."
