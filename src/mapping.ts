@@ -163,6 +163,7 @@ export function handleCreatedEvent(event: Created): void {
   let bondedECDSAKeep = newBondedECDSAKeep(deposit, keepAddress, event);
 
   deposit.bondedECDSAKeep = bondedECDSAKeep.id;
+  deposit.etcToBtcRatio = bondedECDSAKeep.etcToBtcRatio;
   saveDeposit(deposit, event.block);
 
   let logEvent = new CreatedEvent(getIDFromEvent(event))
@@ -258,6 +259,7 @@ function newBondedECDSAKeep(
   bondedECDSAKeep.keepAddress = keepAddress;
   bondedECDSAKeep.totalBondAmount = contract.checkBondAmount();
   bondedECDSAKeep.status = "ACTIVE";
+  bondedECDSAKeep.etcToBtcRatio = bondedECDSAKeep.totalBondAmount.div(deposit.lotSizeSatoshis!);
   bondedECDSAKeep.honestThreshold = contract.honestThreshold().toI32();
   bondedECDSAKeep.pubkeySubmissions = [];
 

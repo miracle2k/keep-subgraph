@@ -1498,21 +1498,13 @@ export class Deposit extends Entity {
     }
   }
 
-  get lotSizeSatoshis(): BigInt | null {
+  get lotSizeSatoshis(): BigInt {
     let value = this.get("lotSizeSatoshis");
-    if (value === null || value.kind == ValueKind.NULL) {
-      return null;
-    } else {
-      return value.toBigInt();
-    }
+    return value.toBigInt();
   }
 
-  set lotSizeSatoshis(value: BigInt | null) {
-    if (value === null) {
-      this.unset("lotSizeSatoshis");
-    } else {
-      this.set("lotSizeSatoshis", Value.fromBigInt(value as BigInt));
-    }
+  set lotSizeSatoshis(value: BigInt) {
+    this.set("lotSizeSatoshis", Value.fromBigInt(value));
   }
 
   get initialCollateralizedPercent(): i32 {
@@ -1611,6 +1603,15 @@ export class Deposit extends Entity {
     } else {
       this.set("bondedECDSAKeep", Value.fromString(value as string));
     }
+  }
+
+  get etcToBtcRatio(): BigInt {
+    let value = this.get("etcToBtcRatio");
+    return value.toBigInt();
+  }
+
+  set etcToBtcRatio(value: BigInt) {
+    this.set("etcToBtcRatio", Value.fromBigInt(value));
   }
 
   get depositLiquidation(): string | null {
@@ -2734,6 +2735,15 @@ export class BondedECDSAKeep extends Entity {
 
   set members(value: Array<string | null>) {
     this.set("members", Value.fromStringArray(value));
+  }
+
+  get etcToBtcRatio(): BigInt {
+    let value = this.get("etcToBtcRatio");
+    return value.toBigInt();
+  }
+
+  set etcToBtcRatio(value: BigInt) {
+    this.set("etcToBtcRatio", Value.fromBigInt(value));
   }
 
   get stakedropInterval(): string | null {
