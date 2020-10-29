@@ -146,6 +146,7 @@ export function handleCreatedEvent(event: Created): void {
   deposit.tdtToken = getDepositTokenIdFromDepositAddress(contractAddress)
   deposit.owner = event.transaction.from;
   deposit.creator = event.transaction.from;
+  deposit.lastActor = event.transaction.from;
   deposit.currentStateTimesOutAt = event.block.timestamp.plus(FORMATION_TIMEOUT);
 
   // Instantiate the graph templates: this indexes the newly created contracts for events
@@ -398,6 +399,7 @@ export function handleRedemptionRequestedEvent(
   deposit.withdrawalRequestTimerStart = event.block.timestamp;
   deposit.currentStateTimesOutAt = event.block.timestamp.plus(REDEMPTION_SIGNATURE_TIMEOUT);
   deposit.currentState = "AWAITING_WITHDRAWAL_SIGNATURE"
+  deposit.lastActor = event.transaction.from;
   saveDeposit(deposit, event.block);
 
   let logEvent = new RedemptionRequestedEvent(getIDFromEvent(event))

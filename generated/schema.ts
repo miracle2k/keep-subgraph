@@ -1481,6 +1481,15 @@ export class Deposit extends Entity {
     this.set("creator", Value.fromBytes(value));
   }
 
+  get lastActor(): Bytes {
+    let value = this.get("lastActor");
+    return value.toBytes();
+  }
+
+  set lastActor(value: Bytes) {
+    this.set("lastActor", Value.fromBytes(value));
+  }
+
   get keepAddress(): Bytes | null {
     let value = this.get("keepAddress");
     if (value === null || value.kind == ValueKind.NULL) {

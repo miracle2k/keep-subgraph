@@ -214,6 +214,9 @@ type Deposit @entity {
   "The address which created the deposit initially. In contrast to the owner, this cannot change."
   creator: Bytes!
 
+  "The address which initiated the last action - initially the creator, then the redeemer."
+  lastActor: Bytes!
+
   keepAddress: Bytes
   lotSizeSatoshis: BigInt!
   initialCollateralizedPercent: Int
