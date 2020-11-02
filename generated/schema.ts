@@ -3693,6 +3693,23 @@ export class RandomBeaconGroup extends Entity {
     this.set("rewardPerMember", Value.fromBigInt(value));
   }
 
+  get stakedropInterval(): string | null {
+    let value = this.get("stakedropInterval");
+    if (value === null || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set stakedropInterval(value: string | null) {
+    if (value === null) {
+      this.unset("stakedropInterval");
+    } else {
+      this.set("stakedropInterval", Value.fromString(value as string));
+    }
+  }
+
   get relayEntries(): Array<string> {
     let value = this.get("relayEntries");
     return value.toStringArray();

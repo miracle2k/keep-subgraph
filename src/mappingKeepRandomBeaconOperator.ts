@@ -11,6 +11,7 @@ import {getOrCreateOperator, getStatus} from "./models";
 import {BIGINT_ZERO} from "./constants";
 import {getBeaconGroupId} from "./modelsRandomBeacon";
 import {Address, BigDecimal, BigInt, log} from "@graphprotocol/graph-ts/index";
+import {BEACON_TYPE, ECDSA_TYPE, getOrCreateStakedropInterval} from "./stakeDrop";
 
 /**
  * Event: GroupSelectionStarted
@@ -74,7 +75,7 @@ export function handleDkgResultSubmittedEvent(event: DkgResultSubmittedEvent): v
 
     memberships.push(membership.id);
 
-    const operator = new Operator(memberAddress);
+    let operator = new Operator(memberAddress);
     operator.beaconGroupCount += 1;
     operator.save();
   }
@@ -82,6 +83,18 @@ export function handleDkgResultSubmittedEvent(event: DkgResultSubmittedEvent): v
 
   group.size = members.length;
   group.uniqueMemberCount = uniqueAddresses.length;
+
+
+  let interval = getOrCreateStakedropInterval(event, BEACON_TYPE);
+  if (interval) {
+    interval.beaconGroupCount += 1;
+    interval.save();
+
+    group.stakedropInterval = interval.id;
+    // We then probably want to calculate the allocation for this interval, and can then estimate the
+    // number of keeps in it.
+  }
+
   group.save()
 }
 

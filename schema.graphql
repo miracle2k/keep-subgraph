@@ -564,6 +564,9 @@ type RandomBeaconGroup @entity {
 
   rewardPerMember: BigInt!
 
+  "Which stakedrop interval this groups belongs to, if any."
+  stakedropInterval: StakedropInterval
+
   relayEntries: [RelayEntry!]! @derivedFrom(field: "group")
 }
 
