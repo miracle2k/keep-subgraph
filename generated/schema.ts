@@ -2484,6 +2484,43 @@ export class Operator extends Entity {
   set totalFaultCount(value: i32) {
     this.set("totalFaultCount", Value.fromI32(value));
   }
+
+  get stakeLockExpiryPoints(): Array<BigInt> | null {
+    let value = this.get("stakeLockExpiryPoints");
+    if (value === null || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigIntArray();
+    }
+  }
+
+  set stakeLockExpiryPoints(value: Array<BigInt> | null) {
+    if (value === null) {
+      this.unset("stakeLockExpiryPoints");
+    } else {
+      this.set(
+        "stakeLockExpiryPoints",
+        Value.fromBigIntArray(value as Array<BigInt>)
+      );
+    }
+  }
+
+  get stakeLockExpiresAt(): BigInt | null {
+    let value = this.get("stakeLockExpiresAt");
+    if (value === null || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set stakeLockExpiresAt(value: BigInt | null) {
+    if (value === null) {
+      this.unset("stakeLockExpiresAt");
+    } else {
+      this.set("stakeLockExpiresAt", Value.fromBigInt(value as BigInt));
+    }
+  }
 }
 
 export class Lock extends Entity {

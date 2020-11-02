@@ -14,9 +14,10 @@ import {
 } from "../generated/StakingContract/StakingContract"
 import {getOrCreateOperator} from "./models";
 import {toDecimal} from "./decimalUtils";
-import { Lock } from "../generated/schema";
+import { Lock, Operator } from "../generated/schema";
 import { store } from "@graphprotocol/graph-ts";
 import {BIGDECIMAL_ZERO} from "./constants";
+import {bigIntMax} from "./utils";
 
 
 /**
@@ -67,13 +68,32 @@ export function handleStakeLocked(event: StakeLocked): void {
   lock.operator = event.params.operator.toHexString();
   lock.creator = event.params.lockCreator;
   lock.save()
+
+  // Maintain `Operator.stakeLockExpiresAt`, which requires a helper-list.
+  let operator = getOrCreateOperator(event.params.operator);
+  if (!operator.stakeLockExpiryPoints) { operator.stakeLockExpiryPoints = []; }
+  operator.stakeLockExpiryPoints.push(event.params.until);
+  operator.stakeLockExpiresAt = bigIntMax(operator.stakeLockExpiryPoints!);
+  operator.save();
 }
+
 
 /**
  * Event: LockReleased
  */
 export function handleLockReleased(event: LockReleased): void {
-  store.remove("Lock", "lock-" + event.params.operator.toHexString() + "-" + event.params.lockCreator.toHexString())
+  let lockId = "lock-" + event.params.operator.toHexString() + "-" + event.params.lockCreator.toHexString();
+  let lock = Lock.load(lockId)!;
+  store.remove("Lock", lockId);
+
+  // Maintain `Operator.stakeLockExpiresAt`, which requires a helper-list.
+  let operator = getOrCreateOperator(event.params.operator);
+  if (!operator.stakeLockExpiryPoints) { operator.stakeLockExpiryPoints = []; }
+  let points = operator.stakeLockExpiryPoints!;
+  points.splice(points.indexOf(lock.until), 1);
+  operator.stakeLockExpiryPoints = points;
+  operator.stakeLockExpiresAt = bigIntMax(operator.stakeLockExpiryPoints!);
+  operator.save();
 }
 
 /**

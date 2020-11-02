@@ -376,10 +376,17 @@ type Operator @entity {
   involvedInFaultCount: Int!
   "How often this operator was involved in a fault, either attributable or not."
   totalFaultCount: Int!
+
+  """A list of timestamps, each representing the expiry date for a lock held on the stake.
+  We use this as a helper to be able to to calculate the maximum value, stakeLockExpiresAt.
+  """
+  stakeLockExpiryPoints: [BigInt!]
+  "The time when the last lock on the operator's stake expires. This can change when a lock is released early, or a new lock is added."
+  stakeLockExpiresAt: BigInt
 }
 
 """
-A lock on an operator stake.
+A lock on an operator stake. This is usually held by a deposit/keep contract.
 """
 type Lock @entity {
   id: ID!
