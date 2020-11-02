@@ -9,9 +9,16 @@ import {
 
 import { toDecimal } from "./decimalUtils";
 import {getOrCreateOperator, getStats} from "./models";
-import { Address, BigDecimal, BigInt, log } from "@graphprotocol/graph-ts";
-import {Bond, StatsRecord} from "../generated/schema";
+import { Address, BigDecimal, BigInt, ethereum } from "@graphprotocol/graph-ts";
+import {
+  Bond, BondReassignedEvent,
+  BondSeizedEvent,
+  UnbondedValueDepositedEvent,
+  UnbondedValueWithdrawnEvent
+} from "../generated/schema";
 import {BIGDECIMAL_ZERO, BIGINT_ZERO} from "./constants";
+import {getIDFromEvent} from "./utils";
+import {completeLogEvent} from "./mapping";
 
 
 // TODO: Consider whether, instead of doing the math ourselves, we should/can call inot the contract to get the
@@ -77,6 +84,10 @@ export function handleBondReassigned(event: BondReassigned): void {
   //   member.memberLocks = memberLockes;
   //   member.save();
   //}
+
+  let logEvent = new BondReassignedEvent(getIDFromEvent(event))
+  logEvent.operator = event.params.operator.toHexString();
+  completeLogEvent(logEvent, event); logEvent.save()
 }
 
 export function handleBondReleased(event: BondReleased): void {
@@ -110,6 +121,10 @@ export function handleBondSeized(event: BondSeized): void {
   operator.bonded = operator.bonded.minus(toDecimal(event.params.amount));
   operator.save()
 
+  let logEvent = new BondSeizedEvent(getIDFromEvent(event))
+  logEvent.operator = event.params.operator.toHexString();
+  completeLogEvent(logEvent, event); logEvent.save()
+
   let stats = getStats();
   stats.totalBonded = stats.totalBonded.minus(toDecimal(event.params.amount));
   stats.totalBondsSeized = stats.totalBondsSeized.plus(toDecimal(event.params.amount));
@@ -126,6 +141,10 @@ export function handleUnbondedValueDeposited(
   let stats = getStats();
   stats.availableToBeBonded = stats.availableToBeBonded.plus(toDecimal(event.params.amount));
   stats.save()
+
+  let logEvent = new UnbondedValueDepositedEvent(getIDFromEvent(event))
+  logEvent.operator = event.params.operator.toHexString();
+  completeLogEvent(logEvent, event); logEvent.save()
 }
 
 export function handleUnbondedValueWithdrawn(
@@ -138,4 +157,8 @@ export function handleUnbondedValueWithdrawn(
   let stats = getStats();
   stats.availableToBeBonded = stats.availableToBeBonded.minus(toDecimal(event.params.amount));
   stats.save()
+
+  let logEvent = new UnbondedValueWithdrawnEvent(getIDFromEvent(event))
+  logEvent.operator = event.params.operator.toHexString();
+  completeLogEvent(logEvent, event); logEvent.save()
 }

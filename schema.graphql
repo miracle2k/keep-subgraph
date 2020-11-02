@@ -46,6 +46,8 @@ interface Event {
 
   # Set if this affects a deposit
   deposit: Deposit
+  # Set if this affects an operator
+  operator: Operator
 }
 
 type CreatedEvent implements Event @entity {
@@ -54,6 +56,7 @@ type CreatedEvent implements Event @entity {
   transactionHash: String!
   timestamp: BigInt!
   deposit: Deposit
+  operator: Operator
 }
 
 type FundedEvent implements Event @entity {
@@ -62,6 +65,7 @@ type FundedEvent implements Event @entity {
   transactionHash: String!
   timestamp: BigInt!
   deposit: Deposit
+  operator: Operator
 
   tx: Bytes!
 }
@@ -72,6 +76,7 @@ type RegisteredPubKeyEvent implements Event @entity {
   transactionHash: String!
   timestamp: BigInt!
   deposit: Deposit
+  operator: Operator
 
   signingGroupPubkeyX: Bytes!
   signingGroupPubkeyY: Bytes!
@@ -83,6 +88,7 @@ type RedeemedEvent implements Event @entity {
   transactionHash: String!
   timestamp: BigInt!
   deposit: Deposit
+  operator: Operator
 
   tx: Bytes!
 }
@@ -93,6 +99,7 @@ type GotRedemptionSignatureEvent implements Event @entity {
   transactionHash: String!
   timestamp: BigInt!
   deposit: Deposit
+  operator: Operator
 }
 
 type RedemptionRequestedEvent implements Event @entity {
@@ -101,6 +108,7 @@ type RedemptionRequestedEvent implements Event @entity {
   transactionHash: String!
   timestamp: BigInt!
   deposit: Deposit
+  operator: Operator
 
   redeemerOutputScript: Bytes!
   requestedFee: BigInt!
@@ -119,6 +127,7 @@ type RedemptionFeeIncreasedEvent implements Event @entity {
   transactionHash: String!
   timestamp: BigInt!
   deposit: Deposit
+  operator: Operator
 
   redeemerOutputScript: Bytes!
   requestedFee: BigInt!
@@ -147,6 +156,7 @@ type SetupFailedEvent implements Event @entity {
   transactionHash: String!
   timestamp: BigInt!
   deposit: Deposit
+  operator: Operator
 
   "The reason for the failure, based on which contract call caused the failure state to be entered."
   reason: SetupFailedReason
@@ -158,6 +168,7 @@ type LiquidatedEvent implements Event @entity {
   transactionHash: String!
   timestamp: BigInt!
   deposit: Deposit
+  operator: Operator
 }
 
 type CourtesyCalledEvent implements Event @entity {
@@ -166,6 +177,7 @@ type CourtesyCalledEvent implements Event @entity {
   transactionHash: String!
   timestamp: BigInt!
   deposit: Deposit
+  operator: Operator
 }
 
 type StartedLiquidationEvent implements Event @entity {
@@ -174,6 +186,7 @@ type StartedLiquidationEvent implements Event @entity {
   transactionHash: String!
   timestamp: BigInt!
   deposit: Deposit
+  operator: Operator
 
   "The cause of this deposit going into liquidation"
   cause: LiquidationCause
@@ -383,6 +396,106 @@ type Operator @entity {
   stakeLockExpiryPoints: [BigInt!]
   "The time when the last lock on the operator's stake expires. This can change when a lock is released early, or a new lock is added."
   stakeLockExpiresAt: BigInt
+}
+
+
+type OperatorStakedEvent implements Event @entity {
+  id: ID!
+  submitter: Bytes!
+  transactionHash: String!
+  timestamp: BigInt!
+  deposit: Deposit
+  operator: Operator
+}
+
+type TokensSlashedEvent implements Event @entity {
+  id: ID!
+  submitter: Bytes!
+  transactionHash: String!
+  timestamp: BigInt!
+  deposit: Deposit
+  operator: Operator
+}
+
+type TokensSeizedEvent implements Event @entity {
+  id: ID!
+  submitter: Bytes!
+  transactionHash: String!
+  timestamp: BigInt!
+  deposit: Deposit
+  operator: Operator
+}
+
+type UndelegatedEvent implements Event @entity {
+  id: ID!
+  submitter: Bytes!
+  transactionHash: String!
+  timestamp: BigInt!
+  deposit: Deposit
+  operator: Operator
+}
+
+type StakeOwnershipTransferredEvent implements Event @entity {
+  id: ID!
+  submitter: Bytes!
+  transactionHash: String!
+  timestamp: BigInt!
+  deposit: Deposit
+  operator: Operator
+}
+
+type TopUpCompletedEvent implements Event @entity {
+  id: ID!
+  submitter: Bytes!
+  transactionHash: String!
+  timestamp: BigInt!
+  deposit: Deposit
+  operator: Operator
+}
+
+type TopUpInitiatedEvent implements Event @entity {
+  id: ID!
+  submitter: Bytes!
+  transactionHash: String!
+  timestamp: BigInt!
+  deposit: Deposit
+  operator: Operator
+}
+
+type BondReassignedEvent implements Event @entity {
+  id: ID!
+  submitter: Bytes!
+  transactionHash: String!
+  timestamp: BigInt!
+  deposit: Deposit
+  operator: Operator
+}
+
+type BondSeizedEvent implements Event @entity {
+  id: ID!
+  submitter: Bytes!
+  transactionHash: String!
+  timestamp: BigInt!
+  deposit: Deposit
+  operator: Operator
+}
+
+type UnbondedValueDepositedEvent implements Event @entity {
+  id: ID!
+  submitter: Bytes!
+  transactionHash: String!
+  timestamp: BigInt!
+  deposit: Deposit
+  operator: Operator
+}
+
+type UnbondedValueWithdrawnEvent implements Event @entity {
+  id: ID!
+  submitter: Bytes!
+  transactionHash: String!
+  timestamp: BigInt!
+  deposit: Deposit
+  operator: Operator
 }
 
 """
@@ -643,6 +756,7 @@ type StakingContractAuthorizedEvent implements Event @entity {
   transactionHash: String!
   timestamp: BigInt!
   deposit: Deposit
+  operator: Operator
 
   grantManager: Bytes!
   stakingContract: Bytes!
@@ -654,6 +768,7 @@ type TokenGrantCreatedEvent implements Event @entity {
   transactionHash: String!
   timestamp: BigInt!
   deposit: Deposit
+  operator: Operator
 
   grantID: BigInt!
 }
@@ -664,6 +779,7 @@ type TokenGrantWithdrawnEvent implements Event @entity {
   transactionHash: String!
   timestamp: BigInt!
   deposit: Deposit
+  operator: Operator
 
   grantID: BigInt!
   amount: BigInt!
@@ -675,10 +791,10 @@ type TokenGrantStakedEvent implements Event @entity {
   transactionHash: String!
   timestamp: BigInt!
   deposit: Deposit
+  operator: Operator
 
   grantID: BigInt!
   amount: BigInt!
-  operator: Bytes!
 }
 
 type TokenGrantRevokedEvent implements Event @entity {
@@ -687,6 +803,7 @@ type TokenGrantRevokedEvent implements Event @entity {
   transactionHash: String!
   timestamp: BigInt!
   deposit: Deposit
+  operator: Operator
 
   grantID: BigInt!
 }

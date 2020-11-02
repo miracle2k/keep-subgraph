@@ -14,10 +14,18 @@ import {
 } from "../generated/StakingContract/StakingContract"
 import {getOrCreateOperator} from "./models";
 import {toDecimal} from "./decimalUtils";
-import { Lock, Operator } from "../generated/schema";
-import { store } from "@graphprotocol/graph-ts";
+import {
+  Lock,
+  Operator,
+  OperatorStakedEvent,
+  RedemptionRequestedEvent, StakeOwnershipTransferredEvent, TokensSeizedEvent, TokensSlashedEvent,
+  TopUpCompletedEvent,
+  TopUpInitiatedEvent, UndelegatedEvent
+} from "../generated/schema";
+import { store, ethereum } from "@graphprotocol/graph-ts";
 import {BIGDECIMAL_ZERO} from "./constants";
-import {bigIntMax} from "./utils";
+import {bigIntMax, getIDFromEvent} from "./utils";
+import {completeLogEvent, getDepositIdFromAddress} from "./mapping";
 
 
 /**
@@ -102,10 +110,14 @@ export function handleLockReleased(event: LockReleased): void {
  * Emitted by `recoverStake()`, once called after the undelegation period expired.
  */
 export function handleRecoveredStake(event: RecoveredStake): void{
-  let member = getOrCreateOperator(event.params.operator);
-  member.stakedAmount = BIGDECIMAL_ZERO;
+  let operator = getOrCreateOperator(event.params.operator);
+  operator.stakedAmount = BIGDECIMAL_ZERO;
   //member.recoveredAt = event.block.timestamp;
-  member.save()
+  operator.save()
+
+  let logEvent = new OperatorStakedEvent(getIDFromEvent(event))
+  logEvent.operator = operator.id;
+  completeLogEvent(logEvent, event); logEvent.save()
 
   // TODO: This would count how many operators are staking
   //let mainContract = MainContract.bind(Address.fromString(KEEP_CONTRACT));
@@ -113,6 +125,8 @@ export function handleRecoveredStake(event: RecoveredStake): void{
   // tokenStaking.totalStaker = tokenStaking.totalStaker.minus(BIGINT_ONE);
   // tokenStaking.totalTokenStaking = toDecimal(mainContract.balanceOf(event.address));
   // tokenStaking.save()
+
+
 }
 
 /**
@@ -128,9 +142,13 @@ export function handleExpiredLockReleased(event: ExpiredLockReleased): void {
 }
 
 export function handleTokensSlashed(event: TokensSlashed): void {
-  let member = getOrCreateOperator(event.params.operator);
-  member.stakedAmount = member.stakedAmount.minus(toDecimal(event.params.amount));
-  member.save()
+  let operator = getOrCreateOperator(event.params.operator);
+  operator.stakedAmount = operator.stakedAmount.minus(toDecimal(event.params.amount));
+  operator.save()
+
+  let logEvent = new TokensSlashedEvent(getIDFromEvent(event))
+  logEvent.operator = operator.id;
+  completeLogEvent(logEvent, event); logEvent.save()
 
   // TODO: We want to log this as an event somehow, and maybe a per-operator total.
 
@@ -140,9 +158,13 @@ export function handleTokensSlashed(event: TokensSlashed): void {
 }
 
 export function handleTokensSeized(event: TokensSeized): void {
-  let member = getOrCreateOperator(event.params.operator);
-  member.stakedAmount = member.stakedAmount.minus(toDecimal(event.params.amount));
-  member.save()
+  let operator = getOrCreateOperator(event.params.operator);
+  operator.stakedAmount = operator.stakedAmount.minus(toDecimal(event.params.amount));
+  operator.save()
+
+  let logEvent = new TokensSeizedEvent(getIDFromEvent(event))
+  logEvent.operator = operator.id;
+  completeLogEvent(logEvent, event); logEvent.save()
 
   // TODO: We want to log this as an event somehow, and maybe a per-operator total.
 
@@ -159,6 +181,10 @@ export function handleUndelegated(event: Undelegated): void {
   // //member.undelegatedAt = event.params.undelegatedAt;
   // member.save()
 
+  let logEvent = new UndelegatedEvent(getIDFromEvent(event))
+  logEvent.operator = event.params.operator.toHexString();
+  completeLogEvent(logEvent, event); logEvent.save()
+
   // let mainContract = MainContract.bind(Address.fromString(KEEP_CONTRACT));
   // let tokenStaking = getTokenStaking();
   // tokenStaking.totalStaker = tokenStaking.totalStaker.minus(BIGINT_ONE);
@@ -169,12 +195,24 @@ export function handleUndelegated(event: Undelegated): void {
 
 export function handleStakeOwnershipTransferred(
     event: StakeOwnershipTransferred
-): void {}
+): void {
+  let logEvent = new StakeOwnershipTransferredEvent(getIDFromEvent(event))
+  logEvent.operator = event.params.operator.toHexString();
+  completeLogEvent(logEvent, event); logEvent.save()
+}
 
 export function handleTopUpCompleted(event: TopUpCompleted): void {
   let operator = getOrCreateOperator(event.params.operator);
   operator.stakedAmount = toDecimal(event.params.newAmount);
   operator.save()
+
+  let logEvent = new TopUpCompletedEvent(getIDFromEvent(event))
+  logEvent.operator = event.params.operator.toHexString();
+  completeLogEvent(logEvent, event); logEvent.save()
 }
 
-export function handleTopUpInitiated(event: TopUpInitiated): void {}
+export function handleTopUpInitiated(event: TopUpInitiated): void {
+  let logEvent = new TopUpInitiatedEvent(getIDFromEvent(event))
+  logEvent.operator = event.params.operator.toHexString();
+  completeLogEvent(logEvent, event); logEvent.save()
+}

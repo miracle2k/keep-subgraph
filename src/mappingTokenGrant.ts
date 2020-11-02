@@ -61,7 +61,7 @@ export function handleTokenGrantStaked(event: TokenGrantStaked): void {
   let logEvent = new TokenGrantStakedEvent(getIDFromEvent(event));
   logEvent.amount = event.params.amount;
   logEvent.grantID = event.params.grantId;
-  logEvent.operator = event.params.operator;
+  logEvent.operator = event.params.operator.toHexString();
   completeLogEvent(logEvent, event);
   logEvent.save();
 
