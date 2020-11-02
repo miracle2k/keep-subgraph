@@ -12,6 +12,7 @@ export function getOrCreateOperator(address: Address): Operator {
     member.activeKeepCount = 0;
     member.bonded = BIGDECIMAL_ZERO;
     member.unboundAvailable = BIGDECIMAL_ZERO;
+    member.beaconGroupCount = 0;
     member.attributableFaultCount = 0;
     member.involvedInFaultCount = 0;
     member.totalFaultCount = 0;

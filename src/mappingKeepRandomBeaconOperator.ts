@@ -5,7 +5,7 @@ import {
   RelayEntryRequested,
   RelayEntrySubmitted
 } from "../generated/KeepRandomBeaconOperator/KeepRandomBeaconOperator";
-import {RandomBeaconGroup, RandomBeaconGroupMembership, RelayEntry} from "../generated/schema";
+import {Operator, RandomBeaconGroup, RandomBeaconGroupMembership, RelayEntry} from "../generated/schema";
 import {getIDFromEvent} from "./utils";
 import {getOrCreateOperator, getStatus} from "./models";
 import {BIGINT_ZERO} from "./constants";
@@ -73,6 +73,10 @@ export function handleDkgResultSubmittedEvent(event: DkgResultSubmittedEvent): v
     membership.save()
 
     memberships.push(membership.id);
+
+    const operator = new Operator(memberAddress);
+    operator.beaconGroupCount += 1;
+    operator.save();
   }
   group.memberships = memberships;
 

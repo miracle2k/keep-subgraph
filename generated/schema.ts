@@ -2413,6 +2413,15 @@ export class Operator extends Entity {
     this.set("activeKeepCount", Value.fromI32(value));
   }
 
+  get beaconGroupCount(): i32 {
+    let value = this.get("beaconGroupCount");
+    return value.toI32();
+  }
+
+  set beaconGroupCount(value: i32) {
+    this.set("beaconGroupCount", Value.fromI32(value));
+  }
+
   get stakedAmount(): BigDecimal {
     let value = this.get("stakedAmount");
     return value.toBigDecimal();
