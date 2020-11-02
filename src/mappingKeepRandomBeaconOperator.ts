@@ -75,7 +75,7 @@ export function handleDkgResultSubmittedEvent(event: DkgResultSubmittedEvent): v
 
     memberships.push(membership.id);
 
-    let operator = new Operator(memberAddress);
+    let operator = getOrCreateOperator(Address.fromString(memberAddress));
     operator.beaconGroupCount += 1;
     operator.save();
   }
