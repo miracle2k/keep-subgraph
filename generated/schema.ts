@@ -1346,6 +1346,104 @@ export class CourtesyCalledEvent extends Entity {
   }
 }
 
+export class ExitedCourtesyCallEvent extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(
+      id !== null,
+      "Cannot save ExitedCourtesyCallEvent entity without an ID"
+    );
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save ExitedCourtesyCallEvent entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("ExitedCourtesyCallEvent", id.toString(), this);
+  }
+
+  static load(id: string): ExitedCourtesyCallEvent | null {
+    return store.get(
+      "ExitedCourtesyCallEvent",
+      id
+    ) as ExitedCourtesyCallEvent | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get submitter(): Bytes {
+    let value = this.get("submitter");
+    return value.toBytes();
+  }
+
+  set submitter(value: Bytes) {
+    this.set("submitter", Value.fromBytes(value));
+  }
+
+  get transactionHash(): string {
+    let value = this.get("transactionHash");
+    return value.toString();
+  }
+
+  set transactionHash(value: string) {
+    this.set("transactionHash", Value.fromString(value));
+  }
+
+  get timestamp(): BigInt {
+    let value = this.get("timestamp");
+    return value.toBigInt();
+  }
+
+  set timestamp(value: BigInt) {
+    this.set("timestamp", Value.fromBigInt(value));
+  }
+
+  get deposit(): string | null {
+    let value = this.get("deposit");
+    if (value === null || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set deposit(value: string | null) {
+    if (value === null) {
+      this.unset("deposit");
+    } else {
+      this.set("deposit", Value.fromString(value as string));
+    }
+  }
+
+  get operator(): string | null {
+    let value = this.get("operator");
+    if (value === null || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set operator(value: string | null) {
+    if (value === null) {
+      this.unset("operator");
+    } else {
+      this.set("operator", Value.fromString(value as string));
+    }
+  }
+}
+
 export class StartedLiquidationEvent extends Entity {
   constructor(id: string) {
     super();

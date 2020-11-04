@@ -180,6 +180,15 @@ type CourtesyCalledEvent implements Event @entity {
   operator: Operator
 }
 
+type ExitedCourtesyCallEvent implements Event @entity {
+  id: ID!
+  submitter: Bytes!
+  transactionHash: String!
+  timestamp: BigInt!
+  deposit: Deposit
+  operator: Operator
+}
+
 type StartedLiquidationEvent implements Event @entity {
   id: ID!
   submitter: Bytes!
@@ -305,7 +314,9 @@ type DepositLiquidation @entity {
   initiateTxhash: Bytes
   courtesyCallTxhash: Bytes
   liquidationInitiated: BigInt # Timestamp of when liquidation starts
-  courtesyCallInitiated: BigInt # When the courtesy call is issued
+
+  "The last time a courtesy call was initiated, even if courtesy call state has been exited."
+  courtesyCallInitiated: BigInt
   isLiquidated: Boolean!
   liquidatedAt: BigInt
   liquidationInitiator: Bytes

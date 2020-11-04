@@ -8,7 +8,7 @@ import {
   Redeemed,
   Funded,
   RegisteredPubkey,
-  SetupFailed,
+  SetupFailed, ExitedCourtesyCall,
 } from "../generated/TBTCSystem/TBTCSystem";
 import { log, BigInt, Address, ethereum, Entity, DataSourceContext } from "@graphprotocol/graph-ts";
 import { Transfer as TDTTransfer } from "../generated/TBTCDepositToken/TBTCDepositToken";
@@ -28,7 +28,7 @@ import {
   RegisteredPubKeyEvent,
   CourtesyCalledEvent,
   LiquidatedEvent,
-  CreatedEvent, DepositSetup, StakedropInterval, RedemptionFeeIncreasedEvent,
+  CreatedEvent, DepositSetup, StakedropInterval, RedemptionFeeIncreasedEvent, ExitedCourtesyCallEvent,
 } from "../generated/schema";
 import {getIDFromEvent} from "./utils";
 import {Value} from "@graphprotocol/graph-ts/index";
@@ -337,13 +337,21 @@ export function handleStartedLiquidationEvent(event: StartedLiquidation): void {
 
 export function handleCourtesyCalledEvent(event: CourtesyCalled): void {
   let contractAddress = event.params._depositContractAddress;
-  let depositLiquidation = DepositLiquidation.load(DPL+contractAddress.toHexString())!;
+  let depositLiquidation = getDepositLiquidation(contractAddress, event.block, event.transaction)!;
   depositLiquidation.courtesyCallInitiated = event.block.timestamp;
   depositLiquidation.save();
 
   setDepositState(contractAddress, "COURTESY_CALL", event.block);
 
   let logEvent = new CourtesyCalledEvent(getIDFromEvent(event))
+  logEvent.deposit = getDepositIdFromAddress(event.params._depositContractAddress);
+  completeLogEvent(logEvent, event); logEvent.save()
+}
+
+export function handleExitedCourtesyCall(event: ExitedCourtesyCall): void {
+  setDepositState(event.params._depositContractAddress, "ACTIVE", event.block);
+
+  let logEvent = new ExitedCourtesyCallEvent(getIDFromEvent(event))
   logEvent.deposit = getDepositIdFromAddress(event.params._depositContractAddress);
   completeLogEvent(logEvent, event); logEvent.save()
 }

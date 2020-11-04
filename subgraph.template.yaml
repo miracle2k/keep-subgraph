@@ -127,6 +127,8 @@ dataSources:
           handler: handleStartedLiquidationEvent
         - event: CourtesyCalled(indexed address,uint256)
           handler: handleCourtesyCalledEvent
+        - event: ExitedCourtesyCall(indexed address,uint256)
+          handler: handleExitedCourtesyCall
         - event: Liquidated(indexed address,uint256)
           handler: handleLiquidatedEvent
         - event: RedemptionRequested(indexed address,indexed address,indexed bytes32,uint256,bytes,uint256,bytes)
