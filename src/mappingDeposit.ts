@@ -1,4 +1,5 @@
 import {
+  NotifyCourtesyCallExpiredCall,
   NotifyFundingTimedOutCall, NotifyRedemptionProofTimedOutCall, NotifyRedemptionSignatureTimedOutCall,
   NotifySignerSetupFailedCall, NotifyUndercollateralizedLiquidationCall, ProvideECDSAFraudProofCall,
   ProvideFundingECDSAFraudProofCall
@@ -194,6 +195,19 @@ export function handleNotifyRedemptionProofTimedOut(call: NotifyRedemptionProofT
 
   faultAllMembers(contractAddress);
   newStartedLiquidationEvent(contractAddress, 'PROOF_TIMEOUT', call);
+}
+
+/**
+ * NOTE: We also catch the StartedLiquidation event, those two handlers work together.
+ */
+export function handleNotifyCourtesyCallExpired(call: NotifyCourtesyCallExpiredCall): void {
+  let contractAddress = call.to;
+  let liq = getDepositLiquidation(contractAddress, call.block, call.transaction);
+  liq.cause = 'COURTESY_CALL_EXPIRED'
+  liq.save();
+
+  faultAllMembers(contractAddress);
+  newStartedLiquidationEvent(contractAddress, 'COURTESY_CALL_EXPIRED', call);
 }
 
 

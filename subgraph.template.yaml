@@ -360,20 +360,17 @@ templates:
           handler: handleNotifyRedemptionSignatureTimedOut
         - function: notifyRedemptionProofTimedOut()
           handler: handleNotifyRedemptionProofTimedOut
+        - function: notifyCourtesyCallExpired()
+          handler: handleNotifyCourtesyCallExpired
     #  - <default>()
     #  - exitCourtesyCall()
     #  - increaseRedemptionFee(bytes8,bytes8)
     #  - initialize(address)
     #  - initializeDeposit(address,address,address,address,address,uint64)
     #  - notifyCourtesyCall()
-    #  - notifyCourtesyCallExpired()
     #  - notifyFundingTimedOut()
-    #  - notifyRedemptionProofTimedOut()
-    #  - notifyRedemptionSignatureTimedOut()
     #  - notifySignerSetupFailed()
-    #  - notifyUndercollateralizedLiquidation()
     #  - provideBTCFundingProof(bytes4,bytes,bytes,bytes4,uint8,bytes,uint256,bytes)
-    #  - provideECDSAFraudProof(uint8,bytes32,bytes32,bytes32,bytes)
     #  - provideFundingECDSAFraudProof(uint8,bytes32,bytes32,bytes32,bytes)
     #  - provideRedemptionProof(bytes4,bytes,bytes,bytes4,bytes,uint256,bytes)
     #  - provideRedemptionSignature(uint8,bytes32,bytes32)
