@@ -215,10 +215,13 @@ export function saveDeposit(deposit: Deposit, block: ethereum.Block): void {
 
   let isRedeemableByAnyone = deposit.currentState === "COURTESY_CALL" || (ownedByVendingMachine && deposit.currentState === 'ACTIVE');
   if (isRedeemableByAnyone) {
-    deposit.filter_redeemableAsOf = BigInt.fromI32(2147483647);  // equiv to about year 2038 - need to figure out how to do fromI64()
+    deposit.filter_redeemableAsOf = BIGINT_ZERO;
   }
   else if (deposit.currentState !== "ACTIVE") {
-    deposit.filter_redeemableAsOf = BIGINT_ZERO;
+    // Those are never redeemable, set to an impossibly large number.
+    // equiv to about year 2038 - need to figure out how to do fromI64()
+    deposit.filter_redeemableAsOf = BigInt.fromI32(2147483647);
+
   }
   else {
     deposit.filter_redeemableAsOf = deposit.endOfTerm ? deposit.endOfTerm! : BIGINT_ZERO;
