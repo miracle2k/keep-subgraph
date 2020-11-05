@@ -166,8 +166,6 @@ export function handleNotifyUndercollateralizedLiquidation(call: NotifyUndercoll
   liq.cause = 'UNDERCOLLATERIZED'
   liq.save();
 
-  faultAllMembers(contractAddress);
-
   newStartedLiquidationEvent(contractAddress, 'UNDERCOLLATERIZED', call);
 }
 
@@ -206,7 +204,6 @@ export function handleNotifyCourtesyCallExpired(call: NotifyCourtesyCallExpiredC
   liq.cause = 'COURTESY_CALL_EXPIRED'
   liq.save();
 
-  faultAllMembers(contractAddress);
   newStartedLiquidationEvent(contractAddress, 'COURTESY_CALL_EXPIRED', call);
 }
 
