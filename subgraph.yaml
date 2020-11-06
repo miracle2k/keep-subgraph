@@ -23,7 +23,7 @@ dataSources:
       file: ./src/mapping.ts
       eventHandlers:
         - event: Transfer(indexed address,indexed address,indexed uint256)
-          handler: handleMintTBTCDepositToken
+          handler: handleTDTTransfer
 
 
   - kind: ethereum/contract
