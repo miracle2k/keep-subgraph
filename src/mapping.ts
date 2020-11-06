@@ -70,7 +70,7 @@ export function getDepositIdFromTokenID(tokenID: BigInt): string {
 }
 
 
-function getDepositTokenIdFromTokenID(tokenID: BigInt): string {
+export function getDepositTokenIdFromTokenID(tokenID: BigInt): string {
   // A simple toHexString() does not work, as a leading 0 would often be not included, which would make
   // the id returned not match the deposit contract address used by Keep.
   // See also: https://github.com/graphprotocol/graph-ts/issues/16
@@ -124,6 +124,13 @@ function getOrCreateDeposit(depositID: string): Deposit {
   return <Deposit>deposit;
 }
 
+/**
+ * Event: Crated.
+ *
+ * Emitted together with a bunch of other events when a new deposit is requested.
+ * Sample transaction:
+ *   https://etherscan.io/tx/0x5f59c21e0fa03adebec0a0e698039a9720b6e823c547c360d5d52715036162e8#eventlog
+ */
 export function handleCreatedEvent(event: Created): void {
   let stats = getStats();
   stats.depositCount += 1;
@@ -221,6 +228,8 @@ export function saveDeposit(deposit: Deposit, block: ethereum.Block): void {
 
   }
   else {
+    // An active deposit which was not handled by the first case is essentially an tdt that was not been
+    // minted, thus it will expire at the end of the contract term.
     deposit.filter_redeemableAsOf = deposit.endOfTerm ? deposit.endOfTerm! : BIGINT_ZERO;
   }
 
@@ -551,37 +560,4 @@ export function handleRegisteredPubkey(event: RegisteredPubkey): void {
 export function handleSetupFailedEvent(event: SetupFailed): void {
   // For now, this is a noop - instead, we handle those notify() contract calls that can cause this event
   // to be triggered in the first place.  Might want to remove this for better indexing performance.
-}
-
-
-const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
-
-/**
- * TDT token.
- */
-export function handleMintTBTCDepositToken(event: TDTTransfer): void {
-  let tokenId = getDepositTokenIdFromTokenID(event.params.tokenId);
-
-  let depositToken: TBTCDepositToken;
-
-  // A mint
-  if (event.params.from.toHexString() == ZERO_ADDRESS) {
-    depositToken = new TBTCDepositToken(tokenId);
-    depositToken.deposit = getDepositIdFromTokenID(event.params.tokenId);
-    depositToken.tokenID = event.params.tokenId;
-    depositToken.owner = event.params.to;
-    depositToken.minter = event.params.to;
-    depositToken.mintedAt = event.block.timestamp;
-    depositToken.save();
-  } else {
-    depositToken = new TBTCDepositToken(tokenId);
-    depositToken.owner = event.params.to;
-    depositToken.save()
-  }
-
-  let deposit = Deposit.load(getDepositIdFromTokenID(event.params.tokenId))
-  if (deposit) {
-    deposit.owner = depositToken!.owner;
-    saveDeposit(deposit!, event.block);
-  }
 }
