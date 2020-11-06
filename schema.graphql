@@ -301,9 +301,11 @@ type DepositSetup @entity {
   fundingProofTimerStartedAt: BigInt
 }
 
+"""The reason why a deposit enter liquidation."""
 enum LiquidationCause {
   FRAUD
   UNDERCOLLATERIZED,
+  COURTESY_CALL_EXPIRED,
   SIGNATURE_TIMEOUT,
   PROOF_TIMEOUT
 }
