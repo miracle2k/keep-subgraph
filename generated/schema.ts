@@ -2172,8 +2172,8 @@ export class DepositLiquidation extends Entity {
     }
   }
 
-  get courtesyCallInitiated(): BigInt | null {
-    let value = this.get("courtesyCallInitiated");
+  get courtesyCallInitiatedAt(): BigInt | null {
+    let value = this.get("courtesyCallInitiatedAt");
     if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
@@ -2181,11 +2181,11 @@ export class DepositLiquidation extends Entity {
     }
   }
 
-  set courtesyCallInitiated(value: BigInt | null) {
+  set courtesyCallInitiatedAt(value: BigInt | null) {
     if (value === null) {
-      this.unset("courtesyCallInitiated");
+      this.unset("courtesyCallInitiatedAt");
     } else {
-      this.set("courtesyCallInitiated", Value.fromBigInt(value as BigInt));
+      this.set("courtesyCallInitiatedAt", Value.fromBigInt(value as BigInt));
     }
   }
 

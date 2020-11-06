@@ -98,9 +98,6 @@ export function getDepositLiquidation(depositAddress: Address, block: ethereum.B
     liq = new DepositLiquidation(id);
     liq.deposit = getDepositIdFromAddress(depositAddress);
     liq.isLiquidated = false;
-    liq.liquidationInitiated = block.timestamp;
-    liq.initiateTxhash = tx.hash;
-    liq.liquidationInitiator = tx.from;
   }
   return liq!;
 }
@@ -306,6 +303,9 @@ export function handleStartedLiquidationEvent(event: StartedLiquidation): void {
   let contractAddress = event.params._depositContractAddress;
 
   let depositLiquidation = getDepositLiquidation(contractAddress, event.block, event.transaction);
+  depositLiquidation.initiateTxhash = event.transaction.hash;
+  depositLiquidation.liquidationInitiated = event.block.timestamp;
+  depositLiquidation.liquidationInitiator = event.transaction.from;
   depositLiquidation.save();
 
   let deposit = Deposit.load(getDepositIdFromAddress(contractAddress))!;
@@ -341,8 +341,9 @@ export function handleStartedLiquidationEvent(event: StartedLiquidation): void {
 
 export function handleCourtesyCalledEvent(event: CourtesyCalled): void {
   let contractAddress = event.params._depositContractAddress;
+
   let depositLiquidation = getDepositLiquidation(contractAddress, event.block, event.transaction)!;
-  depositLiquidation.courtesyCallInitiated = event.block.timestamp;
+  depositLiquidation.courtesyCallInitiatedAt = event.block.timestamp;
   depositLiquidation.save();
 
   setDepositState(contractAddress, "COURTESY_CALL", event.block);
