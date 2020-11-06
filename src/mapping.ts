@@ -360,6 +360,15 @@ export function handleExitedCourtesyCall(event: ExitedCourtesyCall): void {
   completeLogEvent(logEvent, event); logEvent.save()
 }
 
+/**
+ * Event: Liquidated.
+ *
+ * No matter the reason why a liquidation started, it cannot be aborted; and this will
+ * be the final event/state of the deposit.
+ *
+ * Limitation: We cannot read `auctionValue` here from the contract to figure out the
+ *    final value of the auction. Instead, you have to duplicate the math of the contract.
+ */
 export function handleLiquidatedEvent(event: Liquidated): void {
   let contractAddress = event.params._depositContractAddress;
   let depositLiquidation = DepositLiquidation.load(DPL+contractAddress.toHexString())!;
