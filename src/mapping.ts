@@ -10,8 +10,7 @@ import {
   RegisteredPubkey,
   SetupFailed, ExitedCourtesyCall,
 } from "../generated/TBTCSystem/TBTCSystem";
-import { log, BigInt, Address, ethereum, Entity, DataSourceContext } from "@graphprotocol/graph-ts";
-import { Transfer as TDTTransfer } from "../generated/TBTCDepositToken/TBTCDepositToken";
+import { log, BigInt, Address, ethereum, Entity, DataSourceContext, log } from "@graphprotocol/graph-ts";
 import { DepositContract as DepositSmartContract } from "../generated/templates/DepositContract/DepositContract";
 import { BondedECDSAKeep as KeepSmartContract } from "../generated/templates/BondedECDSAKeep/BondedECDSAKeep";
 import {BondedECDSAKeep as BondedECDSAKeepTemplate, DepositContract} from "../generated/templates";
@@ -20,7 +19,6 @@ import {
   BondedECDSAKeep,
   DepositLiquidation,
   DepositRedemption,
-  TBTCDepositToken,
   RedeemedEvent,
   FundedEvent,
   GotRedemptionSignatureEvent,
@@ -28,7 +26,7 @@ import {
   RegisteredPubKeyEvent,
   CourtesyCalledEvent,
   LiquidatedEvent,
-  CreatedEvent, DepositSetup, StakedropInterval, RedemptionFeeIncreasedEvent, ExitedCourtesyCallEvent,
+  CreatedEvent, DepositSetup, RedemptionFeeIncreasedEvent, ExitedCourtesyCallEvent,
 } from "../generated/schema";
 import {getIDFromEvent} from "./utils";
 import {Value} from "@graphprotocol/graph-ts/index";

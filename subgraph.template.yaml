@@ -20,7 +20,7 @@ dataSources:
       abis:
         - name: TBTCDepositToken
           file: ./abis/TBTCDepositToken.json
-      file: ./src/mapping.ts
+      file: ./src/mappingTBTCDepositToken.ts
       eventHandlers:
         - event: Transfer(indexed address,indexed address,indexed uint256)
           handler: handleTDTTransfer
