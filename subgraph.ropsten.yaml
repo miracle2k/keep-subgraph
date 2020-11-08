@@ -305,7 +305,11 @@ dataSources:
           handler: handleTokenGrantStaked
         - event: TokenGrantWithdrawn(indexed uint256,uint256)
           handler: handleTokenGrantWithdrawn
-      file: ./src/mappingTokenGrant.ts      
+      file: ./src/mappingTokenGrant.ts
+
+  
+
+  
 
 templates:
   - name: DepositContract

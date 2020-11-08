@@ -150,7 +150,7 @@ export function handleRelayEntrySubmitted(event: RelayEntrySubmitted): void {
   let entry = RelayEntry.load(status.currentRequestedRelayEntry!)!;
   let group = RandomBeaconGroup.load(entry.group)!;
 
-  // We call `operatorContract.getGroupMemberRewards(groupPubKey)` to get the curren total available to every
+  // We call `operatorContract.getGroupMemberRewards(groupPubKey)` to get the current total available to every
   // member of the group. This value only changes by calling `addGroupMemberReward()`, which is only called whenever
   // `RelayEntrySubmitted` is emitted.
   // We can therefore be sure we are copying over the right value in all cases, and can deduce the fee for this

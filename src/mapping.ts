@@ -290,14 +290,10 @@ function newBondedECDSAKeep(
   if (interval) {
     interval.keepCount += 1;
     interval.save();
-
     bondedECDSAKeep.stakedropInterval = interval.id;
-    // We then probably want to calculate the allocation for this interval, and can then estimate the
-    // number of keeps in it.
   }
 
   bondedECDSAKeep.save();
-
   return bondedECDSAKeep;
 }
 

@@ -326,7 +326,59 @@ dataSources:
           handler: handleTokenGrantStaked
         - event: TokenGrantWithdrawn(indexed uint256,uint256)
           handler: handleTokenGrantWithdrawn
-      file: ./src/mappingTokenGrant.ts      
+      file: ./src/mappingTokenGrant.ts
+
+  {% if BeaconRewards %}
+  - kind: ethereum/contract
+    name: BeaconRewards
+    network: {{ network }}
+    source:
+      startBlock: {{ BeaconRewards.startBlock }}
+      address: "{{ BeaconRewards.address }}"
+      abi: BeaconRewards
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - StakedropInterval
+      abis:
+        - name: BeaconRewards
+          file: ./abis/BeaconRewards.json
+      eventHandlers:
+        #- OwnershipTransferred(indexed address,indexed address)
+        #- UpgradeFinalized(uint256)
+        #- UpgradeInitiated(address)
+        - event: RewardReceived(bytes32,uint256)
+          handler: handleBeaconRewardReceivedEvent
+      file: ./src/mappingStakedrop.ts
+  {% endif %}
+
+  {% if ECDSARewards %}
+  - kind: ethereum/contract
+    name: ECDSARewards
+    network: {{ network }}
+    source:
+      startBlock: {{ ECDSARewards.startBlock }}
+      address: "{{ ECDSARewards.address }}"
+      abi: ECDSARewards
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - StakedropInterval
+      abis:
+        - name: ECDSARewards
+          file: ./abis/ECDSARewards.json
+      eventHandlers:
+        #- OwnershipTransferred(indexed address,indexed address)
+        #- UpgradeFinalized(uint256)
+        #- UpgradeInitiated(address)
+        - event: RewardReceived(bytes32,uint256)
+          handler: handleECDSARewardReceivedEvent
+      file: ./src/mappingStakedrop.ts
+  {% endif %}
 
 templates:
   - name: DepositContract

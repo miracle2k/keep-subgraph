@@ -19,6 +19,9 @@ export function getOrCreateOperator(address: Address): Operator {
     member.totalTBTCRewards = BIGINT_ZERO;
     member.totalETHRewards = BIGINT_ZERO;
     member.totalBeaconRewards = BIGINT_ZERO;
+    member.stakedropBeaconRewardsDispensed = BIGINT_ZERO;
+    member.stakedropECDSARewardsDispensed = BIGINT_ZERO;
+    member.stakedropRewardsDispensed = BIGINT_ZERO;
   }
   return member!;
 }

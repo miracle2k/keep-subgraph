@@ -2743,6 +2743,33 @@ export class Operator extends Entity {
     this.set("totalBeaconRewards", Value.fromBigInt(value));
   }
 
+  get stakedropRewardsDispensed(): BigInt {
+    let value = this.get("stakedropRewardsDispensed");
+    return value.toBigInt();
+  }
+
+  set stakedropRewardsDispensed(value: BigInt) {
+    this.set("stakedropRewardsDispensed", Value.fromBigInt(value));
+  }
+
+  get stakedropECDSARewardsDispensed(): BigInt {
+    let value = this.get("stakedropECDSARewardsDispensed");
+    return value.toBigInt();
+  }
+
+  set stakedropECDSARewardsDispensed(value: BigInt) {
+    this.set("stakedropECDSARewardsDispensed", Value.fromBigInt(value));
+  }
+
+  get stakedropBeaconRewardsDispensed(): BigInt {
+    let value = this.get("stakedropBeaconRewardsDispensed");
+    return value.toBigInt();
+  }
+
+  set stakedropBeaconRewardsDispensed(value: BigInt) {
+    this.set("stakedropBeaconRewardsDispensed", Value.fromBigInt(value));
+  }
+
   get attributableFaultCount(): i32 {
     let value = this.get("attributableFaultCount");
     return value.toI32();
@@ -4098,12 +4125,12 @@ export class BondedECDSAKeep extends Entity {
     this.set("honestThreshold", Value.fromI32(value));
   }
 
-  get members(): Array<string | null> {
+  get members(): Array<string> {
     let value = this.get("members");
     return value.toStringArray();
   }
 
-  set members(value: Array<string | null>) {
+  set members(value: Array<string>) {
     this.set("members", Value.fromStringArray(value));
   }
 
@@ -4131,6 +4158,15 @@ export class BondedECDSAKeep extends Entity {
     } else {
       this.set("stakedropInterval", Value.fromString(value as string));
     }
+  }
+
+  get stakedropRewardDispensed(): boolean {
+    let value = this.get("stakedropRewardDispensed");
+    return value.toBoolean();
+  }
+
+  set stakedropRewardDispensed(value: boolean) {
+    this.set("stakedropRewardDispensed", Value.fromBoolean(value));
   }
 
   get pubkeySubmissions(): Array<string | null> {
@@ -4893,6 +4929,60 @@ export class StatsRecord extends Entity {
   set totalGrantIssued(value: BigInt) {
     this.set("totalGrantIssued", Value.fromBigInt(value));
   }
+
+  get totalStakedropBeaconRewards(): BigInt {
+    let value = this.get("totalStakedropBeaconRewards");
+    return value.toBigInt();
+  }
+
+  set totalStakedropBeaconRewards(value: BigInt) {
+    this.set("totalStakedropBeaconRewards", Value.fromBigInt(value));
+  }
+
+  get totalStakedropECDSARewards(): BigInt {
+    let value = this.get("totalStakedropECDSARewards");
+    return value.toBigInt();
+  }
+
+  set totalStakedropECDSARewards(value: BigInt) {
+    this.set("totalStakedropECDSARewards", Value.fromBigInt(value));
+  }
+
+  get unallocatedStakedropBeaconRewards(): BigInt {
+    let value = this.get("unallocatedStakedropBeaconRewards");
+    return value.toBigInt();
+  }
+
+  set unallocatedStakedropBeaconRewards(value: BigInt) {
+    this.set("unallocatedStakedropBeaconRewards", Value.fromBigInt(value));
+  }
+
+  get unallocatedStakedropECDSARewards(): BigInt {
+    let value = this.get("unallocatedStakedropECDSARewards");
+    return value.toBigInt();
+  }
+
+  set unallocatedStakedropECDSARewards(value: BigInt) {
+    this.set("unallocatedStakedropECDSARewards", Value.fromBigInt(value));
+  }
+
+  get dispensedStakedropBeaconRewards(): BigInt {
+    let value = this.get("dispensedStakedropBeaconRewards");
+    return value.toBigInt();
+  }
+
+  set dispensedStakedropBeaconRewards(value: BigInt) {
+    this.set("dispensedStakedropBeaconRewards", Value.fromBigInt(value));
+  }
+
+  get dispensedStakedropECDSARewards(): BigInt {
+    let value = this.get("dispensedStakedropECDSARewards");
+    return value.toBigInt();
+  }
+
+  set dispensedStakedropECDSARewards(value: BigInt) {
+    this.set("dispensedStakedropECDSARewards", Value.fromBigInt(value));
+  }
 }
 
 export class StatusRecord extends Entity {
@@ -5060,6 +5150,15 @@ export class RandomBeaconGroup extends Entity {
     } else {
       this.set("stakedropInterval", Value.fromString(value as string));
     }
+  }
+
+  get stakedropRewardDispensed(): boolean {
+    let value = this.get("stakedropRewardDispensed");
+    return value.toBoolean();
+  }
+
+  set stakedropRewardDispensed(value: boolean) {
+    this.set("stakedropRewardDispensed", Value.fromBoolean(value));
   }
 
   get relayEntries(): Array<string> {
