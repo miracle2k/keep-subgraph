@@ -2,6 +2,7 @@ import {Transfer as TDTTransfer} from "../generated/TBTCDepositToken/TBTCDeposit
 import {Deposit, TBTCDepositToken} from "../generated/schema";
 import {getDepositIdFromTokenID, getDepositTokenIdFromTokenID, saveDeposit} from "./mapping";
 import {ZERO_ADDRESS} from "./constants";
+import {log} from "@graphprotocol/graph-ts/index";
 
 
 /**
@@ -34,8 +35,12 @@ export function handleTDTTransfer(event: TDTTransfer): void {
   // during minting, the deposit does not exist yet. This mint event is emitted *before* the
   // "deposit create" event.
   let deposit = Deposit.load(getDepositIdFromTokenID(event.params.tokenId))
+  log.info('fooo: tokenid={}, depositid={}', [event.params.tokenId.toHex(), getDepositIdFromTokenID(event.params.tokenId)])
   if (deposit) {
     deposit.owner = depositToken!.owner;
+    log.info('fooo: tokenid={}: deposit found! {}, {}', [event.params.tokenId.toHex(), depositToken!.owner.toHexString(), deposit.owner.toHexString()])
     saveDeposit(deposit!, event.block);
+  } else {
+    log.info('fooo: tokenid={}: not found!', [event.params.tokenId.toHex()])
   }
 }

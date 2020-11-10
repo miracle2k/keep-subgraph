@@ -7,7 +7,7 @@ import {
 } from "../generated/templates/BondedECDSAKeep/BondedECDSAKeep";
 import {BondedECDSAKeep, Deposit} from "../generated/schema";
 import {getOrCreateOperator} from "./models";
-import {Address, BigInt} from "@graphprotocol/graph-ts/index";
+import {Address, BigInt, log} from "@graphprotocol/graph-ts/index";
 import {getDepositIdFromAddress} from "./mapping";
 
 /**
@@ -64,7 +64,13 @@ export function handleSubmitPublicKey(call: SubmitPublicKeyCall): void {
 }
 
 
-// Call path: Deposit.provideRedemptionProof() -> Deposit.distributeSignerFee() -> Keep.distributeERC20Reward().
+/**
+ * Event: ERC20RewardDistributed
+ *
+ * Emitted when a deposit is redeemed, and the designers get paid their reward in the TBTC (ERC20 token).
+ *
+ * Call path: Deposit.provideRedemptionProof() -> Deposit.distributeSignerFee() -> Keep.distributeERC20Reward().
+ */
 export function handleERC20RewardDistributed(event: ERC20RewardDistributed): void {
   // We don't get the keep address in this event, but so have to assume that this tx was a provideRedemptionProof()
   // call to the deposit, and then we get the keep from there.
@@ -72,7 +78,10 @@ export function handleERC20RewardDistributed(event: ERC20RewardDistributed): voi
   let depositAddress = event.transaction.to!;
   let deposit = Deposit.load(getDepositIdFromAddress(depositAddress))!;
 
+  log.info('handleERC20RewardDistributed deposit.keep={}, deposit={}', [deposit.bondedECDSAKeep, deposit.id]);
   let keep = BondedECDSAKeep.load(deposit.bondedECDSAKeep!)!;
+  log.info('handleERC20RewardDistributed keep={}', [keep ? keep.id : "not found"]);
+
   let members = keep.members;
   for (let i=0; i<members.length; i++) {
     let operator = getOrCreateOperator(Address.fromString(members[i]!));
