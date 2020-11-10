@@ -346,11 +346,18 @@ dataSources:
         - name: BeaconRewards
           file: ./abis/BeaconRewards.json
       eventHandlers:
-        #- OwnershipTransferred(indexed address,indexed address)
-        #- UpgradeFinalized(uint256)
-        #- UpgradeInitiated(address)
         - event: RewardReceived(bytes32,uint256)
           handler: handleBeaconRewardReceivedEvent
+      callHandlers:
+        - function: allocateRewards(uint256)
+          handler: handleAllocateBeaconRewards
+        - function: receiveApproval(address,uint256,address,bytes)
+          handler: handleReceiveBeaconApproval
+        # TODO: Figure out if we have do implement all of those, or one would be enough.
+#        - reportTermination(bytes32)
+#        - reportTermination(uint256)
+#        - reportTerminations(bytes32[])
+#        - reportTerminations(uint256[])
       file: ./src/mappingStakedrop.ts
   {% endif %}
 
@@ -372,11 +379,13 @@ dataSources:
         - name: ECDSARewards
           file: ./abis/ECDSARewards.json
       eventHandlers:
-        #- OwnershipTransferred(indexed address,indexed address)
-        #- UpgradeFinalized(uint256)
-        #- UpgradeInitiated(address)
         - event: RewardReceived(bytes32,uint256)
           handler: handleECDSARewardReceivedEvent
+      callHandlers:
+        - function: allocateRewards(uint256)
+          handler: handleAllocateECDSARewards
+        - function: receiveApproval(address,uint256,address,bytes)
+          handler: handleReceiveECDSAApproval
       file: ./src/mappingStakedrop.ts
   {% endif %}
 

@@ -567,7 +567,7 @@ type BondedECDSAKeep @entity {
   "Which stakedrop interval this keep belongs to, if any."
   stakedropInterval: StakedropInterval
   "If the stakedrop reward has been paid out for this keep."
-  stakedropRewardDispensed: Boolean!
+  stakedropRewardStatus: StakedropRewardStatus
 
   "The nodes which have submitted their pubkey."
   pubkeySubmissions: [Operator]!
@@ -700,6 +700,11 @@ type StatusRecord @entity {
   remainingStakedropECDSAAllocation: BigInt!
 }
 
+enum StakedropRewardStatus {
+  DISPENSED,
+  TERMINATION_REPORTED
+}
+
 type RandomBeaconGroup @entity {
   id: ID!
   pubKey: Bytes!
@@ -721,7 +726,7 @@ type RandomBeaconGroup @entity {
   "Which stakedrop interval this groups belongs to, if any."
   stakedropInterval: StakedropInterval
   "If the stakedrop reward has been paid out for this group."
-  stakedropRewardDispensed: Boolean!
+  stakedropRewardStatus: StakedropRewardStatus
 
   relayEntries: [RelayEntry!]! @derivedFrom(field: "group")
 }

@@ -4160,13 +4160,21 @@ export class BondedECDSAKeep extends Entity {
     }
   }
 
-  get stakedropRewardDispensed(): boolean {
-    let value = this.get("stakedropRewardDispensed");
-    return value.toBoolean();
+  get stakedropRewardStatus(): string | null {
+    let value = this.get("stakedropRewardStatus");
+    if (value === null || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  set stakedropRewardDispensed(value: boolean) {
-    this.set("stakedropRewardDispensed", Value.fromBoolean(value));
+  set stakedropRewardStatus(value: string | null) {
+    if (value === null) {
+      this.unset("stakedropRewardStatus");
+    } else {
+      this.set("stakedropRewardStatus", Value.fromString(value as string));
+    }
   }
 
   get pubkeySubmissions(): Array<string | null> {
@@ -5152,13 +5160,21 @@ export class RandomBeaconGroup extends Entity {
     }
   }
 
-  get stakedropRewardDispensed(): boolean {
-    let value = this.get("stakedropRewardDispensed");
-    return value.toBoolean();
+  get stakedropRewardStatus(): string | null {
+    let value = this.get("stakedropRewardStatus");
+    if (value === null || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  set stakedropRewardDispensed(value: boolean) {
-    this.set("stakedropRewardDispensed", Value.fromBoolean(value));
+  set stakedropRewardStatus(value: string | null) {
+    if (value === null) {
+      this.unset("stakedropRewardStatus");
+    } else {
+      this.set("stakedropRewardStatus", Value.fromString(value as string));
+    }
   }
 
   get relayEntries(): Array<string> {

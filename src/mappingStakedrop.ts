@@ -1,10 +1,19 @@
-import {BeaconRewards, RewardReceived as BeaconRewardReceived} from "../generated/BeaconRewards/BeaconRewards";
-import {ECDSARewards, RewardReceived as ECDSARewardReceived} from "../generated/ECDSARewards/ECDSARewards";
+import {
+  AllocateRewardsCall as AllocateBeaconRewardsCall,
+  BeaconRewards, ReceiveApprovalCall as ReceiveBeaconApprovalCall,
+  RewardReceived as BeaconRewardReceived
+} from "../generated/BeaconRewards/BeaconRewards";
+import {
+  AllocateRewardsCall as AllocateECDSARewardsCall,
+  ECDSARewards, ReceiveApprovalCall as ReceiveECDSAApprovalCall,
+  RewardReceived as ECDSARewardReceived
+} from "../generated/ECDSARewards/ECDSARewards";
 import {BondedECDSAKeep, RandomBeaconGroup, RandomBeaconGroupMembership} from "../generated/schema";
 import {Address, BigInt} from "@graphprotocol/graph-ts/index";
 import {getOrCreateOperator, getStats} from "./models";
 import {KeepRandomBeaconOperator} from "../generated/KeepRandomBeaconOperator/KeepRandomBeaconOperator";
 import {getBeaconGroupId} from "./modelsRandomBeacon";
+import {ECDSA_TYPE, getOrCreateStakedropInterval} from "./stakeDrop";
 
 
 /**
@@ -14,7 +23,7 @@ import {getBeaconGroupId} from "./modelsRandomBeacon";
  * amount of KEEP allocated for this interval. That amount cannot change afterwards. It is otherwise
  * emitted once for every kep, to pay out the reward all keep members are eligible for.
  */
-function handleECDSARewardReceivedEvent(event: ECDSARewardReceived): void {
+export function handleECDSARewardReceivedEvent(event: ECDSARewardReceived): void {
   let keep = BondedECDSAKeep.load(event.params.keep.toHexString())!;
 
   // For each member in the keep
@@ -26,11 +35,11 @@ function handleECDSARewardReceivedEvent(event: ECDSARewardReceived): void {
     operator.save()
   }
 
-  keep.stakedropRewardDispensed = true;
+  keep.stakedropRewardStatus = 'DISPENSED';
   keep.save();
 
-  const stats = getStats();
-  const ecdsaRewards = ECDSARewards.bind(event.address);
+  let stats = getStats();
+  let ecdsaRewards = ECDSARewards.bind(event.address);
   stats.dispensedStakedropECDSARewards = ecdsaRewards.dispensedRewards();
 }
 
@@ -42,11 +51,11 @@ function handleECDSARewardReceivedEvent(event: ECDSARewardReceived): void {
  * amount of KEEP allocated for this interval. That amount cannot change afterwards. It is otherwise
  * emitted once for every group, to pay out the reward all group members are eligible for.
  */
-function handleBeaconRewardReceivedEvent(event: BeaconRewardReceived): void {
+export function handleBeaconRewardReceivedEvent(event: BeaconRewardReceived): void {
   // The keep identifier given by the event is the group index, we need to group pub key to fetch the entity.
   // We can hard-code the address here, since there is no stakedrop in ropsten.
   let operatorContract = KeepRandomBeaconOperator.bind(Address.fromString("0xdF708431162Ba247dDaE362D2c919e0fbAfcf9DE"));
-  const groupPubKey = operatorContract.getGroupPublicKey(event.params.keep.toU32());
+  let groupPubKey = operatorContract.getGroupPublicKey(BigInt.fromSignedBytes(event.params.keep));
   let group = RandomBeaconGroup.load(getBeaconGroupId(groupPubKey))!;
 
   // For each member in the group.
@@ -54,9 +63,9 @@ function handleBeaconRewardReceivedEvent(event: BeaconRewardReceived): void {
   for (let i=0; i<memberships.length; i++) {
     // An operator can appear multiple times in a group, and will receive a reward multiple times.
     let membership = RandomBeaconGroupMembership.load(memberships[i])!;
-    const membershipWeight = BigInt.fromI32(membership.count);
+    let membershipWeight = BigInt.fromI32(membership.count);
 
-    const realReward = event.params.amount.times(membershipWeight);
+    let realReward = event.params.amount.times(membershipWeight);
 
     let operator = getOrCreateOperator(Address.fromString(membership.operator));
     operator.stakedropRewardsDispensed = operator.stakedropRewardsDispensed.plus(realReward)
@@ -64,10 +73,63 @@ function handleBeaconRewardReceivedEvent(event: BeaconRewardReceived): void {
     operator.save()
   }
 
-  group.stakedropRewardDispensed = true;
+  group.stakedropRewardStatus = 'DISPENSED';
   group.save();
 
-  const stats = getStats();
-  const beaconRewards = BeaconRewards.bind(event.address);
+  let stats = getStats();
+  let beaconRewards = BeaconRewards.bind(event.address);
   stats.dispensedStakedropBeaconRewards = beaconRewards.dispensedRewards();
 }
+
+export function handleAllocateECDSARewards(call: AllocateECDSARewardsCall): void {
+  // NB: This can be implicitly done via processKeep() so I am not sure it is actually helpful.
+  // Two things;
+  // - log this to figure out when it is called.
+  // - run this code within the RewardReceived handlers as well.
+}
+
+
+/**
+ * Call: receiveApproval().
+ *
+ * This sends further KEEP to be distributed and/or allocates any KEEP dropped to the contract through a transfer.
+ */
+export function handleReceiveECDSAApproval(call: ReceiveECDSAApprovalCall): void {
+  // Use the address directly, as there is no stakedrop in ropsten
+  let rewardsContract = ECDSARewards.bind(Address.fromString("0xc5aC5A8892230E0A3e1c473881A2de7353fFcA88"));
+  let stats = getStats();
+  stats.totalStakedropECDSARewards = rewardsContract.totalRewards();
+  stats.unallocatedStakedropECDSARewards = rewardsContract.unallocatedRewards();
+}
+
+export function handleAllocateBeaconRewards(call: AllocateBeaconRewardsCall): void {
+}
+
+export function handleReceiveBeaconApproval(call: ReceiveBeaconApprovalCall): void {
+  // Use the address directly, as there is no stakedrop in ropsten
+  let rewardsContract = BeaconRewards.bind(Address.fromString("0xBF51807ACb3394B8550f0554FB9098856Ef5F491"));
+  let stats = getStats();
+  stats.totalStakedropBeaconRewards = rewardsContract.totalRewards();
+  stats.unallocatedStakedropBeaconRewards = rewardsContract.unallocatedRewards();
+}
+
+// when creating a new interval (right now this happens on keep/group creation, but it could happen during receiveReward,
+// and we should create the interval there!)
+//    make sure we updated the previous interval: read allocation from the contract
+
+// call to reportTermination():
+//   - mark the item itself as done/handled
+//   - update getStats().unallocatedRewards
+
+
+// TODO: whenever a keep closes, if the stake drop interval is finished, we can add to the member's totals.
+// if it is not, we add to the successful count. in general, we want two fields on the interval:
+// eligableKeepCount (those which have been closed successfully).
+// ineligableKeepCount (those which have been terminated).
+// stillOpenKeepCount (we do not know yet).
+// but open question: how can we, once the interval closes, assign all sums to all members?
+//     1. keep a long array of all affected users for this interval
+//     2. delay it, have a per-operator "stakedropAdded" function, which will run whenever a reward is received
+//             or the member interacts with the system.
+
+// wanted: per member, per interval total rewards distributed

@@ -53,6 +53,12 @@ export function getStats(): StatsRecord {
     stats.totalGrantCount = 0;
     stats.totalGrantIssued = BIGINT_ZERO;
     stats.depositCount = 0;
+    stats.totalStakedropBeaconRewards = BIGINT_ZERO;
+    stats.totalStakedropECDSARewards = BIGINT_ZERO;
+    stats.unallocatedStakedropBeaconRewards = BIGINT_ZERO;
+    stats.unallocatedStakedropECDSARewards = BIGINT_ZERO;
+    stats.dispensedStakedropBeaconRewards = BIGINT_ZERO;
+    stats.dispensedStakedropECDSARewards = BIGINT_ZERO;
   }
   return stats!;
 }
