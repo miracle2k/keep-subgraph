@@ -345,6 +345,8 @@ dataSources:
       abis:
         - name: BeaconRewards
           file: ./abis/BeaconRewards.json
+        - name: KeepRandomBeaconOperator
+          file: ./abis/KeepRandomBeaconOperator.json
       eventHandlers:
         - event: RewardReceived(bytes32,uint256)
           handler: handleBeaconRewardReceivedEvent
