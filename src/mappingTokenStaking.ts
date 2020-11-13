@@ -164,6 +164,7 @@ export function handleTokensSeized(event: TokensSeized): void {
 
   let logEvent = new TokensSeizedEvent(getIDFromEvent(event))
   logEvent.operator = operator.id;
+  logEvent.amount = event.params.amount;
   completeLogEvent(logEvent, event); logEvent.save()
 
   // TODO: We want to log this as an event somehow, and maybe a per-operator total.
@@ -208,11 +209,13 @@ export function handleTopUpCompleted(event: TopUpCompleted): void {
 
   let logEvent = new TopUpCompletedEvent(getIDFromEvent(event))
   logEvent.operator = event.params.operator.toHexString();
+  logEvent.newAmount = event.params.newAmount;
   completeLogEvent(logEvent, event); logEvent.save()
 }
 
 export function handleTopUpInitiated(event: TopUpInitiated): void {
   let logEvent = new TopUpInitiatedEvent(getIDFromEvent(event))
   logEvent.operator = event.params.operator.toHexString();
+  logEvent.amount = event.params.topUp;
   completeLogEvent(logEvent, event); logEvent.save()
 }

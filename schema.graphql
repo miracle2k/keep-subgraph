@@ -449,6 +449,8 @@ type TokensSeizedEvent implements Event @entity {
   timestamp: BigInt!
   deposit: Deposit
   operator: Operator
+
+  amount: BigInt!
 }
 
 type UndelegatedEvent implements Event @entity {
@@ -476,6 +478,8 @@ type TopUpCompletedEvent implements Event @entity {
   timestamp: BigInt!
   deposit: Deposit
   operator: Operator
+
+  newAmount: BigInt!
 }
 
 type TopUpInitiatedEvent implements Event @entity {
@@ -485,6 +489,8 @@ type TopUpInitiatedEvent implements Event @entity {
   timestamp: BigInt!
   deposit: Deposit
   operator: Operator
+
+  amount: BigInt!
 }
 
 type BondReassignedEvent implements Event @entity {
@@ -503,6 +509,10 @@ type BondSeizedEvent implements Event @entity {
   timestamp: BigInt!
   deposit: Deposit
   operator: Operator
+
+  amount: BigInt!
+  destination: Bytes!
+  referenceId: BigInt!
 }
 
 type UnbondedValueDepositedEvent implements Event @entity {
@@ -512,6 +522,9 @@ type UnbondedValueDepositedEvent implements Event @entity {
   timestamp: BigInt!
   deposit: Deposit
   operator: Operator
+
+  amount: BigInt!
+  beneficiary: Bytes!
 }
 
 type UnbondedValueWithdrawnEvent implements Event @entity {
@@ -521,6 +534,9 @@ type UnbondedValueWithdrawnEvent implements Event @entity {
   timestamp: BigInt!
   deposit: Deposit
   operator: Operator
+
+  amount: BigInt!
+  beneficiary: Bytes!
 }
 
 """

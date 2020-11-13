@@ -123,6 +123,9 @@ export function handleBondSeized(event: BondSeized): void {
 
   let logEvent = new BondSeizedEvent(getIDFromEvent(event))
   logEvent.operator = event.params.operator.toHexString();
+  logEvent.amount = event.params.amount;
+  logEvent.destination = event.params.destination;
+  logEvent.referenceId = event.params.referenceID;
   completeLogEvent(logEvent, event); logEvent.save()
 
   let stats = getStats();
@@ -144,6 +147,8 @@ export function handleUnbondedValueDeposited(
 
   let logEvent = new UnbondedValueDepositedEvent(getIDFromEvent(event))
   logEvent.operator = event.params.operator.toHexString();
+  logEvent.amount = event.params.amount;
+  logEvent.beneficiary = event.params.beneficiary;
   completeLogEvent(logEvent, event); logEvent.save()
 }
 
@@ -160,5 +165,7 @@ export function handleUnbondedValueWithdrawn(
 
   let logEvent = new UnbondedValueWithdrawnEvent(getIDFromEvent(event))
   logEvent.operator = event.params.operator.toHexString();
+  logEvent.amount = event.params.amount;
+  logEvent.beneficiary = event.params.beneficiary;
   completeLogEvent(logEvent, event); logEvent.save()
 }

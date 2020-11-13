@@ -3109,6 +3109,15 @@ export class TokensSeizedEvent extends Entity {
       this.set("operator", Value.fromString(value as string));
     }
   }
+
+  get amount(): BigInt {
+    let value = this.get("amount");
+    return value.toBigInt();
+  }
+
+  set amount(value: BigInt) {
+    this.set("amount", Value.fromBigInt(value));
+  }
 }
 
 export class UndelegatedEvent extends Entity {
@@ -3391,6 +3400,15 @@ export class TopUpCompletedEvent extends Entity {
       this.set("operator", Value.fromString(value as string));
     }
   }
+
+  get newAmount(): BigInt {
+    let value = this.get("newAmount");
+    return value.toBigInt();
+  }
+
+  set newAmount(value: BigInt) {
+    this.set("newAmount", Value.fromBigInt(value));
+  }
 }
 
 export class TopUpInitiatedEvent extends Entity {
@@ -3482,6 +3500,15 @@ export class TopUpInitiatedEvent extends Entity {
     } else {
       this.set("operator", Value.fromString(value as string));
     }
+  }
+
+  get amount(): BigInt {
+    let value = this.get("amount");
+    return value.toBigInt();
+  }
+
+  set amount(value: BigInt) {
+    this.set("amount", Value.fromBigInt(value));
   }
 }
 
@@ -3667,6 +3694,33 @@ export class BondSeizedEvent extends Entity {
       this.set("operator", Value.fromString(value as string));
     }
   }
+
+  get amount(): BigInt {
+    let value = this.get("amount");
+    return value.toBigInt();
+  }
+
+  set amount(value: BigInt) {
+    this.set("amount", Value.fromBigInt(value));
+  }
+
+  get destination(): Bytes {
+    let value = this.get("destination");
+    return value.toBytes();
+  }
+
+  set destination(value: Bytes) {
+    this.set("destination", Value.fromBytes(value));
+  }
+
+  get referenceId(): BigInt {
+    let value = this.get("referenceId");
+    return value.toBigInt();
+  }
+
+  set referenceId(value: BigInt) {
+    this.set("referenceId", Value.fromBigInt(value));
+  }
 }
 
 export class UnbondedValueDepositedEvent extends Entity {
@@ -3765,6 +3819,24 @@ export class UnbondedValueDepositedEvent extends Entity {
       this.set("operator", Value.fromString(value as string));
     }
   }
+
+  get amount(): BigInt {
+    let value = this.get("amount");
+    return value.toBigInt();
+  }
+
+  set amount(value: BigInt) {
+    this.set("amount", Value.fromBigInt(value));
+  }
+
+  get beneficiary(): Bytes {
+    let value = this.get("beneficiary");
+    return value.toBytes();
+  }
+
+  set beneficiary(value: Bytes) {
+    this.set("beneficiary", Value.fromBytes(value));
+  }
 }
 
 export class UnbondedValueWithdrawnEvent extends Entity {
@@ -3862,6 +3934,24 @@ export class UnbondedValueWithdrawnEvent extends Entity {
     } else {
       this.set("operator", Value.fromString(value as string));
     }
+  }
+
+  get amount(): BigInt {
+    let value = this.get("amount");
+    return value.toBigInt();
+  }
+
+  set amount(value: BigInt) {
+    this.set("amount", Value.fromBigInt(value));
+  }
+
+  get beneficiary(): Bytes {
+    let value = this.get("beneficiary");
+    return value.toBytes();
+  }
+
+  set beneficiary(value: Bytes) {
+    this.set("beneficiary", Value.fromBytes(value));
   }
 }
 
