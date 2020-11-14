@@ -41,6 +41,7 @@ export function handleECDSARewardReceivedEvent(event: ECDSARewardReceived): void
   let stats = getStats();
   let ecdsaRewards = ECDSARewards.bind(event.address);
   stats.dispensedStakedropECDSARewards = ecdsaRewards.dispensedRewards();
+  stats.save()
 }
 
 
@@ -79,6 +80,7 @@ export function handleBeaconRewardReceivedEvent(event: BeaconRewardReceived): vo
   let stats = getStats();
   let beaconRewards = BeaconRewards.bind(event.address);
   stats.dispensedStakedropBeaconRewards = beaconRewards.dispensedRewards();
+  stats.save()
 }
 
 export function handleAllocateECDSARewards(call: AllocateECDSARewardsCall): void {
@@ -100,6 +102,7 @@ export function handleReceiveECDSAApproval(call: ReceiveECDSAApprovalCall): void
   let stats = getStats();
   stats.totalStakedropECDSARewards = rewardsContract.totalRewards();
   stats.unallocatedStakedropECDSARewards = rewardsContract.unallocatedRewards();
+  stats.save()
 }
 
 export function handleAllocateBeaconRewards(call: AllocateBeaconRewardsCall): void {
@@ -111,6 +114,7 @@ export function handleReceiveBeaconApproval(call: ReceiveBeaconApprovalCall): vo
   let stats = getStats();
   stats.totalStakedropBeaconRewards = rewardsContract.totalRewards();
   stats.unallocatedStakedropBeaconRewards = rewardsContract.unallocatedRewards();
+  stats.save()
 }
 
 // when creating a new interval (right now this happens on keep/group creation, but it could happen during receiveReward,
