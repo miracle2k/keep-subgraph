@@ -333,7 +333,7 @@ dataSources:
     name: BeaconRewards
     network: mainnet
     source:
-      startBlock: 11192879
+      startBlock: 9958365
       address: "0xBF51807ACb3394B8550f0554FB9098856Ef5F491"
       abi: BeaconRewards
     mapping:
@@ -368,7 +368,7 @@ dataSources:
     name: ECDSARewards
     network: mainnet
     source:
-      startBlock: 11193245
+      startBlock: 9958365
       address: "0xc5aC5A8892230E0A3e1c473881A2de7353fFcA88"
       abi: ECDSARewards
     mapping:

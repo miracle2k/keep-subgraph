@@ -41,11 +41,15 @@ const mainNetVars = {
   },
   'ECDSARewards': {
     'address': '0xc5aC5A8892230E0A3e1c473881A2de7353fFcA88',
-    'startBlock': '11193245'
+    // Real value is: 11193245
+    // See: https://github.com/graphprotocol/graph-node/issues/2007
+    'startBlock': '9958365'
   },
   'BeaconRewards': {
     'address': '0xBF51807ACb3394B8550f0554FB9098856Ef5F491',
-    'startBlock': '11192879'
+    // Real value is: 11192879
+    // See: https://github.com/graphprotocol/graph-node/issues/2007
+    'startBlock': '9958365'
   }
 }
 
