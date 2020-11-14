@@ -9,11 +9,10 @@ import {
   RewardReceived as ECDSARewardReceived
 } from "../generated/ECDSARewards/ECDSARewards";
 import {BondedECDSAKeep, RandomBeaconGroup, RandomBeaconGroupMembership} from "../generated/schema";
-import {Address, BigInt} from "@graphprotocol/graph-ts/index";
+import {Address, BigInt, Bytes, log} from "@graphprotocol/graph-ts/index";
 import {getOrCreateOperator, getStats} from "./models";
 import {KeepRandomBeaconOperator} from "../generated/KeepRandomBeaconOperator/KeepRandomBeaconOperator";
 import {getBeaconGroupId} from "./modelsRandomBeacon";
-import {ECDSA_TYPE, getOrCreateStakedropInterval} from "./stakeDrop";
 
 
 /**
@@ -24,7 +23,11 @@ import {ECDSA_TYPE, getOrCreateStakedropInterval} from "./stakeDrop";
  * emitted once for every kep, to pay out the reward all keep members are eligible for.
  */
 export function handleECDSARewardReceivedEvent(event: ECDSARewardReceived): void {
-  let keep = BondedECDSAKeep.load(event.params.keep.toHexString())!;
+  let keep = BondedECDSAKeep.load(event.params.keep.toHexString().slice(0, 42));
+  if (!keep) {
+    log.error("No keep found for: {}", [event.params.keep.toHexString()])
+    return;
+  }
 
   // For each member in the keep
   let operators = keep.members;
@@ -56,8 +59,12 @@ export function handleBeaconRewardReceivedEvent(event: BeaconRewardReceived): vo
   // The keep identifier given by the event is the group index, we need to group pub key to fetch the entity.
   // We can hard-code the address here, since there is no stakedrop in ropsten.
   let operatorContract = KeepRandomBeaconOperator.bind(Address.fromString("0xdF708431162Ba247dDaE362D2c919e0fbAfcf9DE"));
-  let groupPubKey = operatorContract.getGroupPublicKey(BigInt.fromSignedBytes(event.params.keep));
-  let group = RandomBeaconGroup.load(getBeaconGroupId(groupPubKey))!;
+  let groupPubKey = operatorContract.getGroupPublicKey(BigInt.fromSignedBytes(event.params.keep.reverse() as Bytes));
+  let group = RandomBeaconGroup.load(getBeaconGroupId(groupPubKey));
+  if (!group) {
+    log.error("No group found for: {}", [getBeaconGroupId(groupPubKey)])
+    return;
+  }
 
   // For each member in the group.
   let memberships = group.memberships;
