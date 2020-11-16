@@ -5,7 +5,7 @@ import {
   PublicKeyPublished,
   SubmitPublicKeyCall
 } from "../generated/templates/BondedECDSAKeep/BondedECDSAKeep";
-import {BondedECDSAKeep, Deposit} from "../generated/schema";
+import {BondedECDSAKeep, Deposit, StakedropInterval} from "../generated/schema";
 import {getOrCreateOperator} from "./models";
 import {Address, BigInt, log} from "@graphprotocol/graph-ts/index";
 import {getDepositIdFromAddress} from "./mapping";
@@ -24,6 +24,12 @@ export function handlePublicKeyPublished(event: PublicKeyPublished): void {
 export function handleKeepClosed(event: KeepClosed): void {
   let keep = BondedECDSAKeep.load(event.address.toHexString())!;
   keep.status = "CLOSED";
+
+  // Closed keeps have their rewards become withdrawable.
+  if (keep.stakedropInterval) {
+    keep.stakedropRewardStatus = 'WITHDRAWABLE';
+  }
+
   keep.save();
 
   reduceMemberKeepCount(keep.members);
@@ -32,6 +38,12 @@ export function handleKeepClosed(event: KeepClosed): void {
 export function handleKeepTerminated(event: KeepTerminated): void {
   let keep = BondedECDSAKeep.load(event.address.toHexString())!;
   keep.status = "TERMINATED";
+
+  // Terminated keeps become ineligible for stakedrop rewards.
+  if (keep.stakedropInterval) {
+    keep.stakedropRewardStatus = 'INELIGABLE';
+  }
+
   keep.save();
 
   reduceMemberKeepCount(keep.members);

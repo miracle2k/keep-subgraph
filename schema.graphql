@@ -716,8 +716,16 @@ type StatusRecord @entity {
   remainingStakedropECDSAAllocation: BigInt!
 }
 
+"""The stakedrop reward status for an individual group of keep.
+"""
 enum StakedropRewardStatus {
+  "The entity will not be rewarded because the stakers did not operate it correctly."
+  INELIGABLE,
+  "The reward is available and can be withdrawn."
+  WITHDRAWABLE,
+  "The reward was withdrawn."
   DISPENSED,
+  "The reward meant for an ineligable entity was returned back to the pool."
   TERMINATION_REPORTED
 }
 

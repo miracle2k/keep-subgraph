@@ -91,8 +91,6 @@ export function handleDkgResultSubmittedEvent(event: DkgResultSubmittedEvent): v
     interval.save();
 
     group.stakedropInterval = interval.id;
-    // We then probably want to calculate the allocation for this interval, and can then estimate the
-    // number of keeps in it.
   }
 
   group.save()
