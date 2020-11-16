@@ -215,14 +215,9 @@ export function saveDeposit(deposit: Deposit, block: ethereum.Block): void {
 
   ) && !ownedByVendingMachine;
 
-  // saveDeposit dp-0xf5a0008c1673291ca2eebe10267ce39b09f85f05, owned=true, redeemable=false, currentState=ACTIVE, data_source: TBTCDepositToken, runtime_host: 1/1, block_hash: 0x3aa7c188dede81e9320a0b5fa60e71b5e71035399d6a384a4d781e5b503b808a, block_number: 11202539
+  // NB: This used to be written as `a == b || (c == d)`, i.e. the first clause without brackets. Which did not work.
+  // Best as I can tell, AssemblyScript interprets this as `a == (b || (c == d))`, which does not match JS behaviour?
   let isRedeemableByAnyone = (deposit.currentState == "COURTESY_CALL") || (ownedByVendingMachine && deposit.currentState == 'ACTIVE');
-  let isActive = (deposit.currentState == 'ACTIVE');
-  let isActiveTriple = (deposit.currentState == 'ACTIVE');
-  log.info(
-    'saveDeposit {}, owned={}, redeemable={}, currentState={}, isActive={}, isActiveTripe={}', 
-    [deposit.id, ownedByVendingMachine.toString(), isRedeemableByAnyone.toString(), deposit.currentState, isActive.toString(), isActiveTriple.toString()]
-  )
   if (isRedeemableByAnyone) {
     deposit.filter_redeemableAsOf = BIGINT_ZERO;
   }
