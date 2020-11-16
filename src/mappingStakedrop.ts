@@ -33,8 +33,9 @@ export function handleECDSARewardReceivedEvent(event: ECDSARewardReceived): void
   let operators = keep.members;
   for (let i=0; i<operators.length; i++) {
     let operator = getOrCreateOperator(Address.fromString(operators[i]));
-    operator.stakedropRewardsDispensed = operator.stakedropRewardsDispensed.plus(event.params.amount)
-    operator.stakedropECDSARewardsDispensed = operator.stakedropECDSARewardsDispensed.plus(event.params.amount);
+    let realReward = event.params.amount.div(BigInt.fromI32(operators.length));
+    operator.stakedropRewardsDispensed = operator.stakedropRewardsDispensed.plus(realReward)
+    operator.stakedropECDSARewardsDispensed = operator.stakedropECDSARewardsDispensed.plus(realReward);
     operator.save()
   }
 
@@ -73,7 +74,7 @@ export function handleBeaconRewardReceivedEvent(event: BeaconRewardReceived): vo
     let membership = RandomBeaconGroupMembership.load(memberships[i])!;
     let membershipWeight = BigInt.fromI32(membership.count);
 
-    let realReward = event.params.amount.times(membershipWeight);
+    let realReward = event.params.amount.times(membershipWeight).div(BigInt.fromI32(64));
 
     let operator = getOrCreateOperator(Address.fromString(membership.operator));
     operator.stakedropRewardsDispensed = operator.stakedropRewardsDispensed.plus(realReward)
