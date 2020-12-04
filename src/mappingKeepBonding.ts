@@ -9,7 +9,7 @@ import {
 } from "../generated/KeepBonding/KeepBondingContract"
 
 import { toDecimal } from "./decimalUtils";
-import {getOrCreateOperator, getStats} from "./models";
+import {getOrCreateOperator, getStats, updateStakedropRewardFormula} from "./models";
 import { Address, BigDecimal, BigInt, ethereum } from "@graphprotocol/graph-ts";
 import {
   Bond, BondReassignedEvent,
@@ -120,6 +120,8 @@ export function handleBondSeized(event: BondSeized): void {
 
   let operator = getOrCreateOperator(event.params.operator);
   operator.bonded = operator.bonded.minus(toDecimal(event.params.amount));
+  operator.ethLocked = operator.ethLocked.minus(toDecimal(event.params.amount));
+  updateStakedropRewardFormula(operator);
   operator.save()
 
   let logEvent = new BondSeizedEvent(getIDFromEvent(event))
@@ -140,6 +142,8 @@ export function handleUnbondedValueDeposited(
 ): void {
   let operator = getOrCreateOperator(event.params.operator);
   operator.unboundAvailable = operator.unboundAvailable.plus(toDecimal(event.params.amount));
+  operator.ethLocked = operator.ethLocked.plus(toDecimal(event.params.amount));
+  updateStakedropRewardFormula(operator);
   operator.save()
 
   let stats = getStats();
@@ -158,6 +162,8 @@ export function handleUnbondedValueWithdrawn(
 ): void {
   let operator = getOrCreateOperator(event.params.operator);
   operator.unboundAvailable = operator.unboundAvailable.minus(toDecimal(event.params.amount));
+  operator.ethLocked = operator.ethLocked.minus(toDecimal(event.params.amount));
+  updateStakedropRewardFormula(operator);
   operator.save()
 
   let stats = getStats();

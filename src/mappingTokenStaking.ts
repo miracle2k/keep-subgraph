@@ -13,7 +13,7 @@ import {
   TopUpInitiated,
   Undelegated,
 } from "../generated/StakingContract/StakingContract"
-import {getOrCreateOperator} from "./models";
+import {getOrCreateOperator, updateStakedropRewardFormula} from "./models";
 import {toDecimal} from "./decimalUtils";
 import {
   Lock,
@@ -145,6 +145,7 @@ export function handleExpiredLockReleased(event: ExpiredLockReleased): void {
 export function handleTokensSlashed(event: TokensSlashed): void {
   let operator = getOrCreateOperator(event.params.operator);
   operator.stakedAmount = operator.stakedAmount.minus(toDecimal(event.params.amount));
+  updateStakedropRewardFormula(operator);
   operator.save()
 
   let logEvent = new TokensSlashedEvent(getIDFromEvent(event))
@@ -161,6 +162,7 @@ export function handleTokensSlashed(event: TokensSlashed): void {
 export function handleTokensSeized(event: TokensSeized): void {
   let operator = getOrCreateOperator(event.params.operator);
   operator.stakedAmount = operator.stakedAmount.minus(toDecimal(event.params.amount));
+  updateStakedropRewardFormula(operator);
   operator.save()
 
   let logEvent = new TokensSeizedEvent(getIDFromEvent(event))
@@ -206,6 +208,7 @@ export function handleStakeOwnershipTransferred(
 export function handleTopUpCompleted(event: TopUpCompleted): void {
   let operator = getOrCreateOperator(event.params.operator);
   operator.stakedAmount = toDecimal(event.params.newAmount);
+  updateStakedropRewardFormula(operator);
   operator.save()
 
   let logEvent = new TopUpCompletedEvent(getIDFromEvent(event))

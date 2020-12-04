@@ -2706,6 +2706,15 @@ export class Operator extends Entity {
     this.set("tbtcSystemSortitionPoolAuthorized", Value.fromBoolean(value));
   }
 
+  get ethLocked(): BigDecimal {
+    let value = this.get("ethLocked");
+    return value.toBigDecimal();
+  }
+
+  set ethLocked(value: BigDecimal) {
+    this.set("ethLocked", Value.fromBigDecimal(value));
+  }
+
   get bonded(): BigDecimal {
     let value = this.get("bonded");
     return value.toBigDecimal();
@@ -2812,6 +2821,33 @@ export class Operator extends Entity {
 
   set stakedropBeaconRewardsDispensed(value: BigInt) {
     this.set("stakedropBeaconRewardsDispensed", Value.fromBigInt(value));
+  }
+
+  get stakedropEthScore(): BigDecimal {
+    let value = this.get("stakedropEthScore");
+    return value.toBigDecimal();
+  }
+
+  set stakedropEthScore(value: BigDecimal) {
+    this.set("stakedropEthScore", Value.fromBigDecimal(value));
+  }
+
+  get stakedropBoost(): BigDecimal {
+    let value = this.get("stakedropBoost");
+    return value.toBigDecimal();
+  }
+
+  set stakedropBoost(value: BigDecimal) {
+    this.set("stakedropBoost", Value.fromBigDecimal(value));
+  }
+
+  get stakedropRewardWeight(): BigDecimal {
+    let value = this.get("stakedropRewardWeight");
+    return value.toBigDecimal();
+  }
+
+  set stakedropRewardWeight(value: BigDecimal) {
+    this.set("stakedropRewardWeight", Value.fromBigDecimal(value));
   }
 
   get attributableFaultCount(): i32 {
@@ -5306,6 +5342,15 @@ export class StatusRecord extends Entity {
 
   set remainingStakedropECDSAAllocation(value: BigInt) {
     this.set("remainingStakedropECDSAAllocation", Value.fromBigInt(value));
+  }
+
+  get totalRewardWeight(): BigDecimal {
+    let value = this.get("totalRewardWeight");
+    return value.toBigDecimal();
+  }
+
+  set totalRewardWeight(value: BigDecimal) {
+    this.set("totalRewardWeight", Value.fromBigDecimal(value));
   }
 }
 

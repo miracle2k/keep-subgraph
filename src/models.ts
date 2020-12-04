@@ -2,6 +2,51 @@ import {BIGDECIMAL_ZERO, BIGINT_ZERO} from "./constants";
 import {Address, BigInt} from "@graphprotocol/graph-ts/index";
 import {Operator, StatsRecord, StatusRecord, User} from "../generated/schema";
 import {BEACON_DISTRIBUTION, ECDSA_DISTRIBUTION} from "./stakeDrop";
+import {BigDecimal} from "@graphprotocol/graph-ts";
+
+
+let BIG_DECIMAL_1 = BigDecimal.fromString("1");
+let BIG_DECIMAL_2 = BigDecimal.fromString("2");
+let BIG_DECIMAL_500 = BigDecimal.fromString("500");
+let BIG_DECIMAL_3000 = BigDecimal.fromString("3000");
+let BIG_DECIMAL_MIN_STAKE = BigDecimal.fromString("80000")
+
+function bigDecimalSqrt(v: BigDecimal): BigDecimal {
+  let x = v;
+  let z = x.plus(BigDecimal.fromString("1")).div(BIG_DECIMAL_2);
+  let y = x;
+  while (z < y) {
+    y = z
+    z = x.div(z).plus(z).div(BIG_DECIMAL_2)
+  }
+
+  return y
+}
+
+export function updateStakedropRewardFormula(operator: Operator) {
+  let prevWeight = operator.stakedropRewardWeight;
+
+  // =IF(B11>3000,2*SQRT(B11*3000)-3000,B11)
+  operator.stakedropEthScore = operator.ethLocked.gt(BIG_DECIMAL_3000)
+      ? bigDecimalSqrt(operator.ethLocked.times(BIG_DECIMAL_3000)).times(BIG_DECIMAL_2).minus(BIG_DECIMAL_3000)
+      : operator.ethLocked;
+
+  // This will start to be wrong once BIG_DECIMAL_MIN_STAKE changes. We might have to calculate the value for
+  // all min stake values, or come up with a clever formula.
+  // =IF(B11=0,0,1+MIN(C11/70000,SQRT(C11/(B11*500))))
+  let boostFactor1 = operator.stakedAmount.div(BIG_DECIMAL_MIN_STAKE);
+  let boostFactor2 = bigDecimalSqrt(operator.stakedAmount.div(operator.ethLocked.times(BIG_DECIMAL_500)));
+  operator.stakedropBoost = operator.ethLocked.equals(BIGDECIMAL_ZERO) ? BIGDECIMAL_ZERO :
+      BIG_DECIMAL_1.plus(boostFactor1.gt(boostFactor2) ? boostFactor2 : boostFactor1);
+
+  operator.stakedropRewardWeight = operator.stakedropEthScore.times(operator.stakedropBoost);
+
+  if (operator.stakedropRewardWeight.notEqual(prevWeight)) {
+    const status = getStatus();
+    status.totalRewardWeight = status.totalRewardWeight.minus(prevWeight).plus(operator.stakedropRewardWeight);
+    status.save();
+  }
+}
 
 export function getOrCreateOperator(address: Address): Operator {
   let member = Operator.load(address.toHexString());
@@ -25,6 +70,8 @@ export function getOrCreateOperator(address: Address): Operator {
     member.randomBeaconOperatorAuthorized = false;
     member.bondedECDSAKeepFactoryAuthorized = false;
     member.tbtcSystemSortitionPoolAuthorized = false;
+    updateStakedropRewardFormula(member);
+
   }
   return member!;
 }
@@ -76,6 +123,7 @@ export function getStatus(): StatusRecord {
     status.currentRequestedRelayEntry = null;
     status.remainingStakedropBeaconAllocation = BigInt.fromI32(BEACON_DISTRIBUTION);
     status.remainingStakedropECDSAAllocation = BigInt.fromI32(ECDSA_DISTRIBUTION);
+    status.totalRewardWeight = BIGDECIMAL_ZERO;
   }
   return status!;
 }

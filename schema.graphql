@@ -395,6 +395,8 @@ type Operator @entity {
   tbtcSystemSortitionPoolAuthorized: Boolean!
 
   # Statistics
+  "Amount of ETH locked in total by this operator, both bonded to a keep and available to be bonded."
+  ethLocked: BigDecimal!
   bonded: BigDecimal!
   unboundAvailable: BigDecimal!
   totalKeepCount: Int!
@@ -411,10 +413,14 @@ type Operator @entity {
 
   "The total stakedrop rewards dispensed to this operator, including ECDSA and beacon. They may be eligible for further unclaimed rewards."
   stakedropRewardsDispensed: BigInt!
-  "The ECDSA stakedrop rewards dispensed to this operator. They may be eligible for further unclaimed rewards."
+  "The ECDSA stakedrop rewards dispensed to this operator. They may be eligible for further unclaimed rewards. Only used in interval one and two."
   stakedropECDSARewardsDispensed: BigInt!
   "The beacon stakedrop rewards dispensed to this operator. They may be eligible for further unclaimed rewards."
   stakedropBeaconRewardsDispensed: BigInt!
+
+  stakedropEthScore: BigDecimal!
+  stakedropBoost: BigDecimal!
+  stakedropRewardWeight: BigDecimal!
 
   "How often this operator was involved in a fault, attributable to them."
   attributableFaultCount: Int!
@@ -741,6 +747,9 @@ type StatusRecord @entity {
 
   remainingStakedropBeaconAllocation: BigInt!
   remainingStakedropECDSAAllocation: BigInt!
+
+  "The current total reward weight, as used in the Stakedrop rewards formula starting with interval 3."
+  totalRewardWeight: BigDecimal!
 }
 
 """The stakedrop reward status for an individual group of keep.
