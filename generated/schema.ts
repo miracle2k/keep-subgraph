@@ -2662,6 +2662,33 @@ export class Operator extends Entity {
     }
   }
 
+  get randomBeaconOperatorAuthorized(): boolean {
+    let value = this.get("randomBeaconOperatorAuthorized");
+    return value.toBoolean();
+  }
+
+  set randomBeaconOperatorAuthorized(value: boolean) {
+    this.set("randomBeaconOperatorAuthorized", Value.fromBoolean(value));
+  }
+
+  get bondedECDSAKeepFactoryAuthorized(): boolean {
+    let value = this.get("bondedECDSAKeepFactoryAuthorized");
+    return value.toBoolean();
+  }
+
+  set bondedECDSAKeepFactoryAuthorized(value: boolean) {
+    this.set("bondedECDSAKeepFactoryAuthorized", Value.fromBoolean(value));
+  }
+
+  get tbtcSystemSortitionPoolAuthorized(): boolean {
+    let value = this.get("tbtcSystemSortitionPoolAuthorized");
+    return value.toBoolean();
+  }
+
+  set tbtcSystemSortitionPoolAuthorized(value: boolean) {
+    this.set("tbtcSystemSortitionPoolAuthorized", Value.fromBoolean(value));
+  }
+
   get bonded(): BigDecimal {
     let value = this.get("bonded");
     return value.toBigDecimal();
@@ -2832,6 +2859,122 @@ export class Operator extends Entity {
     } else {
       this.set("stakeLockExpiresAt", Value.fromBigInt(value as BigInt));
     }
+  }
+}
+
+export class OperatorAuthorizationEvent extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(
+      id !== null,
+      "Cannot save OperatorAuthorizationEvent entity without an ID"
+    );
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save OperatorAuthorizationEvent entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("OperatorAuthorizationEvent", id.toString(), this);
+  }
+
+  static load(id: string): OperatorAuthorizationEvent | null {
+    return store.get(
+      "OperatorAuthorizationEvent",
+      id
+    ) as OperatorAuthorizationEvent | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get submitter(): Bytes {
+    let value = this.get("submitter");
+    return value.toBytes();
+  }
+
+  set submitter(value: Bytes) {
+    this.set("submitter", Value.fromBytes(value));
+  }
+
+  get transactionHash(): string {
+    let value = this.get("transactionHash");
+    return value.toString();
+  }
+
+  set transactionHash(value: string) {
+    this.set("transactionHash", Value.fromString(value));
+  }
+
+  get timestamp(): BigInt {
+    let value = this.get("timestamp");
+    return value.toBigInt();
+  }
+
+  set timestamp(value: BigInt) {
+    this.set("timestamp", Value.fromBigInt(value));
+  }
+
+  get deposit(): string | null {
+    let value = this.get("deposit");
+    if (value === null || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set deposit(value: string | null) {
+    if (value === null) {
+      this.unset("deposit");
+    } else {
+      this.set("deposit", Value.fromString(value as string));
+    }
+  }
+
+  get operator(): string | null {
+    let value = this.get("operator");
+    if (value === null || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set operator(value: string | null) {
+    if (value === null) {
+      this.unset("operator");
+    } else {
+      this.set("operator", Value.fromString(value as string));
+    }
+  }
+
+  get authorizationType(): string {
+    let value = this.get("authorizationType");
+    return value.toString();
+  }
+
+  set authorizationType(value: string) {
+    this.set("authorizationType", Value.fromString(value));
+  }
+
+  get isDeauthorization(): boolean {
+    let value = this.get("isDeauthorization");
+    return value.toBoolean();
+  }
+
+  set isDeauthorization(value: boolean) {
+    this.set("isDeauthorization", Value.fromBoolean(value));
   }
 }
 

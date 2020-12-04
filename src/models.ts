@@ -22,6 +22,9 @@ export function getOrCreateOperator(address: Address): Operator {
     member.stakedropBeaconRewardsDispensed = BIGINT_ZERO;
     member.stakedropECDSARewardsDispensed = BIGINT_ZERO;
     member.stakedropRewardsDispensed = BIGINT_ZERO;
+    member.randomBeaconOperatorAuthorized = false;
+    member.bondedECDSAKeepFactoryAuthorized = false;
+    member.tbtcSystemSortitionPoolAuthorized = false;
   }
   return member!;
 }

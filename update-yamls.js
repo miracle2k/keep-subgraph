@@ -1,6 +1,14 @@
 const nunjucks = require('nunjucks');
 const fs = require('fs');
 
+
+// Real value is the one given in the argument.
+// See: https://github.com/graphprotocol/graph-node/issues/2007
+function forceMinimumStartBlock(realStartBlock) {
+  return '9958365';
+}
+
+
 const mainNetVars = {
   network: 'mainnet',
   'TBTCDepositToken': {
@@ -13,7 +21,7 @@ const mainNetVars = {
   },
   'KeepBonding': {
     'address': '0x27321f84704a599aB740281E285cc4463d89A3D5',
-    'startBlock': '10834319'
+    'startBlock': forceMinimumStartBlock(10834319),
   },
   'TBTCSystem': {
     'address': '0xe20A5C79b39bC8C363f0f49ADcFa82C2a01ab64a',
@@ -21,7 +29,7 @@ const mainNetVars = {
   },
   'TokenStaking': {
     'address': '0x1293a54e160d1cd7075487898d65266081a15458',
-    'startBlock': '10834080'
+    'startBlock': forceMinimumStartBlock(10834080),
   },
   'KeepRandomBeaconOperator': {
     'address': '0xdF708431162Ba247dDaE362D2c919e0fbAfcf9DE',
@@ -41,15 +49,11 @@ const mainNetVars = {
   },
   'ECDSARewards': {
     'address': '0xc5aC5A8892230E0A3e1c473881A2de7353fFcA88',
-    // Real value is: 11193245
-    // See: https://github.com/graphprotocol/graph-node/issues/2007
-    'startBlock': '9958365'
+    'startBlock': forceMinimumStartBlock(11193245)
   },
   'BeaconRewards': {
     'address': '0xBF51807ACb3394B8550f0554FB9098856Ef5F491',
-    // Real value is: 11192879
-    // See: https://github.com/graphprotocol/graph-node/issues/2007
-    'startBlock': '9958365'
+    'startBlock': forceMinimumStartBlock(11192879),
   }
 }
 

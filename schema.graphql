@@ -386,6 +386,11 @@ type Operator @entity {
   beneficiary: Bytes
   authorizer: Bytes
 
+  # Authorizations
+  randomBeaconOperatorAuthorized: Boolean!
+  bondedECDSAKeepFactoryAuthorized: Boolean!
+  tbtcSystemSortitionPoolAuthorized: Boolean!
+
   # Statistics
   bonded: BigDecimal!
   unboundAvailable: BigDecimal!
@@ -423,6 +428,25 @@ type Operator @entity {
   stakeLockExpiresAt: BigInt
 }
 
+
+enum OperatorAuthorizationType {
+    RandomBeaconOperator,
+    BondedECDSAKeepFactory,
+    TBTCSystemSortitionPool
+}
+
+"""This combines multiple authorization actions, i.e. a node operator authorizing the random beacon contract or others."""
+type OperatorAuthorizationEvent implements Event @entity {
+  id: ID!
+  submitter: Bytes!
+  transactionHash: String!
+  timestamp: BigInt!
+  deposit: Deposit
+  operator: Operator
+
+  authorizationType: OperatorAuthorizationType!
+  isDeauthorization: Boolean!
+}
 
 type OperatorStakedEvent implements Event @entity {
   id: ID!

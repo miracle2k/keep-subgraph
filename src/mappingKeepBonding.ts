@@ -1,8 +1,9 @@
 import {
+  AuthorizeSortitionPoolContractCall,
   BondCreated,
   BondReassigned,
   BondReleased,
-  BondSeized,
+  BondSeized, DeauthorizeSortitionPoolContractCall,
   UnbondedValueDeposited,
   UnbondedValueWithdrawn
 } from "../generated/KeepBonding/KeepBondingContract"
@@ -12,13 +13,13 @@ import {getOrCreateOperator, getStats} from "./models";
 import { Address, BigDecimal, BigInt, ethereum } from "@graphprotocol/graph-ts";
 import {
   Bond, BondReassignedEvent,
-  BondSeizedEvent,
+  BondSeizedEvent, OperatorAuthorizationEvent,
   UnbondedValueDepositedEvent,
   UnbondedValueWithdrawnEvent
 } from "../generated/schema";
 import {BIGDECIMAL_ZERO, BIGINT_ZERO} from "./constants";
-import {getIDFromEvent} from "./utils";
-import {completeLogEvent} from "./mapping";
+import {getIDFromCall, getIDFromEvent} from "./utils";
+import {completeLogEvent, completeLogEventRaw} from "./mapping";
 
 
 // TODO: Consider whether, instead of doing the math ourselves, we should/can call inot the contract to get the
@@ -168,4 +169,49 @@ export function handleUnbondedValueWithdrawn(
   logEvent.amount = event.params.amount;
   logEvent.beneficiary = event.params.beneficiary;
   completeLogEvent(logEvent, event); logEvent.save()
+}
+
+
+// The address returned by BondedECDSAKeepFactory.getSortitionPool(address(TBTCSystem)). Not sure if this can
+// change, but if it does, we will need to introduce a new property on the operator to represent the new
+// sortition pool, as we would not be able to reset a flag on all existing operators, given limitations in the
+// graph's system.
+const TBTC_SYSTEM_SORTITION_POOL_ADDRESS = "0xA3748633c6786e1842b5cC44fa43db1ecC710501";
+
+/**
+ * Call: authorizeSortitionPoolContract().
+ *
+ * Called by the node operator (that is, it's authorizer) with the address of the sortition pool used
+ * by the TBTCSystem.
+ */
+export function handleAuthorizeSortitionPoolContract(call: AuthorizeSortitionPoolContractCall): void {
+  let operator = getOrCreateOperator(call.inputs._operator);
+  if (call.inputs._poolAddress === Address.fromString(TBTC_SYSTEM_SORTITION_POOL_ADDRESS)) {
+    operator.tbtcSystemSortitionPoolAuthorized = true;
+  }
+  operator.save()
+
+  let logEvent = new OperatorAuthorizationEvent(getIDFromCall(call))
+  logEvent.operator = call.inputs._operator.toHexString();
+  logEvent.authorizationType = "TBTCSystemSortitionPool";
+  logEvent.isDeauthorization = false;
+  completeLogEventRaw(logEvent, call.transaction, call.block); logEvent.save()
+}
+
+
+/**
+ * Call: deauthorizeSortitionPoolContract().
+ */
+export function handleDeauthorizeSortitionPoolContract(call: DeauthorizeSortitionPoolContractCall): void {
+  let operator = getOrCreateOperator(call.inputs._operator);
+  if (call.inputs._poolAddress === Address.fromString(TBTC_SYSTEM_SORTITION_POOL_ADDRESS)) {
+    operator.tbtcSystemSortitionPoolAuthorized = true;
+  }
+  operator.save()
+
+  let logEvent = new OperatorAuthorizationEvent(getIDFromCall(call))
+  logEvent.operator = call.inputs._operator.toHexString();
+  logEvent.authorizationType = "TBTCSystemSortitionPool";
+  logEvent.isDeauthorization = true;
+  completeLogEventRaw(logEvent, call.transaction, call.block); logEvent.save()
 }

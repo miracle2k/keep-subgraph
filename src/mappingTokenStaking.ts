@@ -1,4 +1,5 @@
 import {
+  AuthorizeOperatorContractCall,
   ExpiredLockReleased,
   LockReleased,
   OperatorStaked,
@@ -16,16 +17,16 @@ import {getOrCreateOperator} from "./models";
 import {toDecimal} from "./decimalUtils";
 import {
   Lock,
-  Operator,
+  Operator, OperatorAuthorizationEvent,
   OperatorStakedEvent,
   RedemptionRequestedEvent, StakeOwnershipTransferredEvent, TokensSeizedEvent, TokensSlashedEvent,
   TopUpCompletedEvent,
   TopUpInitiatedEvent, UndelegatedEvent
 } from "../generated/schema";
-import { store, ethereum } from "@graphprotocol/graph-ts";
+import {store, ethereum, Address} from "@graphprotocol/graph-ts";
 import {BIGDECIMAL_ZERO} from "./constants";
-import {bigIntMax, getIDFromEvent} from "./utils";
-import {completeLogEvent, getDepositIdFromAddress} from "./mapping";
+import {bigIntMax, getIDFromCall, getIDFromEvent} from "./utils";
+import {completeLogEvent, completeLogEventRaw, getDepositIdFromAddress} from "./mapping";
 
 
 /**
@@ -218,4 +219,31 @@ export function handleTopUpInitiated(event: TopUpInitiated): void {
   logEvent.operator = event.params.operator.toHexString();
   logEvent.amount = event.params.topUp;
   completeLogEvent(logEvent, event); logEvent.save()
+}
+
+/**
+ * Call: authorizeOperatorContract().
+ *
+ * This is called by the node operators during setup, to allow system contracts to access their staked KEEP.
+ */
+export function handleAuthorizeOperatorContract(call: AuthorizeOperatorContractCall): void {
+  let operator = getOrCreateOperator(call.inputs._operator);
+  let type = "";
+  if (call.inputs._operatorContract == Address.fromString("0xA7d9E842EFB252389d613dA88EDa3731512e40bD")) {
+    operator.bondedECDSAKeepFactoryAuthorized = true;
+    type = "BondedECDSAKeepFactory";
+  }
+  if (call.inputs._operatorContract == Address.fromString("0xdF708431162Ba247dDaE362D2c919e0fbAfcf9DE")) {
+    operator.randomBeaconOperatorAuthorized = true;
+    type = "RandomBeaconOperator";
+  }
+  operator.save();
+
+  if (type) {
+    let logEvent = new OperatorAuthorizationEvent(getIDFromCall(call))
+    logEvent.operator = call.inputs._operator.toHexString();
+    logEvent.authorizationType = type;
+    logEvent.isDeauthorization = false;
+    completeLogEventRaw(logEvent, call.transaction, call.block); logEvent.save()
+  }
 }

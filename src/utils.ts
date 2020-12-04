@@ -8,6 +8,13 @@ export function getIDFromEvent(event: ethereum.Event): string {
   return event.transaction.hash.toHex() + "-" + event.logIndex.toString()
 }
 
+/**
+ * If nothing better is available, this generates a unique id from a call.
+ */
+export function getIDFromCall(call: ethereum.Call): string {
+  return "call:" + call.transaction.hash.toHex() + "-" + call.transaction.index.toString();
+}
+
 export function bigIntMax (args: BigInt[]): BigInt {
   return args.reduce<BigInt>((m, e) => e > m ? e : m, BIGINT_ZERO);
 }

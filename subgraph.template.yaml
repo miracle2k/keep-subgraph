@@ -91,6 +91,11 @@ dataSources:
         # Called via keep.withdraw() - not sure?
         - event: UnbondedValueWithdrawn(indexed address,indexed address,uint256)
           handler: handleUnbondedValueWithdrawn
+      callHandlers:
+        - function: authorizeSortitionPoolContract(address,address)
+          handler: handleAuthorizeSortitionPoolContract
+        - function: deauthorizeSortitionPoolContract(address,address)
+          handler: handleDeauthorizeSortitionPoolContract
       file: ./src/mappingKeepBonding.ts
 
   - kind: ethereum/contract
@@ -220,6 +225,9 @@ dataSources:
           handler: handleTopUpInitiated
         - event: Undelegated(indexed address,uint256)
           handler: handleUndelegated
+      callHandlers:
+        - function: authorizeOperatorContract(address,address)
+          handler: handleAuthorizeOperatorContract
       file: ./src/mappingTokenStaking.ts
 
   - kind: ethereum/contract
