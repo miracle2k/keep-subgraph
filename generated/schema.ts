@@ -1908,6 +1908,23 @@ export class Deposit extends Entity {
     this.set("etcToBtcRatio", Value.fromBigInt(value));
   }
 
+  get finalBtcPrice(): BigInt | null {
+    let value = this.get("finalBtcPrice");
+    if (value === null || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set finalBtcPrice(value: BigInt | null) {
+    if (value === null) {
+      this.unset("finalBtcPrice");
+    } else {
+      this.set("finalBtcPrice", Value.fromBigInt(value as BigInt));
+    }
+  }
+
   get depositLiquidation(): string | null {
     let value = this.get("depositLiquidation");
     if (value === null || value.kind == ValueKind.NULL) {

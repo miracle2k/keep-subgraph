@@ -40,6 +40,7 @@ import {
 } from "./constants";
 import {getStats} from "./models";
 import {ECDSA_TYPE, getOrCreateStakedropInterval} from "./stakeDrop";
+import {getOraclePrice} from "./mappingPriceFeed";
 
 
 // Wild-card re-export compiles but then does not find the functions at runtime.
@@ -241,6 +242,8 @@ export function saveDeposit(deposit: Deposit, block: ethereum.Block): void {
       deposit.currentState == 'REDEEMED' ||
       deposit.currentState == 'FAILED_SETUP')) {
     deposit.closedAt = block.timestamp;
+
+    deposit.finalBtcPrice = getOraclePrice();
   }
 
   deposit!.save();

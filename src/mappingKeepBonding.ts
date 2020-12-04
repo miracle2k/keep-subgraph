@@ -183,6 +183,9 @@ const TBTC_SYSTEM_SORTITION_POOL_ADDRESS = "0xA3748633c6786e1842b5cC44fa43db1ecC
  *
  * Called by the node operator (that is, it's authorizer) with the address of the sortition pool used
  * by the TBTCSystem.
+ *
+ * The ECDSAFactory contract can have multiple sortition pools for multiple "applications", one of them being
+ * the TBTCSystem contract.
  */
 export function handleAuthorizeSortitionPoolContract(call: AuthorizeSortitionPoolContractCall): void {
   let operator = getOrCreateOperator(call.inputs._operator);

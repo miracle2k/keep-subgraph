@@ -254,6 +254,9 @@ type Deposit @entity {
   "The ratio of backing ETH to lot size. This allows you to sort by collateralization-ratio."
   etcToBtcRatio: BigInt!
 
+  "The oracle price (price of BTC in ETH) at the time of redemption."
+  finalBtcPrice: BigInt
+
   depositLiquidation: DepositLiquidation
   depositRedemption: DepositRedemption
   depositSetup: DepositSetup @derivedFrom(field: "deposit")
