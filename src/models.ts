@@ -23,7 +23,7 @@ function bigDecimalSqrt(v: BigDecimal): BigDecimal {
   return y
 }
 
-export function updateStakedropRewardFormula(operator: Operator) {
+export function updateStakedropRewardFormula(operator: Operator): void {
   let prevWeight = operator.stakedropRewardWeight;
 
   // =IF(B11>3000,2*SQRT(B11*3000)-3000,B11)
@@ -42,7 +42,7 @@ export function updateStakedropRewardFormula(operator: Operator) {
   operator.stakedropRewardWeight = operator.stakedropEthScore.times(operator.stakedropBoost);
 
   if (operator.stakedropRewardWeight.notEqual(prevWeight)) {
-    const status = getStatus();
+    let status = getStatus();
     status.totalRewardWeight = status.totalRewardWeight.minus(prevWeight).plus(operator.stakedropRewardWeight);
     status.save();
   }
@@ -70,8 +70,10 @@ export function getOrCreateOperator(address: Address): Operator {
     member.randomBeaconOperatorAuthorized = false;
     member.bondedECDSAKeepFactoryAuthorized = false;
     member.tbtcSystemSortitionPoolAuthorized = false;
-    updateStakedropRewardFormula(member);
-
+    member.stakedropRewardWeight = BIGDECIMAL_ZERO;
+    member.stakedropEthScore = BIGDECIMAL_ZERO;
+    member.stakedropBoost = BIGDECIMAL_ZERO;
+    updateStakedropRewardFormula(member!);
   }
   return member!;
 }
