@@ -55,9 +55,11 @@ export function getOrCreateOperator(address: Address): Operator {
     member.address = address;
     member.totalKeepCount = 0;
     member.activeKeepCount = 0;
+    member.ethLocked = BIGDECIMAL_ZERO;
     member.bonded = BIGDECIMAL_ZERO;
     member.unboundAvailable = BIGDECIMAL_ZERO;
     member.beaconGroupCount = 0;
+    member.stakedAmount = BIGDECIMAL_ZERO;
     member.attributableFaultCount = 0;
     member.involvedInFaultCount = 0;
     member.totalFaultCount = 0;
