@@ -114,11 +114,13 @@ dataSources:
       abis:
         - name: TBTCSystem
           file: ./abis/TBTCSystem.json
-        # Needs those as well to be able to create a data source from them / instantiate them?
+        # Needs those as well to be able to instantiate them.
         - name: DepositContract
           file: ./abis/DepositContract.json
         - name: BondedECDSAKeep
           file: ./abis/BondedECDSAKeep.json
+        - name: MedianETHBTC
+          file: ./abis/MedianETHBTC.json
       eventHandlers:
         - event: Created(indexed address,indexed address,uint256)
           handler: handleCreatedEvent
