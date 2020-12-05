@@ -54,7 +54,7 @@ dataSources:
     name: KeepBonding
     network: mainnet
     source:
-      startBlock: 10834319
+      startBlock: 9958365
       address: "0x27321f84704a599aB740281E285cc4463d89A3D5"
       abi: KeepBondingContract
     mapping:
@@ -93,9 +93,9 @@ dataSources:
           handler: handleUnbondedValueWithdrawn
       callHandlers:
         - function: authorizeSortitionPoolContract(address,address)
-          handler: handleAuthorizeOperatorContract
+          handler: handleAuthorizeSortitionPoolContract
         - function: deauthorizeSortitionPoolContract(address,address)
-          handler: handleAuthorizeOperatorContract
+          handler: handleDeauthorizeSortitionPoolContract
       file: ./src/mappingKeepBonding.ts
 
   - kind: ethereum/contract
@@ -177,7 +177,7 @@ dataSources:
     name: StakingContract
     network: mainnet
     source:
-      startBlock: 10834080
+      startBlock: 9958365
       address: "0x1293a54e160d1cd7075487898d65266081a15458"
       abi: StakingContract
     mapping:

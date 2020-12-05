@@ -93,9 +93,9 @@ dataSources:
           handler: handleUnbondedValueWithdrawn
       callHandlers:
         - function: authorizeSortitionPoolContract(address,address)
-          handler: handleAuthorizeOperatorContract
+          handler: handleAuthorizeSortitionPoolContract
         - function: deauthorizeSortitionPoolContract(address,address)
-          handler: handleAuthorizeOperatorContract
+          handler: handleDeauthorizeSortitionPoolContract
       file: ./src/mappingKeepBonding.ts
 
   - kind: ethereum/contract
