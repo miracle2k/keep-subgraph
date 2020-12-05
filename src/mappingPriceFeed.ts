@@ -17,6 +17,6 @@ export function handleLogMedianPrice(event: LogMedianPrice): void {
 }
 
 export function getOraclePrice(): BigInt {
-  const oracle = MedianETHBTC.bind(Address.fromString(ORACLE_ADDRESS));
+  let oracle = MedianETHBTC.bind(Address.fromString(ORACLE_ADDRESS));
   return oracle.read();
 }

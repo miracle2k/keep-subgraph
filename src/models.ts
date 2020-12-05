@@ -35,9 +35,8 @@ export function updateStakedropRewardFormula(operator: Operator): void {
   // all min stake values, or come up with a clever formula.
   // =IF(B11=0,0,1+MIN(C11/70000,SQRT(C11/(B11*500))))
   let boostFactor1 = operator.stakedAmount.div(BIG_DECIMAL_MIN_STAKE);
-  let boostFactor2 = bigDecimalSqrt(operator.stakedAmount.div(operator.ethLocked.times(BIG_DECIMAL_500)));
-  operator.stakedropBoost = operator.ethLocked.equals(BIGDECIMAL_ZERO) ? BIGDECIMAL_ZERO :
-      BIG_DECIMAL_1.plus(boostFactor1.gt(boostFactor2) ? boostFactor2 : boostFactor1);
+  let boostFactor2 = operator.ethLocked.equals(BIGDECIMAL_ZERO) ? BIGDECIMAL_ZERO : bigDecimalSqrt(operator.stakedAmount.div(operator.ethLocked.times(BIG_DECIMAL_500)));
+  operator.stakedropBoost = BIG_DECIMAL_1.plus(boostFactor1.gt(boostFactor2) ? boostFactor2 : boostFactor1);
 
   operator.stakedropRewardWeight = operator.stakedropEthScore.times(operator.stakedropBoost);
 
