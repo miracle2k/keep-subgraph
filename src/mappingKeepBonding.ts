@@ -182,7 +182,7 @@ export function handleUnbondedValueWithdrawn(
 // change, but if it does, we will need to introduce a new property on the operator to represent the new
 // sortition pool, as we would not be able to reset a flag on all existing operators, given limitations in the
 // graph's system.
-const TBTC_SYSTEM_SORTITION_POOL_ADDRESS = "0xA3748633c6786e1842b5cC44fa43db1ecC710501";
+const TBTC_SYSTEM_SORTITION_POOL_ADDRESS = "0xa3748633c6786e1842b5cc44fa43db1ecc710501";
 
 /**
  * Call: authorizeSortitionPoolContract().
@@ -195,14 +195,17 @@ const TBTC_SYSTEM_SORTITION_POOL_ADDRESS = "0xA3748633c6786e1842b5cC44fa43db1ecC
  */
 export function handleAuthorizeSortitionPoolContract(call: AuthorizeSortitionPoolContractCall): void {
   let operator = getOrCreateOperator(call.inputs._operator);
-  if (call.inputs._poolAddress === Address.fromString(TBTC_SYSTEM_SORTITION_POOL_ADDRESS)) {
+  let authType = 'UnknownContract';
+
+  if (call.inputs._poolAddress.toHexString() === TBTC_SYSTEM_SORTITION_POOL_ADDRESS) {
     operator.tbtcSystemSortitionPoolAuthorized = true;
+    authType = 'TBTCSystemSortitionPool';
   }
   operator.save()
 
   let logEvent = new OperatorAuthorizationEvent(getIDFromCall(call))
   logEvent.operator = call.inputs._operator.toHexString();
-  logEvent.authorizationType = "TBTCSystemSortitionPool";
+  logEvent.authorizationType = authType;
   logEvent.isDeauthorization = false;
   completeLogEventRaw(logEvent, call.transaction, call.block); logEvent.save()
 }
@@ -213,14 +216,17 @@ export function handleAuthorizeSortitionPoolContract(call: AuthorizeSortitionPoo
  */
 export function handleDeauthorizeSortitionPoolContract(call: DeauthorizeSortitionPoolContractCall): void {
   let operator = getOrCreateOperator(call.inputs._operator);
-  if (call.inputs._poolAddress === Address.fromString(TBTC_SYSTEM_SORTITION_POOL_ADDRESS)) {
+  let authType = 'UnknownContract';
+
+  if (call.inputs._poolAddress.toHexString() === TBTC_SYSTEM_SORTITION_POOL_ADDRESS) {
     operator.tbtcSystemSortitionPoolAuthorized = true;
+    authType = 'TBTCSystemSortitionPool';
   }
   operator.save()
 
   let logEvent = new OperatorAuthorizationEvent(getIDFromCall(call))
   logEvent.operator = call.inputs._operator.toHexString();
-  logEvent.authorizationType = "TBTCSystemSortitionPool";
+  logEvent.authorizationType = authType;
   logEvent.isDeauthorization = true;
   completeLogEventRaw(logEvent, call.transaction, call.block); logEvent.save()
 }

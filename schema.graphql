@@ -439,6 +439,7 @@ type Operator @entity {
 
 
 enum OperatorAuthorizationType {
+    UnknownContract,
     RandomBeaconOperator,
     BondedECDSAKeepFactory,
     TBTCSystemSortitionPool
