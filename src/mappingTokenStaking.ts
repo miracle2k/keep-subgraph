@@ -81,7 +81,9 @@ export function handleStakeLocked(event: StakeLocked): void {
   // Maintain `Operator.stakeLockExpiresAt`, which requires a helper-list.
   let operator = getOrCreateOperator(event.params.operator);
   if (!operator.stakeLockExpiryPoints) { operator.stakeLockExpiryPoints = []; }
-  operator.stakeLockExpiryPoints.push(event.params.until);
+  let points = operator.stakeLockExpiryPoints!;
+  points.push(event.params.until);
+  operator.stakeLockExpiryPoints = points;
   operator.stakeLockExpiresAt = bigIntMax(operator.stakeLockExpiryPoints!);
   operator.save();
 }
