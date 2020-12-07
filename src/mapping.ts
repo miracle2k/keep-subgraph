@@ -10,7 +10,7 @@ import {
   RegisteredPubkey,
   SetupFailed, ExitedCourtesyCall,
 } from "../generated/TBTCSystem/TBTCSystem";
-import { log, BigInt, Address, ethereum, Entity, DataSourceContext, log } from "@graphprotocol/graph-ts";
+import { BigInt, Address, ethereum, Entity, DataSourceContext } from "@graphprotocol/graph-ts";
 import { DepositContract as DepositSmartContract } from "../generated/templates/DepositContract/DepositContract";
 import { BondedECDSAKeep as KeepSmartContract } from "../generated/templates/BondedECDSAKeep/BondedECDSAKeep";
 import {BondedECDSAKeep as BondedECDSAKeepTemplate, DepositContract} from "../generated/templates";
