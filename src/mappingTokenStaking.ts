@@ -238,16 +238,21 @@ export function handleAuthorizeOperatorContract(call: AuthorizeOperatorContractC
     operator.bondedECDSAKeepFactoryAuthorized = true;
     type = "BondedECDSAKeepFactory";
   }
-  if (call.inputs._operatorContract == Address.fromString("0xdF708431162Ba247dDaE362D2c919e0fbAfcf9DE")) {
+  else if (call.inputs._operatorContract == Address.fromString("0xdF708431162Ba247dDaE362D2c919e0fbAfcf9DE")) {
     operator.randomBeaconOperatorAuthorized = true;
     type = "RandomBeaconOperator";
   }
+  else {
+    type = "UnknownContract";
+  }
+
   operator.save();
 
   if (type) {
     let logEvent = new OperatorAuthorizationEvent(getIDFromCall(call))
     logEvent.operator = call.inputs._operator.toHexString();
     logEvent.authorizationType = type;
+    logEvent.contractAddress = call.inputs._operatorContract;
     logEvent.isDeauthorization = false;
     completeLogEventRaw(logEvent, call.transaction, call.block); logEvent.save()
   }

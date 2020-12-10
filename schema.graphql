@@ -456,6 +456,7 @@ type OperatorAuthorizationEvent implements Event @entity {
 
   authorizationType: OperatorAuthorizationType!
   isDeauthorization: Boolean!
+  contractAddress: Bytes!
 }
 
 type OperatorStakedEvent implements Event @entity {

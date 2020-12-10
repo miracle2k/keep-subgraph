@@ -3029,6 +3029,15 @@ export class OperatorAuthorizationEvent extends Entity {
   set isDeauthorization(value: boolean) {
     this.set("isDeauthorization", Value.fromBoolean(value));
   }
+
+  get contractAddress(): Bytes {
+    let value = this.get("contractAddress");
+    return value.toBytes();
+  }
+
+  set contractAddress(value: Bytes) {
+    this.set("contractAddress", Value.fromBytes(value));
+  }
 }
 
 export class OperatorStakedEvent extends Entity {

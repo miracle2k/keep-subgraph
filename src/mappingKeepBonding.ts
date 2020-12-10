@@ -206,6 +206,7 @@ export function handleAuthorizeSortitionPoolContract(call: AuthorizeSortitionPoo
   let logEvent = new OperatorAuthorizationEvent(getIDFromCall(call))
   logEvent.operator = call.inputs._operator.toHexString();
   logEvent.authorizationType = authType;
+  logEvent.contractAddress = call.inputs._poolAddress;
   logEvent.isDeauthorization = false;
   completeLogEventRaw(logEvent, call.transaction, call.block); logEvent.save()
 }
@@ -226,6 +227,7 @@ export function handleDeauthorizeSortitionPoolContract(call: DeauthorizeSortitio
 
   let logEvent = new OperatorAuthorizationEvent(getIDFromCall(call))
   logEvent.operator = call.inputs._operator.toHexString();
+  logEvent.contractAddress = call.inputs._poolAddress;
   logEvent.authorizationType = authType;
   logEvent.isDeauthorization = true;
   completeLogEventRaw(logEvent, call.transaction, call.block); logEvent.save()
