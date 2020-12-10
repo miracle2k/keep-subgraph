@@ -9,19 +9,36 @@ let BIG_DECIMAL_1 = BigDecimal.fromString("1");
 let BIG_DECIMAL_2 = BigDecimal.fromString("2");
 let BIG_DECIMAL_500 = BigDecimal.fromString("500");
 let BIG_DECIMAL_3000 = BigDecimal.fromString("3000");
-let BIG_DECIMAL_MIN_STAKE = BigDecimal.fromString("80000")
+let BIG_DECIMAL_MIN_STAKE = BigDecimal.fromString("70000")
 
-function bigDecimalSqrt(v: BigDecimal): BigDecimal {
-  let x = v;
-  let z = x.plus(BigDecimal.fromString("1")).div(BIG_DECIMAL_2);
-  let y = x;
-  while (z < y) {
-    y = z
-    z = x.div(z).plus(z).div(BIG_DECIMAL_2)
+
+// Calculate the square root of a BigDecimal using the Babylonian method.
+// http://en.wikipedia.org/wiki/Methods_of_computing_square_roots#Babylonian_method
+// @param n - the number to compute the square root of
+// @param g - the best guess so far (can omit from initial call)
+// From: https://gist.github.com/joelpt/3824024
+//
+// Initially, I attempted to port BigInt.sqrt() from graph-ts to BigDecimal, but this
+// implementation does not support values between 0 and 1.
+function bigDecimalSqrt(n: BigDecimal, g: BigDecimal|null = null): BigDecimal {
+  if (!g) {
+    // Take an initial guess at the square root
+    g = n.div(BIG_DECIMAL_2);
   }
-
-  return y
+  if (g == BIGDECIMAL_ZERO) {
+    return BIGDECIMAL_ZERO;
+  }
+  let d = n.div(g!);
+  let ng = (d.plus(g!)).div(BIG_DECIMAL_2)
+  if (g == ng) {
+    // The new guess is the same as the old guess; further guesses
+    // can get no more accurate so we return this guess
+    return g!;
+  }
+  // Recursively solve for closer and closer approximations of the square root
+  return bigDecimalSqrt(n, ng);
 }
+
 
 export function updateStakedropRewardFormula(operator: Operator): void {
   let prevWeight = operator.stakedropRewardWeight;
@@ -37,7 +54,6 @@ export function updateStakedropRewardFormula(operator: Operator): void {
   let boostFactor1 = operator.stakedAmount.div(BIG_DECIMAL_MIN_STAKE);
   let boostFactor2 = operator.ethLocked.equals(BIGDECIMAL_ZERO) ? BIGDECIMAL_ZERO : bigDecimalSqrt(operator.stakedAmount.div(operator.ethLocked.times(BIG_DECIMAL_500)));
   operator.stakedropBoost = BIG_DECIMAL_1.plus(boostFactor1.gt(boostFactor2) ? boostFactor2 : boostFactor1);
-
   operator.stakedropRewardWeight = operator.stakedropEthScore.times(operator.stakedropBoost);
 
   if (operator.stakedropRewardWeight.notEqual(prevWeight)) {
