@@ -243,6 +243,7 @@ export function saveDeposit(deposit: Deposit, block: ethereum.Block): void {
       deposit.currentState == 'FAILED_SETUP')) {
     deposit.closedAt = block.timestamp;
 
+    // TODO: We should rather try to log this in when we *enter* a liquidation-like state.
     deposit.finalBtcPrice = getOraclePrice();
   }
 
