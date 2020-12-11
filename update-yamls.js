@@ -41,7 +41,10 @@ const mainNetVars = {
   },
   "MedianETHBTC": {
     'address': '0x81a679f98b63b3ddf2f17cb5619f4d6775b3c5ed',
-    'startBlock': '10941427'
+    // This starts long before us, but we don't care to do it earlier than the start of our system.
+    // We are lucky that between that system start and the first LogMediumEvent the price is not needed.
+    // Strictly speaking, we should go for the first LogMedian event *before* that time.
+    'startBlock': forceMinimumStartBlock(9849211)
   },
   'TokenGrant': {
     'address': '0x175989c71Fd023D580C65F5dC214002687ff88B7',

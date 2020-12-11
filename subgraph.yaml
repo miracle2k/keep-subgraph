@@ -289,7 +289,7 @@ dataSources:
     source:
       address: "0x81a679f98b63b3ddf2f17cb5619f4d6775b3c5ed"
       abi: MedianETHBTC
-      startBlock: 10941427
+      startBlock: 9958365
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
