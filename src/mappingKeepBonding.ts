@@ -197,7 +197,7 @@ export function handleAuthorizeSortitionPoolContract(call: AuthorizeSortitionPoo
   let operator = getOrCreateOperator(call.inputs._operator);
   let authType = 'UnknownContract';
 
-  if (call.inputs._poolAddress.toHexString() === TBTC_SYSTEM_SORTITION_POOL_ADDRESS) {
+  if (call.inputs._poolAddress.toHexString() == TBTC_SYSTEM_SORTITION_POOL_ADDRESS) {
     operator.tbtcSystemSortitionPoolAuthorized = true;
     authType = 'TBTCSystemSortitionPool';
   }
@@ -219,7 +219,7 @@ export function handleDeauthorizeSortitionPoolContract(call: DeauthorizeSortitio
   let operator = getOrCreateOperator(call.inputs._operator);
   let authType = 'UnknownContract';
 
-  if (call.inputs._poolAddress.toHexString() === TBTC_SYSTEM_SORTITION_POOL_ADDRESS) {
+  if (call.inputs._poolAddress.toHexString() == TBTC_SYSTEM_SORTITION_POOL_ADDRESS) {
     operator.tbtcSystemSortitionPoolAuthorized = true;
     authType = 'TBTCSystemSortitionPool';
   }
