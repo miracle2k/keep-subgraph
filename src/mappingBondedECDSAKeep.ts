@@ -88,7 +88,15 @@ export function handleERC20RewardDistributed(event: ERC20RewardDistributed): voi
   // call to the deposit, and then we get the keep from there.
   // NB: It is an event triggered by the keep contract, but called through the deposit.
   let depositAddress = event.transaction.to!;
-  let deposit = Deposit.load(getDepositIdFromAddress(depositAddress))!;
+  let deposit = Deposit.load(getDepositIdFromAddress(depositAddress));
+
+  if (!deposit) {
+    // This happens at least once on ropsten currently: 0x1df961f9d4a7a4e8cb6ff99ac8697f835117d2d9
+    // I am assuming then that this is not due to a normal provideRedemptionProof(), but that the event is triggered
+    // with an indirect call to it. How could we solve this?
+    log.warning('handleERC20RewardDistributed(): no deposit found for {}', [event.transaction.to ? event.transaction.to.toHexString() : "(no event.to)"]);
+    return;
+  }
 
   log.info('handleERC20RewardDistributed deposit.keep={}, deposit={}', [deposit.bondedECDSAKeep, deposit.id]);
   let keep = BondedECDSAKeep.load(deposit.bondedECDSAKeep!)!;
