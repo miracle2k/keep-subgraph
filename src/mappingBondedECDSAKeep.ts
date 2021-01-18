@@ -79,7 +79,7 @@ export function handleSubmitPublicKey(call: SubmitPublicKeyCall): void {
 /**
  * Event: ERC20RewardDistributed
  *
- * Emitted when a deposit is redeemed, and the designers get paid their reward in the TBTC (ERC20 token).
+ * Emitted when a deposit is redeemed, and the signers get paid their reward in the TBTC (ERC20 token).
  *
  * Call path: Deposit.provideRedemptionProof() -> Deposit.distributeSignerFee() -> Keep.distributeERC20Reward().
  */

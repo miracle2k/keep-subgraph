@@ -849,7 +849,11 @@ type Grant @entity {
   withdrawn: BigInt!
   staked: BigInt!
   stakingPolicy: Bytes!
+
+  "The transaction in which this grant was created."
   transactionHash: Bytes!
+
+  "The time this grant was last updated."
   timestamp: BigInt
 }
 
