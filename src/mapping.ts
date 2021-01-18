@@ -133,6 +133,13 @@ function getOrCreateDeposit(depositID: string): Deposit {
 export function handleCreatedEvent(event: Created): void {
   let stats = getStats();
   stats.depositCount += 1;
+  // The fee paid to the random beacon is the ETH sent with this request. Note that in theory
+  // the sender could send *more* than the fee; the remainder should be owned by the deposit
+  // contract, and will then be sent to who?  We consider this to be a fee paid though.
+  // TODO: If deposit setup fails, this fee is taken from the signer bonds, and made withdrawable
+  // from the deposit. Handle this, if we can! We'd need to "guess" the amount withdrawable after
+  // `notifySignerSetupFailed`, and we could watch `withdrawFunds()` calls to figure out when this happens.
+  stats.randomBeaconFees = stats.randomBeaconFees.plus(event.transaction.value);
   stats.save()
 
   let contractAddress = event.params._depositContractAddress;

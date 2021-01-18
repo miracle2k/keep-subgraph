@@ -733,6 +733,8 @@ type StatsRecord @entity {
 
   "The amount of fees, in TBTC, earned by signers (and paid by depositors or redeemers)."
   tbtcFees: BigInt!
+  "The amount of fees, in Wei, that depositors have paid for opening a deposit."
+  randomBeaconFees: BigInt!
 
   totalStakedropBeaconRewards: BigInt!
   totalStakedropECDSARewards: BigInt!
