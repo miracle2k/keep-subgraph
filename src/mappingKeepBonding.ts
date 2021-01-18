@@ -10,7 +10,7 @@ import {
 
 import { toDecimal } from "./decimalUtils";
 import {getOrCreateOperator, getStats, updateStakedropRewardFormula} from "./models";
-import { Address, BigDecimal, BigInt, ethereum } from "@graphprotocol/graph-ts";
+import {Address, BigDecimal, BigInt, ethereum, log} from "@graphprotocol/graph-ts";
 import {
   Bond, BondReassignedEvent,
   BondSeizedEvent, Operator, OperatorAuthorizationEvent,
@@ -164,6 +164,7 @@ export function handleUnbondedValueWithdrawn(
   // https://etherscan.io/address/0x207d73dce73ec3a10037fc2a0c926186002c6aa2
   let member = Operator.load(event.params.operator.toHexString());
   if (!member) {
+    log.warning("UnbondedValueWithdrawn for unknown operator: {} ", [event.params.operator.toHexString()]);
     return;
   }
 
