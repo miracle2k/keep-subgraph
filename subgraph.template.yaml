@@ -401,6 +401,32 @@ dataSources:
       file: ./src/mappingStakedrop.ts
   {% endif %}
 
+  {% if ECDSARewardsDistributor %}
+  - kind: ethereum/contract
+    name: ECDSARewardsDistributor
+    network: {{ network }}
+    source:
+      startBlock: {{ ECDSARewardsDistributor.startBlock }}
+      address: "{{ ECDSARewardsDistributor.address }}"
+      abi: ECDSARewardsDistributor
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - StakedropInterval
+      abis:
+        - name: ECDSARewardsDistributor
+          file: ./abis/ECDSARewardsDistributor.json
+      eventHandlers:
+        - event: RewardsClaimed(indexed bytes32,indexed uint256,indexed address,address,uint256)
+          handler: handleRewardsClaimed
+        # Emitted once for each weekly interval. The actual mapping of amounts to operator addresses
+        # is in an off-chain JSON file, but we could read this to get total allocation numbers.
+        # RewardsAllocated(bytes32,uint256)
+      file: ./src/mappingStakedrop.ts
+  {% endif %}
+
 templates:
   - name: DepositContract
     kind: ethereum/contract

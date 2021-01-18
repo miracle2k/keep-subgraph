@@ -13,6 +13,7 @@ import {Address, BigInt, Bytes, log} from "@graphprotocol/graph-ts/index";
 import {getOrCreateOperator, getStats} from "./models";
 import {KeepRandomBeaconOperator} from "../generated/KeepRandomBeaconOperator/KeepRandomBeaconOperator";
 import {getBeaconGroupId} from "./modelsRandomBeacon";
+import {RewardsClaimed} from "../generated/ECDSARewardsDistributor/ECDSARewardsDistributor";
 
 
 /**
@@ -145,3 +146,14 @@ export function handleReceiveBeaconApproval(call: ReceiveBeaconApprovalCall): vo
 //             or the member interacts with the system.
 
 // wanted: per member, per interval total rewards distributed
+
+
+/**
+ * RewardsClaimed event on the ECDSARewardsDistributor contract (the new stakedrop system).
+ */
+export function handleRewardsClaimed(event: RewardsClaimed): void {
+  let operator = getOrCreateOperator(event.params.operator);
+  operator.stakedropRewardsDispensed = operator.stakedropRewardsDispensed.plus(event.params.amount)
+  operator.stakedropECDSARewardsDispensed = operator.stakedropECDSARewardsDispensed.plus(event.params.amount);
+  operator.save();
+}

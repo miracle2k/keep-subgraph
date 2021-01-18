@@ -321,6 +321,8 @@ dataSources:
 
   
 
+  
+
 templates:
   - name: DepositContract
     kind: ethereum/contract

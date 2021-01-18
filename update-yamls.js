@@ -59,6 +59,10 @@ const mainNetVars = {
   'BeaconRewards': {
     'address': '0xBF51807ACb3394B8550f0554FB9098856Ef5F491',
     'startBlock': forceMinimumStartBlock(11192879),
+  },
+  'ECDSARewardsDistributor': {
+    'address': '0x5b9E48F8818962699fe38F5989b130ceE691bBb3',
+    'startBlock': forceMinimumStartBlock(11432833),
   }
 }
 
