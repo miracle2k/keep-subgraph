@@ -2922,6 +2922,26 @@ export class Operator extends Entity {
       this.set("stakeLockExpiresAt", Value.fromBigInt(value as BigInt));
     }
   }
+
+  get _mostRecentBondSeizedEventId(): string | null {
+    let value = this.get("_mostRecentBondSeizedEventId");
+    if (value === null || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set _mostRecentBondSeizedEventId(value: string | null) {
+    if (value === null) {
+      this.unset("_mostRecentBondSeizedEventId");
+    } else {
+      this.set(
+        "_mostRecentBondSeizedEventId",
+        Value.fromString(value as string)
+      );
+    }
+  }
 }
 
 export class OperatorAuthorizationEvent extends Entity {

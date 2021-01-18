@@ -436,6 +436,9 @@ type Operator @entity {
   stakeLockExpiryPoints: [BigInt!]
   "The time when the last lock on the operator's stake expires. This can change when a lock is released early, or a new lock is added."
   stakeLockExpiresAt: BigInt
+
+  # Internal use
+  _mostRecentBondSeizedEventId: ID
 }
 
 
