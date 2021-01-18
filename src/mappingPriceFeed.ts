@@ -1,6 +1,6 @@
 import {PriceFeed} from "../generated/schema";
 import {LogMedianPrice} from "../generated/MedianETHBTC/MedianETHBTC";
-import {BigInt} from "@graphprotocol/graph-ts";
+import {BigInt, log} from "@graphprotocol/graph-ts";
 
 
 const ORACLE_ADDRESS = '0x81a679f98b63b3ddf2f17cb5619f4d6775b3c5ed';
@@ -18,6 +18,10 @@ export function handleLogMedianPrice(event: LogMedianPrice): void {
 
 export function getOraclePrice(): BigInt|null {
   // Note: We have to read from our own storage. We cannot read from the contract, it blocks unauthorized reads.
-  const feed = PriceFeed.load(ORACLE_ADDRESS);
+  let feed = PriceFeed.load(ORACLE_ADDRESS);
+  if (!feed) {
+    log.warning('PriceFeed: has no value yet', [])
+    return null;
+  }
   return feed.val;
 }

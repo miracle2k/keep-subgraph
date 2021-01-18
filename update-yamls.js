@@ -44,6 +44,8 @@ const mainNetVars = {
     // This starts long before us, but we don't care to do it earlier than the start of our system.
     // We are lucky that between that system start and the first LogMediumEvent the price is not needed.
     // Strictly speaking, we should go for the first LogMedian event *before* that time.
+
+    // TODO: still not sure why this sometimes triggers the "PriceFeed: has no value yet" warning.
     'startBlock': forceMinimumStartBlock(9849211)
   },
   'TokenGrant': {
