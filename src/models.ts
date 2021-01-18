@@ -120,6 +120,7 @@ export function getStats(): StatsRecord {
     stats.totalBondsSeized = BIGDECIMAL_ZERO;
     stats.btcUnderDeposit = BIGINT_ZERO;
     stats.btcInActiveDeposits = BIGINT_ZERO;
+    stats.tbtcFees = BIGINT_ZERO;
     stats.totalGrantCount = 0;
     stats.totalGrantIssued = BIGINT_ZERO;
     stats.depositCount = 0;

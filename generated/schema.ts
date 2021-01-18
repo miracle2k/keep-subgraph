@@ -5242,6 +5242,15 @@ export class StatsRecord extends Entity {
     this.set("totalGrantIssued", Value.fromBigInt(value));
   }
 
+  get tbtcFees(): BigInt {
+    let value = this.get("tbtcFees");
+    return value.toBigInt();
+  }
+
+  set tbtcFees(value: BigInt) {
+    this.set("tbtcFees", Value.fromBigInt(value));
+  }
+
   get totalStakedropBeaconRewards(): BigInt {
     let value = this.get("totalStakedropBeaconRewards");
     return value.toBigInt();

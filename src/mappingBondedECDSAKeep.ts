@@ -6,7 +6,7 @@ import {
   SubmitPublicKeyCall
 } from "../generated/templates/BondedECDSAKeep/BondedECDSAKeep";
 import {BondedECDSAKeep, Deposit, StakedropInterval} from "../generated/schema";
-import {getOrCreateOperator} from "./models";
+import {getOrCreateOperator, getStats} from "./models";
 import {Address, BigInt, log} from "@graphprotocol/graph-ts/index";
 import {getDepositIdFromAddress} from "./mapping";
 
@@ -112,6 +112,9 @@ export function handleERC20RewardDistributed(event: ERC20RewardDistributed): voi
     operator.save()
   }
 
+  let stats = getStats();
+  stats.tbtcFees = stats.tbtcFees.plus(event.params.amount);
+  stats.save();
 }
 
 // Seems like this is never used in the contracts.

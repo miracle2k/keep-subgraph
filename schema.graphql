@@ -731,6 +731,9 @@ type StatsRecord @entity {
   "Total amount of grants issued."
   totalGrantIssued: BigInt!
 
+  "The amount of fees, in TBTC, earned by signers (and paid by depositors or redeemers)."
+  tbtcFees: BigInt!
+
   totalStakedropBeaconRewards: BigInt!
   totalStakedropECDSARewards: BigInt!
   unallocatedStakedropBeaconRewards: BigInt!
