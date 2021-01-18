@@ -13,7 +13,7 @@ import {getOrCreateOperator, getStats, updateStakedropRewardFormula} from "./mod
 import { Address, BigDecimal, BigInt, ethereum } from "@graphprotocol/graph-ts";
 import {
   Bond, BondReassignedEvent,
-  BondSeizedEvent, OperatorAuthorizationEvent,
+  BondSeizedEvent, Operator, OperatorAuthorizationEvent,
   UnbondedValueDepositedEvent,
   UnbondedValueWithdrawnEvent
 } from "../generated/schema";
@@ -160,6 +160,13 @@ export function handleUnbondedValueDeposited(
 export function handleUnbondedValueWithdrawn(
     event: UnbondedValueWithdrawn
 ): void {
+  // TODO: Fix this: there is a withdraw operation from what I assume is not the operator but the owner, maybe:
+  // https://etherscan.io/address/0x207d73dce73ec3a10037fc2a0c926186002c6aa2
+  let member = Operator.load(event.params.operator.toHexString());
+  if (!member) {
+    return;
+  }
+
   let operator = getOrCreateOperator(event.params.operator);
   operator.unboundAvailable = operator.unboundAvailable.minus(toDecimal(event.params.amount));
   operator.ethLocked = operator.ethLocked.minus(toDecimal(event.params.amount));
