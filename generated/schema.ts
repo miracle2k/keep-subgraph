@@ -2769,6 +2769,15 @@ export class Operator extends Entity {
     this.set("stakedAmount", Value.fromBigDecimal(value));
   }
 
+  get tbtcFeesEarned(): BigInt {
+    let value = this.get("tbtcFeesEarned");
+    return value.toBigInt();
+  }
+
+  set tbtcFeesEarned(value: BigInt) {
+    this.set("tbtcFeesEarned", Value.fromBigInt(value));
+  }
+
   get totalTBTCRewards(): BigInt {
     let value = this.get("totalTBTCRewards");
     return value.toBigInt();

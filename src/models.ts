@@ -79,6 +79,7 @@ export function getOrCreateOperator(address: Address): Operator {
     member.involvedInFaultCount = 0;
     member.totalFaultCount = 0;
     member.totalTBTCRewards = BIGINT_ZERO;
+    member.tbtcFeesEarned = BIGINT_ZERO;
     member.totalETHRewards = BIGINT_ZERO;
     member.totalBeaconRewards = BIGINT_ZERO;
     member.stakedropBeaconRewardsDispensed = BIGINT_ZERO;

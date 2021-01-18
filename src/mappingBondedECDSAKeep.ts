@@ -105,9 +105,10 @@ export function handleERC20RewardDistributed(event: ERC20RewardDistributed): voi
   let members = keep.members;
   for (let i=0; i<members.length; i++) {
     let operator = getOrCreateOperator(Address.fromString(members[i]!));
-    operator.totalTBTCRewards = operator.totalTBTCRewards.plus(
+    operator.tbtcFeesEarned = operator.tbtcFeesEarned.plus(
       event.params.amount.div(BigInt.fromI32(members.length))
     );
+    operator.totalTBTCRewards = operator.tbtcFeesEarned;
     operator.save()
   }
 
