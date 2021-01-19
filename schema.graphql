@@ -251,6 +251,9 @@ type Deposit @entity {
   endOfTerm: BigInt
   bondedECDSAKeep: BondedECDSAKeep
 
+  "The fee in Wei paid to the random beacon operators for selecting the signers for this deposit."
+  randomBeaconFee: BigInt!
+
   "The ratio of backing ETH to lot size. This allows you to sort by collateralization-ratio."
   etcToBtcRatio: BigInt!
 

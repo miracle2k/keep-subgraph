@@ -158,6 +158,7 @@ export function handleCreatedEvent(event: Created): void {
   deposit.creator = event.transaction.from;
   deposit.lastActor = event.transaction.from;
   deposit.currentStateTimesOutAt = event.block.timestamp.plus(FORMATION_TIMEOUT);
+  deposit.randomBeaconFee = event.transaction.value;
 
   // Instantiate the graph templates: this indexes the newly created contracts for events
   let context = new DataSourceContext()

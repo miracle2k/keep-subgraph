@@ -15,7 +15,7 @@ import {
 } from "./mapping";
 import { Address, log } from "@graphprotocol/graph-ts";
 import {ethereum} from "@graphprotocol/graph-ts/index";
-import {getOrCreateOperator, getOrCreateUser} from "./models";
+import {getOrCreateOperator, getOrCreateUser, getStats} from "./models";
 
 
 function newSetupFailedEvent(depositAddress: Address, reason: string, call: ethereum.Call): SetupFailedEvent {
@@ -107,6 +107,11 @@ export function handleNotifySignerSetupFailed(call: NotifySignerSetupFailedCall)
         }
       }
     }
+
+    // The random beacon fee is given back to the depositor in this case (it is made withdrawable).
+    let stats = getStats();
+    stats.randomBeaconFees = stats.randomBeaconFees.minus(deposit.randomBeaconFee);
+    stats.save();
   }
 
   deposit.currentState = 'FAILED_SETUP';

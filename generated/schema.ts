@@ -1899,6 +1899,15 @@ export class Deposit extends Entity {
     }
   }
 
+  get randomBeaconFee(): BigInt {
+    let value = this.get("randomBeaconFee");
+    return value.toBigInt();
+  }
+
+  set randomBeaconFee(value: BigInt) {
+    this.set("randomBeaconFee", Value.fromBigInt(value));
+  }
+
   get etcToBtcRatio(): BigInt {
     let value = this.get("etcToBtcRatio");
     return value.toBigInt();
