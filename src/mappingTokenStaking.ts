@@ -1,5 +1,6 @@
 import {
   AuthorizeOperatorContractCall,
+  CancelStakeCall,
   ExpiredLockReleased,
   LockReleased,
   OperatorStaked,
@@ -130,6 +131,17 @@ export function handleRecoveredStake(event: RecoveredStake): void{
   // tokenStaking.save()
 
 
+}
+
+/**
+ * Call: cancelStake().
+ *
+ * Called when a delegation is cancelled a few hours after it was started
+ */
+export function handleCancelledStake(call: CancelStakeCall): void{
+  let operator = getOrCreateOperator(call.inputs._operator);
+  operator.stakedAmount = BIGDECIMAL_ZERO;
+  operator.save();
 }
 
 /**
