@@ -128,8 +128,6 @@ export function handleRecoveredStake(event: RecoveredStake): void{
   // tokenStaking.totalStaker = tokenStaking.totalStaker.minus(BIGINT_ONE);
   // tokenStaking.totalTokenStaking = toDecimal(mainContract.balanceOf(event.address));
   // tokenStaking.save()
-
-
 }
 
 /**
@@ -179,23 +177,18 @@ export function handleTokensSeized(event: TokensSeized): void {
   // tokenStaking.save()
 }
 
-// Tokens go back to the owner after an undelegation period, but not yet.
+/**
+ * Event: Undelegated.
+ *
+ * This starts the undelegation period - the tokens are still staked, until `recoverStake` is called
+ * once the undelegation period ends. At this point, they go to the owner.
+ */
 export function handleUndelegated(event: Undelegated): void {
-  // TODO: Somehow store as a state that the undelegation period started.
-  // let member = getOrCreateOperator(event.params.operator);
-  // member.stakingState = "UNDELEGATED";
-  // //member.undelegatedAt = event.params.undelegatedAt;
-  // member.save()
+  // TODO: Store as state that the undelegation period started.
 
   let logEvent = new UndelegatedEvent(getIDFromEvent(event))
   logEvent.operator = event.params.operator.toHexString();
   completeLogEvent(logEvent, event); logEvent.save()
-
-  // let mainContract = MainContract.bind(Address.fromString(KEEP_CONTRACT));
-  // let tokenStaking = getTokenStaking();
-  // tokenStaking.totalStaker = tokenStaking.totalStaker.minus(BIGINT_ONE);
-  // tokenStaking.totalTokenStaking = toDecimal(mainContract.balanceOf(event.address));
-  // tokenStaking.save()
 }
 
 
