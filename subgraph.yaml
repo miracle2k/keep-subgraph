@@ -421,6 +421,9 @@ dataSources:
       eventHandlers:
         - event: RewardsClaimed(indexed bytes32,indexed uint256,indexed address,address,uint256)
           handler: handleRewardsClaimed
+        # Emitted once for each weekly interval. The actual mapping of amounts to operator addresses
+        # is in an off-chain JSON file, but we could read this to get total allocation numbers.
+        # RewardsAllocated(bytes32,uint256)
       file: ./src/mappingStakedrop.ts
   
 
