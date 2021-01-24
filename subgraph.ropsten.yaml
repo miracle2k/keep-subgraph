@@ -230,6 +230,8 @@ dataSources:
       callHandlers:
         - function: authorizeOperatorContract(address,address)
           handler: handleAuthorizeOperatorContract
+        - function: cancelStake(address)
+          handler: handleCancelledStake
       file: ./src/mappingTokenStaking.ts
 
   - kind: ethereum/contract
