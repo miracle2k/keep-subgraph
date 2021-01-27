@@ -63,7 +63,11 @@ const mainNetVars = {
   'ECDSARewardsDistributor': {
     'address': '0x5b9E48F8818962699fe38F5989b130ceE691bBb3',
     'startBlock': forceMinimumStartBlock(11432833),
-  }
+  },
+  'TokenStakingEscrow': {
+    'address': '0xDa534b567099Ca481384133bC121D5843F681365',
+    'startBlock': forceMinimumStartBlock(10834074),
+  },
 }
 
 const ropstenVars = {

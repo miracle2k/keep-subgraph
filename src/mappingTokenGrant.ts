@@ -1,6 +1,6 @@
 import { BigInt, Address, Bytes, ethereum } from "@graphprotocol/graph-ts";
 import { Grant, StakingContractAuthorizedEvent, TokenGrantCreatedEvent, TokenGrantRevokedEvent, TokenGrantStakedEvent, TokenGrantWithdrawnEvent } from "../generated/schema";
-import { getStats } from "./models";
+import { getStats, getOrCreateOperator } from "./models";
 import {
   StakingContractAuthorized,
   TokenGrant,
@@ -58,6 +58,11 @@ export function handleTokenGrantRevoked(event: TokenGrantRevoked): void {
 }
 
 export function handleTokenGrantStaked(event: TokenGrantStaked): void {
+  let member = getOrCreateOperator(event.params.operator);
+  let grant = Grant.load(event.params.grantId.toString());
+  member.owner = grant.grantee;
+  member.save()
+
   let logEvent = new TokenGrantStakedEvent(getIDFromEvent(event));
   logEvent.amount = event.params.amount;
   logEvent.grantID = event.params.grantId;
