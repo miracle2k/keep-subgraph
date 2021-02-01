@@ -39,7 +39,6 @@ import {completeLogEvent, completeLogEventRaw, getDepositIdFromAddress} from "./
  */
 export function handleOperatorStaked(event: OperatorStaked): void {
   let member = getOrCreateOperator(event.params.operator);
-  member.stakedAt = event.block.timestamp;
   member.stakedAmount = toDecimal(event.params.value);
   member.authorizer = event.params.authorizer;
   member.beneficiary = event.params.beneficiary;
@@ -63,6 +62,7 @@ export function handleOperatorStaked(event: OperatorStaked): void {
  */
 export function handleStakeDelegated(event: StakeDelegated): void {
   let member = getOrCreateOperator(event.params.operator);
+  member.stakedAt = event.block.timestamp;
   // This is wrong for all operators that stake from a grant (because there are smart contracts in between)
   // but we'll overwrite this owner later with the real one so it's good
   // Note that this relies on the ordering of the events, so we have to be extra careful here

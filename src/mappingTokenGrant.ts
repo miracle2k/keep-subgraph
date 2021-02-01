@@ -58,7 +58,7 @@ export function handleTokenGrantRevoked(event: TokenGrantRevoked): void {
 }
 
 export function handleTokenGrantStaked(event: TokenGrantStaked): void {
-  if(event.block.number.lt(new BigInt(10834080))){
+  if(event.block.number.lt(BigInt.fromI32(10834081))){
     return; // Old TokenStaking contract in use
   }
   let member = getOrCreateOperator(event.params.operator);
