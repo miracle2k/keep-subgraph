@@ -33,3 +33,17 @@ export class BondedECDSAKeep extends DataSourceTemplate {
     );
   }
 }
+
+export class ManagedGrant extends DataSourceTemplate {
+  static create(address: Address): void {
+    DataSourceTemplate.create("ManagedGrant", [address.toHex()]);
+  }
+
+  static createWithContext(address: Address, context: DataSourceContext): void {
+    DataSourceTemplate.createWithContext(
+      "ManagedGrant",
+      [address.toHex()],
+      context
+    );
+  }
+}

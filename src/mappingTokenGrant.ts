@@ -58,6 +58,9 @@ export function handleTokenGrantRevoked(event: TokenGrantRevoked): void {
 }
 
 export function handleTokenGrantStaked(event: TokenGrantStaked): void {
+  if(event.block.number.lt(new BigInt(10834080))){
+    return; // Old TokenStaking contract in use
+  }
   let member = getOrCreateOperator(event.params.operator);
   let grant = Grant.load(event.params.grantId.toString());
   member.owner = grant.grantee;

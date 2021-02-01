@@ -341,6 +341,48 @@ dataSources:
           handler: handleDepositRedelegatedEvent
       file: ./src/mappingTokenStakingEscrow.ts
 
+  - kind: ethereum/contract
+    name: StakingPortBacker
+    network: ropsten
+    source:
+      startBlock: 
+      address: ""
+      abi: StakingPortBacker
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - Operator
+      abis:
+        - name: StakingPortBacker
+          file: ./abis/StakingPortBacker.json
+      eventHandlers:
+        - event: StakeCopied(indexed address,indexed address,uint256)
+          handler: handleStakeCopiedEvent
+      file: ./src/mappingStakingPortBacker.ts
+
+  - kind: ethereum/contract
+    name: ManagedGrantFactory
+    network: ropsten
+    source:
+      startBlock: 
+      address: ""
+      abi: ManagedGrantFactory
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - Operator
+      abis:
+        - name: ManagedGrantFactory
+          file: ./abis/ManagedGrantFactory.json
+      eventHandlers:
+        - event: ManagedGrantCreated(address,indexed address)
+          handler: handleManagedGrantCreatedEvent
+      file: ./src/mappingManagedGrantFactory.ts
+
   
 
   
@@ -430,3 +472,25 @@ templates:
       callHandlers:
         - function: submitPublicKey(bytes)
           handler: handleSubmitPublicKey
+  
+  - name: ManagedGrant
+    kind: ethereum/contract
+    network: ropsten
+    source:
+      abi: ManagedGrant
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/mappingManagedGrant.ts
+      entities:
+        - Operator
+      abis:
+        - name: ManagedGrant
+          file: ./abis/ManagedGrant.json
+      eventHandlers:
+        - event: GranteeReassignmentConfirmed(address,address)
+          handler: handleGranteeReassignmentConfirmedEvent
+      callHandlers:
+        - function: stake(address,uint256,bytes)
+          handler: handleStakeCall

@@ -362,6 +362,48 @@ dataSources:
           handler: handleDepositRedelegatedEvent
       file: ./src/mappingTokenStakingEscrow.ts
 
+  - kind: ethereum/contract
+    name: StakingPortBacker
+    network: mainnet
+    source:
+      startBlock: 9958365
+      address: "0x236aa50979D5f3De3Bd1Eeb40E81137F22ab794b"
+      abi: StakingPortBacker
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - Operator
+      abis:
+        - name: StakingPortBacker
+          file: ./abis/StakingPortBacker.json
+      eventHandlers:
+        - event: StakeCopied(indexed address,indexed address,uint256)
+          handler: handleStakeCopiedEvent
+      file: ./src/mappingStakingPortBacker.ts
+
+  - kind: ethereum/contract
+    name: ManagedGrantFactory
+    network: mainnet
+    source:
+      startBlock: 9958365
+      address: "0x43cf9E26857B188868051bDcFAcEdBB38531964E"
+      abi: ManagedGrantFactory
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - Operator
+      abis:
+        - name: ManagedGrantFactory
+          file: ./abis/ManagedGrantFactory.json
+      eventHandlers:
+        - event: ManagedGrantCreated(address,indexed address)
+          handler: handleManagedGrantCreatedEvent
+      file: ./src/mappingManagedGrantFactory.ts
+
   
   - kind: ethereum/contract
     name: BeaconRewards
@@ -534,3 +576,25 @@ templates:
       callHandlers:
         - function: submitPublicKey(bytes)
           handler: handleSubmitPublicKey
+  
+  - name: ManagedGrant
+    kind: ethereum/contract
+    network: mainnet
+    source:
+      abi: ManagedGrant
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/mappingManagedGrant.ts
+      entities:
+        - Operator
+      abis:
+        - name: ManagedGrant
+          file: ./abis/ManagedGrant.json
+      eventHandlers:
+        - event: GranteeReassignmentConfirmed(address,address)
+          handler: handleGranteeReassignmentConfirmedEvent
+      callHandlers:
+        - function: stake(address,uint256,bytes)
+          handler: handleStakeCall
