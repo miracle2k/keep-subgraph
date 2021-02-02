@@ -66,7 +66,7 @@ export function handleStakeDelegated(event: StakeDelegated): void {
   // This is wrong for all operators that stake from a grant (because there are smart contracts in between)
   // but we'll overwrite this owner later with the real one so it's good
   // Note that this relies on the ordering of the events, so we have to be extra careful here
-  member.owner = event.params.operator;
+  member.owner = event.params.owner;
   member.save()
   // let member = getOrCreateOperator(event.params.operator);
   // member.stakingState = "DELEGATED";

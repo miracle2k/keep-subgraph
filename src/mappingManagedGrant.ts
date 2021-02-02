@@ -14,10 +14,10 @@ export function handleGranteeReassignmentConfirmedEvent(event: GranteeReassignme
 // This always executes after the operation creation events are triggered
 // because calls are always handled after all events have been handled
 export function handleStakeCall(call: StakeCall): void {
-  if(call.inputs._stakingContract.toHexString() !== "0x1293a54e160d1cd7075487898d65266081a15458"){
+  if(call.inputs._stakingContract.notEqual(Address.fromHexString("0x1293a54e160d1cd7075487898d65266081a15458"))){
     return; // Old staking contract
   }
-  let operator = Address.fromHexString(call.inputs._extraData.toHexString().substring(20, 40)) as Address;
+  let operator = Address.fromHexString(call.inputs._extraData.toHexString().substring(42, 82)) as Address;
   let grantee = ManagedGrant.bind(call.to).grantee()
   let member = getOrCreateOperator(operator);
   member.owner = grantee;
