@@ -108,7 +108,10 @@ function createOrUpdateGrant(
   let contract = TokenGrant.bind(address);
   let contractGrant = contract.grants(id);
 
-  let grant = new Grant(id.toString());
+  let grant = Grant.load(id.toString());
+  if(grant === null){
+    grant = new Grant(id.toString());
+  }
   grant.grantManager = contractGrant.value0;
   grant.grantee = contractGrant.value1;
   grant.revokedAt = contractGrant.value2;
