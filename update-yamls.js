@@ -111,7 +111,19 @@ const ropstenVars = {
   'TokenGrant': {
     'address': '0xb64649fe00f8Ef5187d09d109C6F38f13C7CF857',
     'startBlock': '8580756'
-  }
+  },
+  'TokenStakingEscrow': {
+    'address': '0xADF243DdaE718975882F647067ae9035784179E2',
+    'startBlock': '8580760',
+  },
+  'ManagedGrantFactory': {
+    'address': '0xbC36F83ba37b88bD4fbe63dD5007dbd3DFd8de49',
+    'startBlock': '8580784',
+  },
+  'StakingPortBacker': {
+    'address': '0xded94F0448aB499a6fB3669229d21C94Ff06Ef4e',
+    'startBlock': '8580777',
+  },
 }
 
 const templateString = fs.readFileSync('subgraph.template.yaml', 'utf8').toString();

@@ -324,8 +324,8 @@ dataSources:
     name: TokenStakingEscrow
     network: ropsten
     source:
-      startBlock: 
-      address: ""
+      startBlock: 8580760
+      address: "0xADF243DdaE718975882F647067ae9035784179E2"
       abi: TokenStakingEscrow
     mapping:
       kind: ethereum/events
@@ -345,8 +345,8 @@ dataSources:
     name: StakingPortBacker
     network: ropsten
     source:
-      startBlock: 
-      address: ""
+      startBlock: 8580777
+      address: "0xded94F0448aB499a6fB3669229d21C94Ff06Ef4e"
       abi: StakingPortBacker
     mapping:
       kind: ethereum/events
@@ -366,8 +366,8 @@ dataSources:
     name: ManagedGrantFactory
     network: ropsten
     source:
-      startBlock: 
-      address: ""
+      startBlock: 8580784
+      address: "0xbC36F83ba37b88bD4fbe63dD5007dbd3DFd8de49"
       abi: ManagedGrantFactory
     mapping:
       kind: ethereum/events
