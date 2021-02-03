@@ -62,8 +62,10 @@ export function handleTokenGrantStaked(event: TokenGrantStaked): void {
     return; // Old TokenStaking contract in use
   }
   let member = getOrCreateOperator(event.params.operator);
-  let grant = Grant.load(event.params.grantId.toString());
+  let grantId = event.params.grantId.toString()
+  let grant = Grant.load(grantId);
   member.owner = grant.grantee;
+  member.grant = grantId;
   member.save()
 
   let logEvent = new TokenGrantStakedEvent(getIDFromEvent(event));
@@ -73,13 +75,17 @@ export function handleTokenGrantStaked(event: TokenGrantStaked): void {
   completeLogEvent(logEvent, event);
   logEvent.save();
 
-  createOrUpdateGrant(
+  grant = createOrUpdateGrant(
     event.address,
     event.params.grantId,
     event.block.timestamp,
     event.transaction.hash,
     false
   );
+  let grantOperators = grant.operators;
+  grantOperators.push(event.params.operator.toHexString())
+  grant.operators= grantOperators;
+  grant.save()
 }
 
 export function handleTokenGrantWithdrawn(event: TokenGrantWithdrawn): void {
@@ -111,11 +117,11 @@ function createOrUpdateGrant(
   let grant = Grant.load(id.toString());
   if(grant === null){
     grant = new Grant(id.toString());
+    grant.operators = []
     grant.isManaged = false; // Overwritten afterwards
-    grant.operators = [];
+    grant.grantee = contractGrant.value1;
   }
   grant.grantManager = contractGrant.value0;
-  grant.grantee = contractGrant.value1;
   grant.revokedAt = contractGrant.value2;
   grant.revokedAmount = contractGrant.value3;
   grant.revokedWithdrawn = contractGrant.value4;
