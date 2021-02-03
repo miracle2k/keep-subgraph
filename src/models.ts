@@ -124,6 +124,7 @@ export function getStats(): StatsRecord {
     stats.randomBeaconFees = BIGINT_ZERO;
     stats.totalGrantCount = 0;
     stats.totalGrantIssued = BIGINT_ZERO;
+    stats.numStakers = 0;
     stats.depositCount = 0;
     stats.totalStakedropBeaconRewards = BIGINT_ZERO;
     stats.totalStakedropECDSARewards = BIGINT_ZERO;

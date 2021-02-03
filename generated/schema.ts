@@ -5208,6 +5208,15 @@ export class StatsRecord extends Entity {
     this.set("depositCount", Value.fromI32(value));
   }
 
+  get numStakers(): i32 {
+    let value = this.get("numStakers");
+    return value.toI32();
+  }
+
+  set numStakers(value: i32) {
+    this.set("numStakers", Value.fromI32(value));
+  }
+
   get availableToBeBonded(): BigDecimal {
     let value = this.get("availableToBeBonded");
     return value.toBigDecimal();

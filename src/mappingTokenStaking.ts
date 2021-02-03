@@ -14,7 +14,7 @@ import {
   TopUpInitiated,
   Undelegated,
 } from "../generated/StakingContract/StakingContract"
-import {getOrCreateOperator, updateStakedropRewardFormula} from "./models";
+import {getOrCreateOperator, getStats, updateStakedropRewardFormula} from "./models";
 import {toDecimal} from "./decimalUtils";
 import {
   Lock,
@@ -25,7 +25,7 @@ import {
   TopUpInitiatedEvent, UndelegatedEvent
 } from "../generated/schema";
 import {store, ethereum, Address} from "@graphprotocol/graph-ts";
-import {BIGDECIMAL_ZERO} from "./constants";
+import {BIGDECIMAL_ZERO, BIGINT_ZERO} from "./constants";
 import {bigIntMax, getIDFromCall, getIDFromEvent} from "./utils";
 import {completeLogEvent, completeLogEventRaw, getDepositIdFromAddress} from "./mapping";
 
@@ -42,7 +42,11 @@ export function handleOperatorStaked(event: OperatorStaked): void {
   member.stakedAmount = toDecimal(event.params.value);
   member.authorizer = event.params.authorizer;
   member.beneficiary = event.params.beneficiary;
-  member.save()
+  member.save();
+
+  let stats = getStats();
+  stats.numStakers = stats.numStakers + 1;
+  stats.save();
 
   // these are like the config arguments of the staking contract. not sure what the best way to store them is.
   //let contract = StakingContract.bind(event.address);
@@ -128,6 +132,10 @@ export function handleRecoveredStake(event: RecoveredStake): void{
   logEvent.operator = operator.id;
   completeLogEvent(logEvent, event); logEvent.save()
 
+  let stats = getStats();
+  stats.numStakers = stats.numStakers - 1;
+  stats.save();
+
   // TODO: This would count how many operators are staking
   //let mainContract = MainContract.bind(Address.fromString(KEEP_CONTRACT));
   // let tokenStaking = getTokenStaking();
@@ -145,6 +153,12 @@ export function handleCancelledStake(call: CancelStakeCall): void{
   let operator = getOrCreateOperator(call.inputs._operator);
   operator.stakedAmount = BIGDECIMAL_ZERO;
   operator.save();
+
+  // TODO: log this here.
+
+  let stats = getStats();
+  stats.numStakers = stats.numStakers - 1;
+  stats.save();
 }
 
 /**
@@ -165,6 +179,12 @@ export function handleTokensSlashed(event: TokensSlashed): void {
   updateStakedropRewardFormula(operator);
   operator.save()
 
+  if (operator.stakedAmount.equals(BIGDECIMAL_ZERO)) {
+    let stats = getStats();
+    stats.numStakers = stats.numStakers - 1;
+    stats.save();
+  }
+
   let logEvent = new TokensSlashedEvent(getIDFromEvent(event))
   logEvent.operator = operator.id;
   completeLogEvent(logEvent, event); logEvent.save()
@@ -181,6 +201,12 @@ export function handleTokensSeized(event: TokensSeized): void {
   operator.stakedAmount = operator.stakedAmount.minus(toDecimal(event.params.amount));
   updateStakedropRewardFormula(operator);
   operator.save()
+
+  if (operator.stakedAmount.equals(BIGDECIMAL_ZERO)) {
+    let stats = getStats();
+    stats.numStakers = stats.numStakers - 1;
+    stats.save();
+  }
 
   let logEvent = new TokensSeizedEvent(getIDFromEvent(event))
   logEvent.operator = operator.id;
@@ -229,6 +255,10 @@ export function handleTopUpCompleted(event: TopUpCompleted): void {
   operator.stakedAmount = toDecimal(event.params.newAmount);
   updateStakedropRewardFormula(operator);
   operator.save()
+
+  let stats = getStats();
+  stats.numStakers = stats.numStakers + 1;
+  stats.save();
 
   let logEvent = new TopUpCompletedEvent(getIDFromEvent(event))
   logEvent.operator = event.params.operator.toHexString();

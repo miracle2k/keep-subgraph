@@ -723,6 +723,9 @@ type StatsRecord @entity {
   "Total number of deposits ever created, regardless of their current state."
   depositCount: Int!
 
+  "The total number of stakers with a stake larger than 0."
+  numStakers: Int!
+
   availableToBeBonded: BigDecimal!
   totalBonded: BigDecimal!
   totalBondsSeized: BigDecimal!
@@ -851,14 +854,22 @@ type Grant @entity {
   grantManager: Bytes!
   grantee: Bytes!
   revokedAt: BigInt!
+  "The number of tokens revoked from the grantee."
   revokedAmount: BigInt!
+  "The number of tokens returned to the grant creator."
   revokedWithdrawn: BigInt!
+  "Whether grant manager can revoke the grant."
   revocable: Boolean!
   amount: BigInt!
+  "Duration in seconds of the period in which the granted tokens will unlock."
   duration: BigInt!
+  "Timestamp at which the linear unlocking schedule starts."
   start: BigInt!
+  "Timestamp before which no tokens will be unlocked."
   cliff: BigInt!
+  "Amount that was withdrawn to the grantee."
   withdrawn: BigInt!
+  "Amount that was staked by the grantee."
   staked: BigInt!
   stakingPolicy: Bytes!
   operators: [Bytes!]
