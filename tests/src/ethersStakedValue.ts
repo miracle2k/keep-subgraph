@@ -10,10 +10,7 @@ interface DelegationInfo {
 
 const e18 = BigNumber.from(10).pow(18);
 
-export default async function(
-  ops: NoAmountOperator[],
-  block: number
-) {
+export default async function (ops: NoAmountOperator[], block: number) {
   const opStakes = await Promise.all(
     ops.map(async (op) => {
       const address = op.address;

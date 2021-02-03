@@ -87,5 +87,5 @@ export {
   StakingPortBacker,
   TokenStakingEscrowAddress,
   TokenStakingEscrow,
-  TokenGrantStakedEventABI
+  TokenGrantStakedEventABI,
 };

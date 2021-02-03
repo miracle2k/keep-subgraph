@@ -14,7 +14,7 @@ import {
   provider,
   StakingPortBacker,
   TokenStakingEscrow,
-  TokenGrantStakedEventABI
+  TokenGrantStakedEventABI,
 } from "./contracts";
 import { ethers } from "ethers";
 import Web3 from "web3";
@@ -116,10 +116,7 @@ async function resolveOwner(
   }
 }
 
-async function resolveGrantee(
- grantee: string,
-  blockTag: number
-) {
+async function resolveGrantee(grantee: string, blockTag: number) {
   while (true) {
     if ((await provider.getStorageAt(grantee, 0)) === "0x") {
       return grantee; // grantee is already a user-owned account
