@@ -5995,21 +5995,13 @@ export class Grant extends Entity {
     this.set("stakingPolicy", Value.fromBytes(value));
   }
 
-  get operators(): Array<string> | null {
+  get operators(): Array<string> {
     let value = this.get("operators");
-    if (value === null || value.kind == ValueKind.NULL) {
-      return null;
-    } else {
-      return value.toStringArray();
-    }
+    return value.toStringArray();
   }
 
-  set operators(value: Array<string> | null) {
-    if (value === null) {
-      this.unset("operators");
-    } else {
-      this.set("operators", Value.fromStringArray(value as Array<string>));
-    }
+  set operators(value: Array<string>) {
+    this.set("operators", Value.fromStringArray(value));
   }
 
   get isManaged(): boolean {

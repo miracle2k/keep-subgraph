@@ -13,11 +13,13 @@ export function handleGranteeReassignmentConfirmedEvent(event: GranteeReassignme
   let grant = Grant.load(grantId.toString());
   grant.grantee=event.params.newGrantee;
   grant.save()
-  grant.operators.forEach(op => {
-    let member = getOrCreateOperator(Address.fromHexString(op) as Address);
+  let grantOperators = grant.operators;
+  for (let i = 0; i < grantOperators.length; i++) {
+    let operator = grantOperators[i];
+    let member = getOrCreateOperator(Address.fromHexString(operator) as Address);
     member.owner = event.params.newGrantee;
     member.save()
-  })
+  }
 }
 
 // This always executes after the operation creation events are triggered

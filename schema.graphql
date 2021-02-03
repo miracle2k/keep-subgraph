@@ -863,7 +863,7 @@ type Grant @entity {
   withdrawn: BigInt!
   staked: BigInt!
   stakingPolicy: Bytes!
-  operators: [Operator!]
+  operators: [Operator!]!
   isManaged: Boolean
 
   "The transaction in which this grant was created."
