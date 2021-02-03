@@ -32,7 +32,8 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: '12.x'
-    - run: |
+    - name: Build tests
+      run: |
           cd tests
           npm ci
           npm run build
