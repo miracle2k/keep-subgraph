@@ -1,0 +1,24 @@
+name: Tests
+
+on:
+  schedule:
+    # * is a special character in YAML so you have to quote this string
+    - cron:  '0 0 * * *'
+    
+defaults:
+  run:
+    working-directory: ./tests    
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Get Node.js
+      uses: actions/setup-node@v1
+      with:
+        node-version: '12.x'
+    - run: npm ci
+    - run: npm start
+      env:
+        ALCHEMY_API: ${{ secrets.ALCHEMY_API }}
