@@ -18,7 +18,7 @@ interface MetaSubgraphResponse {
 }
 
 const subgraphUrl =
-  "https://api.thegraph.com/subgraphs/name/corollari/atktest2";
+  "https://api.thegraph.com/subgraphs/name/miracle2k/all-the-keeps";
 
 function subgraphCall(query: string) {
   return fetch(subgraphUrl, {

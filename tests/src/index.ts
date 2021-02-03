@@ -36,6 +36,7 @@ function processOps(ops: Operator[]) {
 
 (async () => {
   const block = await getCurrentSubgraphBlock();
+  console.log("block", block);
   const subgraphOps = await getAllSubgraphOperators(block).then(processOps);
   const etherOps = await getTbtcJsOperators(block)
     .then((ops) => getEthersStakedValue(ops, block))
