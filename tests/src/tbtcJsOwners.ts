@@ -14,13 +14,12 @@ import {
   provider,
   StakingPortBacker,
   TokenStakingEscrow,
+  TokenGrantStakedEventABI
 } from "./contracts";
 import { ethers } from "ethers";
 import Web3 from "web3";
-import TokenGrantJSON from "@keep-network/keep-core/artifacts/TokenGrant.json";
 import ManagedGrantJSON from "@keep-network/keep-core/artifacts/ManagedGrant.json";
 
-const TokenGrantABI = TokenGrantJSON.abi;
 const ManagedGrantABI = ManagedGrantJSON.abi;
 
 const web3 = new Web3();
@@ -76,15 +75,6 @@ async function resolveOwner(
       blockTag
     );
     const grantId = args!.grantId;
-    /*
-      const {
-        returnValues: { grantId }
-      } = await EthereumHelpers.getExistingEvent(
-        TokenStakingEscrow,
-        "DepositRedelegated",
-        { newOperator: operator }
-      )
-      */
     const { grantee } = await TokenGrant.getGrant(grantId, { blockTag });
     return resolveGrantee(grantee, blockTag);
   } else {
@@ -97,30 +87,13 @@ async function resolveOwner(
           0,
           blockTag
         );
-        /*
-        const {
-          transactionHash
-        } = await EthereumHelpers.getExistingEvent(
-          TokenStaking,
-          "StakeDelegated",
-          { operator }
-        )
-        */
         const { logs } = await provider.getTransactionReceipt(transactionHash);
-        /*
-        const TokenGrantStakedABI = TokenGrantABI.filter(
-          _ => _.type == "event" && _.name == "TokenGrantStaked"
-        )[0]
-        console.log((TokenGrantStakedABI as any))
-        */
         let grantId = null;
-        // eslint-disable-next-line guard-for-in
         for (const i in logs) {
           const { data, topics } = logs[i];
-          // @ts-ignore Oh but there is a signature property on events foo'.
-          if (topics[0] == TokenGrantStakedABI.signature) {
+          if (topics[0] == TokenGrantStakedEventABI.signature) {
             const decoded = web3.eth.abi.decodeLog(
-              TokenGrantStakedABI.inputs,
+              TokenGrantStakedEventABI.inputs,
               data,
               topics.slice(1)
             );
@@ -143,38 +116,8 @@ async function resolveOwner(
   }
 }
 
-const TokenGrantStakedABI = {
-  anonymous: false,
-  inputs: [
-    {
-      indexed: true,
-      internalType: "uint256",
-      name: "grantId",
-      type: "uint256",
-    },
-    {
-      indexed: false,
-      internalType: "uint256",
-      name: "amount",
-      type: "uint256",
-    },
-    {
-      indexed: false,
-      internalType: "address",
-      name: "operator",
-      type: "address",
-    },
-  ],
-  name: "TokenGrantStaked",
-  type: "event",
-  constant: undefined,
-  payable: undefined,
-  signature:
-    "0xf05c07b89b3e4ff57b17aa6883ec35e90d7710c57a038c49c3ec3911a80c2445",
-};
-
 async function resolveGrantee(
-  /** @type {string} */ grantee: string,
+ grantee: string,
   blockTag: number
 ) {
   while (true) {

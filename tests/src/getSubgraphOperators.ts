@@ -1,44 +1,44 @@
 import fetch from "node-fetch";
 import { Operator } from "./types";
 
-interface SubgraphResponse {
+interface OperatorsSubgraphResponse {
   data: {
     operators: Operator[];
   };
 }
 
-export async function getVoterOperators(proposalId: string, block: number) {
-  const voters = Object.keys(
-    await fetch(
-      `https://hub.snapshot.page/api/keepstakers.eth/proposal/${proposalId}`
-    ).then((res) => res.json())
-  ).map((a) => a.toLowerCase());
+interface MetaSubgraphResponse {
+  "data": {
+    "_meta": {
+      "block": {
+        "number": number
+      }
+    }
+  }
+}
 
-  const ops: SubgraphResponse = await fetch(
-    "https://api.thegraph.com/subgraphs/name/miracle2k/all-the-keeps",
+const subgraphUrl = "https://api.thegraph.com/subgraphs/name/corollari/atktest2"
+
+function subgraphCall(query:string){
+  return fetch(
+    subgraphUrl,
     {
       method: "POST",
       body: JSON.stringify({
-        query: `query { operators (where: {owner_in: ${JSON.stringify(
-          voters
-        )}}, first: 1000, block: {number: ${block}}) { owner address stakedAmount } }`,
+        query,
       }),
     }
   ).then((res) => res.json());
+}
+
+export async function getAllSubgraphOperators(block: number) {
+  const ops: OperatorsSubgraphResponse = await subgraphCall(`query { operators (first: 1000, block: {number: ${block}}) { owner address stakedAmount } }`)
 
   return ops.data.operators;
 }
 
-export async function getAllOperators(block: number) {
-  const ops: SubgraphResponse = await fetch(
-    "https://api.thegraph.com/subgraphs/name/corollari/atktest2",
-    {
-      method: "POST",
-      body: JSON.stringify({
-        query: `query { operators (first: 1000, block: {number: ${block}}) { owner address stakedAmount } }`,
-      }),
-    }
-  ).then((res) => res.json());
+export async function getCurrentSubgraphBlock() {
+  const response: MetaSubgraphResponse = await subgraphCall(`query { _meta { block { number } } }`)
 
-  return ops.data.operators;
+  return response.data._meta.block.number;
 }

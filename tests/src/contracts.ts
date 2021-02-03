@@ -50,6 +50,36 @@ const TokenStakingEscrow = new ethers.Contract(
   provider
 );
 
+const TokenGrantStakedEventABI = {
+  anonymous: false,
+  inputs: [
+    {
+      indexed: true,
+      internalType: "uint256",
+      name: "grantId",
+      type: "uint256",
+    },
+    {
+      indexed: false,
+      internalType: "uint256",
+      name: "amount",
+      type: "uint256",
+    },
+    {
+      indexed: false,
+      internalType: "address",
+      name: "operator",
+      type: "address",
+    },
+  ],
+  name: "TokenGrantStaked",
+  type: "event",
+  constant: undefined,
+  payable: undefined,
+  signature:
+    "0xf05c07b89b3e4ff57b17aa6883ec35e90d7710c57a038c49c3ec3911a80c2445",
+};
+
 export {
   provider,
   TokenGrant,
@@ -57,4 +87,5 @@ export {
   StakingPortBacker,
   TokenStakingEscrowAddress,
   TokenStakingEscrow,
+  TokenGrantStakedEventABI
 };

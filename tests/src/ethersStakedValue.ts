@@ -1,4 +1,4 @@
-import { BigNumber, ethers } from "ethers";
+import { BigNumber } from "ethers";
 import { NoAmountOperator } from "./types";
 import { TokenStaking } from "./contracts";
 
@@ -10,7 +10,7 @@ interface DelegationInfo {
 
 const e18 = BigNumber.from(10).pow(18);
 
-export default async function etherStrategy(
+export default async function(
   ops: NoAmountOperator[],
   block: number
 ) {
@@ -35,8 +35,4 @@ export default async function etherStrategy(
     })
   );
   return opStakes;
-  /*
-    const filter = contract.filters.CourtesyCalled();
-    contract.queryFilter(filter, -10000000000).then(a => console.log(a.length))
-    */
 }
