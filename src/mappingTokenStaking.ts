@@ -39,11 +39,9 @@ import {completeLogEvent, completeLogEventRaw, getDepositIdFromAddress} from "./
  */
 export function handleOperatorStaked(event: OperatorStaked): void {
   let member = getOrCreateOperator(event.params.operator);
-  member.stakedAt = event.block.timestamp;
   member.stakedAmount = toDecimal(event.params.value);
   member.authorizer = event.params.authorizer;
   member.beneficiary = event.params.beneficiary;
-  member.owner = event.transaction.from;
   member.save()
 
   // these are like the config arguments of the staking contract. not sure what the best way to store them is.
@@ -63,6 +61,13 @@ export function handleOperatorStaked(event: OperatorStaked): void {
  * Only ever raised together with OperatorStaked, we might only need one of them.
  */
 export function handleStakeDelegated(event: StakeDelegated): void {
+  let member = getOrCreateOperator(event.params.operator);
+  member.stakedAt = event.block.timestamp;
+  // This is wrong for all operators that stake from a grant (because there are smart contracts in between)
+  // but we'll overwrite this owner later with the real one so it's good
+  // Note that this relies on the ordering of the events, so we have to be extra careful here
+  member.owner = event.params.owner;
+  member.save()
   // let member = getOrCreateOperator(event.params.operator);
   // member.stakingState = "DELEGATED";
   // member.save()
@@ -207,6 +212,13 @@ export function handleUndelegated(event: Undelegated): void {
 export function handleStakeOwnershipTransferred(
     event: StakeOwnershipTransferred
 ): void {
+  // Here we can ignore all the hoops we have to usually jump through to get to the real owner of a deposit
+  // because this function is not callable by grant-based operators, so the owners being handled here
+  // will be the real ones instead of a Grant smart contract
+  let operator = getOrCreateOperator(event.params.operator);
+  operator.owner = event.params.newOwner;
+  operator.save()
+
   let logEvent = new StakeOwnershipTransferredEvent(getIDFromEvent(event))
   logEvent.operator = event.params.operator.toHexString();
   completeLogEvent(logEvent, event); logEvent.save()

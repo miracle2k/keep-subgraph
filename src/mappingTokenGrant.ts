@@ -1,6 +1,6 @@
 import { BigInt, Address, Bytes, ethereum } from "@graphprotocol/graph-ts";
 import { Grant, StakingContractAuthorizedEvent, TokenGrantCreatedEvent, TokenGrantRevokedEvent, TokenGrantStakedEvent, TokenGrantWithdrawnEvent } from "../generated/schema";
-import { getStats } from "./models";
+import { getStats, getOrCreateOperator } from "./models";
 import {
   StakingContractAuthorized,
   TokenGrant,
@@ -58,6 +58,14 @@ export function handleTokenGrantRevoked(event: TokenGrantRevoked): void {
 }
 
 export function handleTokenGrantStaked(event: TokenGrantStaked): void {
+  if(event.block.number.lt(BigInt.fromI32(10834081))){
+    return; // Old TokenStaking contract in use
+  }
+  let member = getOrCreateOperator(event.params.operator);
+  let grant = Grant.load(event.params.grantId.toString());
+  member.owner = grant.grantee;
+  member.save()
+
   let logEvent = new TokenGrantStakedEvent(getIDFromEvent(event));
   logEvent.amount = event.params.amount;
   logEvent.grantID = event.params.grantId;
@@ -100,7 +108,12 @@ function createOrUpdateGrant(
   let contract = TokenGrant.bind(address);
   let contractGrant = contract.grants(id);
 
-  let grant = new Grant(id.toString());
+  let grant = Grant.load(id.toString());
+  if(grant === null){
+    grant = new Grant(id.toString());
+    grant.isManaged = false; // Overwritten afterwards
+    grant.operators = [];
+  }
   grant.grantManager = contractGrant.value0;
   grant.grantee = contractGrant.value1;
   grant.revokedAt = contractGrant.value2;
@@ -114,7 +127,6 @@ function createOrUpdateGrant(
   grant.withdrawn = contractGrant.value10;
   grant.staked = contractGrant.value11;
   grant.stakingPolicy = contractGrant.value12;
-  // grant.isManaged = false; // get from other contract
   grant.timestamp = timestamp;
   if (isTokenGrantCreateEvent) {
     grant.transactionHash = transactionHash;
