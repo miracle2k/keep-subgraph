@@ -33,8 +33,6 @@ export function handleStakeCall(call: StakeCall): void {
   let grantId = ManagedGrant.bind(call.to).grantId();
   let grant = Grant.load(grantId.toString());
   // The owner of this operator can't change after this because ownerChange() can only be called by liquid stakers
-  let operators = grant.operators;
-  operators.push(operator);
-  grant.operators = operators;
+  grant.operators.push(operator);
   grant.save()
 }

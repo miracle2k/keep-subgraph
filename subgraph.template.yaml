@@ -399,6 +399,8 @@ dataSources:
       abis:
         - name: ManagedGrantFactory
           file: ./abis/ManagedGrantFactory.json
+        - name: ManagedGrant
+          file: ./abis/ManagedGrant.json
       eventHandlers:
         - event: ManagedGrantCreated(address,indexed address)
           handler: handleManagedGrantCreatedEvent

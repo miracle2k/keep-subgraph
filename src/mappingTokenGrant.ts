@@ -111,6 +111,8 @@ function createOrUpdateGrant(
   let grant = Grant.load(id.toString());
   if(grant === null){
     grant = new Grant(id.toString());
+    grant.isManaged = false; // Overwritten afterwards
+    grant.operators = [];
   }
   grant.grantManager = contractGrant.value0;
   grant.grantee = contractGrant.value1;
@@ -125,7 +127,6 @@ function createOrUpdateGrant(
   grant.withdrawn = contractGrant.value10;
   grant.staked = contractGrant.value11;
   grant.stakingPolicy = contractGrant.value12;
-  // grant.isManaged = false; // get from other contract
   grant.timestamp = timestamp;
   if (isTokenGrantCreateEvent) {
     grant.transactionHash = transactionHash;

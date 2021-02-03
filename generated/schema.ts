@@ -5995,6 +5995,15 @@ export class Grant extends Entity {
     }
   }
 
+  get isManaged(): boolean {
+    let value = this.get("isManaged");
+    return value.toBoolean();
+  }
+
+  set isManaged(value: boolean) {
+    this.set("isManaged", Value.fromBoolean(value));
+  }
+
   get transactionHash(): Bytes {
     let value = this.get("transactionHash");
     return value.toBytes();
