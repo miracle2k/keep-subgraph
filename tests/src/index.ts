@@ -29,7 +29,7 @@ function processOps(ops: Operator[]) {
     .map(({ owner, address, stakedAmount }) => ({
       owner: getAddress(owner),
       address: getAddress(address),
-      stakedAmount,
+      stakedAmount: stakedAmount.split(".")[0], // Remove decimals
     }))
     .sort(sortOperators);
 }

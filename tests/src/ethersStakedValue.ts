@@ -19,7 +19,7 @@ export default async function (ops: NoAmountOperator[], block: number) {
         stakedAmount = await TokenStaking.getDelegationInfo(address, {
           blockTag: block,
         }).then(
-          (res: DelegationInfo) => res.amount.div(e18).toString().split(".")[0]
+          (res: DelegationInfo) => res.amount.div(e18).toString()
         );
       } catch (e) {
         console.log("voteCount", e);
