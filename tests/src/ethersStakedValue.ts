@@ -15,14 +15,18 @@ export default async function (ops: NoAmountOperator[], block: number) {
     ops.map(async (op) => {
       const address = op.address;
       let stakedAmount: string = "0";
-      try {
-        stakedAmount = await TokenStaking.getDelegationInfo(address, {
-          blockTag: block,
-        }).then(
-          (res: DelegationInfo) => res.amount.div(e18).toString()
-        );
-      } catch (e) {
-        console.log("voteCount", e);
+      while (true) {
+        try {
+          stakedAmount = await TokenStaking.getDelegationInfo(address, {
+            blockTag: block,
+          }).then((res: DelegationInfo) => res.amount.div(e18).toString());
+        } catch (e) {
+          if (e.code === "TIMEOUT") {
+            continue;
+          } else {
+            console.log("stakedValue", e);
+          }
+        }
       }
       return {
         owner: op.owner,
