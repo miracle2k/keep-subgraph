@@ -11,11 +11,15 @@ import { getOrCreateOperator } from "./models";
 export function handleGranteeReassignmentConfirmedEvent(event: GranteeReassignmentConfirmed): void {
   let grantId = ManagedGrant.bind(event.address).grantId()
   let grant = Grant.load(grantId.toString());
-  grant.operators.forEach(op => {
-    let member = getOrCreateOperator(op as Address);
+  grant.grantee=event.params.newGrantee;
+  grant.save()
+  let grantOperators = grant.operators;
+  for (let i = 0; i < grantOperators.length; i++) {
+    let operator = grantOperators[i];
+    let member = getOrCreateOperator(Address.fromHexString(operator) as Address);
     member.owner = event.params.newGrantee;
     member.save()
-  })
+  }
 }
 
 // This always executes after the operation creation events are triggered
@@ -29,10 +33,4 @@ export function handleStakeCall(call: StakeCall): void {
   let member = getOrCreateOperator(operator);
   member.owner = grantee;
   member.save()
-
-  let grantId = ManagedGrant.bind(call.to).grantId();
-  let grant = Grant.load(grantId.toString());
-  // The owner of this operator can't change after this because ownerChange() can only be called by liquid stakers
-  grant.operators.push(operator);
-  grant.save()
 }

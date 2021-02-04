@@ -2932,6 +2932,23 @@ export class Operator extends Entity {
     }
   }
 
+  get grant(): string | null {
+    let value = this.get("grant");
+    if (value === null || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set grant(value: string | null) {
+    if (value === null) {
+      this.unset("grant");
+    } else {
+      this.set("grant", Value.fromString(value as string));
+    }
+  }
+
   get _mostRecentBondSeizedEventId(): string | null {
     let value = this.get("_mostRecentBondSeizedEventId");
     if (value === null || value.kind == ValueKind.NULL) {
@@ -5987,21 +6004,13 @@ export class Grant extends Entity {
     this.set("stakingPolicy", Value.fromBytes(value));
   }
 
-  get operators(): Array<Bytes> | null {
+  get operators(): Array<string> {
     let value = this.get("operators");
-    if (value === null || value.kind == ValueKind.NULL) {
-      return null;
-    } else {
-      return value.toBytesArray();
-    }
+    return value.toStringArray();
   }
 
-  set operators(value: Array<Bytes> | null) {
-    if (value === null) {
-      this.unset("operators");
-    } else {
-      this.set("operators", Value.fromBytesArray(value as Array<Bytes>));
-    }
+  set operators(value: Array<string>) {
+    this.set("operators", Value.fromStringArray(value));
   }
 
   get isManaged(): boolean {

@@ -440,6 +440,8 @@ type Operator @entity {
   "The time when the last lock on the operator's stake expires. This can change when a lock is released early, or a new lock is added."
   stakeLockExpiresAt: BigInt
 
+  grant: Grant
+
   # Internal use
   _mostRecentBondSeizedEventId: ID
 }
@@ -872,7 +874,7 @@ type Grant @entity {
   "Amount that was staked by the grantee."
   staked: BigInt!
   stakingPolicy: Bytes!
-  operators: [Bytes!]
+  operators: [Operator!]!
   isManaged: Boolean
 
   "The transaction in which this grant was created."
