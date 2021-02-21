@@ -48,6 +48,12 @@ export {handleLotSizesUpdateStarted} from './mappingGovernance';
 export {handleLotSizesUpdated} from './mappingGovernance';
 export {handleKeepFactoriesUpdateStarted} from './mappingGovernance';
 export {handleKeepFactoriesUpdated} from './mappingGovernance';
+export {handleCollateralizationThresholdsUpdateStarted} from './mappingGovernance';
+export {handleSignerFeeDivisorUpdateStarted} from './mappingGovernance';
+export {handleSignerFeeDivisorUpdated} from './mappingGovernance';
+export {handleEthBtcPriceFeedAdditionStarted} from './mappingGovernance';
+export {handleEthBtcPriceFeedAdded} from './mappingGovernance';
+export {handleAllowNewDepositsUpdated} from './mappingGovernance';
 
 
 const DPL = 'dpl-';
