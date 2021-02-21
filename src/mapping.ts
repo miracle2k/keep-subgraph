@@ -49,6 +49,7 @@ export {handleLotSizesUpdated} from './mappingGovernance';
 export {handleKeepFactoriesUpdateStarted} from './mappingGovernance';
 export {handleKeepFactoriesUpdated} from './mappingGovernance';
 export {handleCollateralizationThresholdsUpdateStarted} from './mappingGovernance';
+export {handleCollateralizationThresholdsUpdated} from './mappingGovernance';
 export {handleSignerFeeDivisorUpdateStarted} from './mappingGovernance';
 export {handleSignerFeeDivisorUpdated} from './mappingGovernance';
 export {handleEthBtcPriceFeedAdditionStarted} from './mappingGovernance';
