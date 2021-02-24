@@ -1,5 +1,6 @@
 import {BigInt, ethereum} from "@graphprotocol/graph-ts/index";
 import {StakedropInterval} from "../generated/schema";
+import { BIGINT_ZERO } from "./constants";
 import {getStatus} from "./models";
 
 
@@ -30,6 +31,33 @@ const ECDSAWeights: i32[] = [
   15,
   15
 ];
+
+const totalRewards = [
+  8000000,
+  15360000,
+  17664000,
+  19077120,
+  20984832,
+  17837107,
+  15161541,
+  16887310,
+  10954213,
+  9311081,
+  7914419,
+  6727256,
+  5718168,
+  4860443,
+  4131376,
+  3511670,
+  2984919,
+  2537181,
+  2156604,
+  1833114,
+  1558147,
+  1324425,
+  1125761,
+  956897
+]
 
 let ecdsaFirstIntervalStart = BigInt.fromI32(1600041600);
 
@@ -104,19 +132,28 @@ export function getOrCreateStakedropInterval(event: ethereum.Event, type: number
   // TODO: This is not quite right, because we can only calculate this once we know the final keepCount.
   // So for now, assume that it will be reached.
   if (type == BEACON_TYPE && !interval.allocationBeacon) {
-    let status = getStatus();
-    let remainingAllocationBeacon = status.remainingStakedropBeaconAllocation;
-    interval.allocationBeacon = adjustedAllocation(idx, 2, remainingAllocationBeacon, BEACON_TYPE)
-    interval.save();
-    status.remainingStakedropBeaconAllocation = remainingAllocationBeacon.minus(interval.allocationBeacon!);
+    if(idx<=1){
+      let status = getStatus();
+      let remainingAllocationBeacon = status.remainingStakedropBeaconAllocation;
+      interval.allocationBeacon = adjustedAllocation(idx, 2, remainingAllocationBeacon, BEACON_TYPE)
+      interval.save();
+      status.remainingStakedropBeaconAllocation = remainingAllocationBeacon.minus(interval.allocationBeacon!);
+    } else {
+      interval.allocationBeacon = BIGINT_ZERO;
+      interval.save();
+    }
   }
   if (type == ECDSA_TYPE && !interval.allocationECDSA) {
-    let status = getStatus();
-    let remainingAllocationECDSA = status.remainingStakedropECDSAAllocation;
-    interval.allocationECDSA = adjustedAllocation(idx, 1000, remainingAllocationECDSA, ECDSA_TYPE)
-    interval.save();
-    status.remainingStakedropECDSAAllocation = remainingAllocationECDSA.minus(interval.allocationECDSA!);
-
+    if(idx<=2){
+      let status = getStatus();
+      let remainingAllocationECDSA = status.remainingStakedropECDSAAllocation;
+      interval.allocationECDSA = adjustedAllocation(idx, 1000, remainingAllocationECDSA, ECDSA_TYPE)
+      interval.save();
+      status.remainingStakedropECDSAAllocation = remainingAllocationECDSA.minus(interval.allocationECDSA!)
+    } else {
+      interval.allocationECDSA = BigInt.fromI32(totalRewards[idx]*0.9);
+      interval.save();
+    }
   }
 
   return interval;
