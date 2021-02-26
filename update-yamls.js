@@ -81,48 +81,48 @@ const mainNetVars = {
 const ropstenVars = {
   network: 'ropsten',
   'TBTCDepositToken': {
-    'address': '0x7cAad48DF199Cd661762485fc44126F4Fe8A58C9',
-    'startBlock': '8595001'
+    'address': '0x777eceE852Ab7517d2537726b0e4685339701ea9',
+    'startBlock': '9421711'
   },
   'TBTCToken': {
-    'address': '0x7c07C42973047223F80C4A69Bb62D5195460Eb5F',
-    'startBlock': '8594999'
+    'address': '0x8661B93F1508e01e30D1679cE7817A04fEE2163C',
+    'startBlock': '9421707'
   },
   'KeepBonding': {
-    'address': '0x60535A59B4e71F908f3fEB0116F450703FB35eD8',
-    'startBlock': '8593098'
+    'address': '0xef3A39A22E2D71f8967B977351e7301CaCB5A254',
+    'startBlock': '9420578'
   },
   'TBTCSystem': {
-    'address': '0xc3f96306eDabACEa249D2D22Ec65697f38c6Da69',
-    'startBlock': '8594981'
+    'address': '0xA41ffe9d9BAD45aD884e5100E6e201854912373E',
+    'startBlock': '9421660'
   },
   'TokenStaking': {
-    'address': '0x234d2182B29c6a64ce3ab6940037b5C8FdAB608e',
-    'startBlock': '8580771'
+    'address': '0x3D6Ef582590D75d1fBe63B379f626DA1f5b2f810',
+    'startBlock': '9403344'
   },
   'KeepRandomBeaconOperator': {
-    'address': '0xC8337a94a50d16191513dEF4D1e61A6886BF410f',
-    'startBlock': '8580806'
+    'address': '0x89361Bd4E69C72194CDcAEcEA3A4df525F22Cb03',
+    'startBlock': '9403375'
   },
   'KeepRandomBeaconService': {
-    'address': '0x6c04499B595efdc28CdbEd3f9ed2E83d7dCCC717',
-    'startBlock': '8580802'
+    'address': '0x0D3735ED83F812417af32CEDD09772b0Ec43dAf6',
+    'startBlock': '9403373'
   },
   'TokenGrant': {
-    'address': '0xb64649fe00f8Ef5187d09d109C6F38f13C7CF857',
-    'startBlock': '8580756'
+    'address': '0x474c370C78526257D3e03816Fd3b3b260523CD01',
+    'startBlock': '9403327'
   },
   'TokenStakingEscrow': {
-    'address': '0xADF243DdaE718975882F647067ae9035784179E2',
-    'startBlock': '8580760',
+    'address': '0xF2fa678bfF7Ac1F1c62F9C8221604e6CFb16F635',
+    'startBlock': '9403331',
   },
   'ManagedGrantFactory': {
-    'address': '0xbC36F83ba37b88bD4fbe63dD5007dbd3DFd8de49',
-    'startBlock': '8580784',
+    'address': '0xf61bb6F3227B3f19b0d8d365c6743E525A565fCE',
+    'startBlock': '9403356',
   },
   'StakingPortBacker': {
-    'address': '0xded94F0448aB499a6fB3669229d21C94Ff06Ef4e',
-    'startBlock': '8580777',
+    'address': '0x574C4a62366a30F2f53eff394128503f0919011C',
+    'startBlock': '9403349',
   },
 }
 
