@@ -1,6 +1,7 @@
-import {BigInt, ethereum} from "@graphprotocol/graph-ts/index";
-import {StakedropInterval} from "../generated/schema";
-import {getStatus} from "./models";
+import { BigInt, ethereum } from "@graphprotocol/graph-ts/index";
+import { StakedropInterval } from "../generated/schema";
+import { BIGINT_ZERO } from "./constants";
+import { getStatus } from "./models";
 
 
 // From ECDSARewards.sol
@@ -30,6 +31,21 @@ const ECDSAWeights: i32[] = [
   15,
   15
 ];
+
+const ecdsaRewards: i32[] = [
+  7200000, 13824000,
+  15897600, 17169408,
+  18886348, 16053396,
+  13645386, 15198579,
+  9858791, 8379972,
+  7122977, 6054530,
+  5146351, 4374398,
+  3718238, 3160503,
+  2686427, 2283462,
+  1940943, 1649802,
+  1402332, 1191982,
+  1013184, 861207
+]
 
 let ecdsaFirstIntervalStart = BigInt.fromI32(1600041600);
 
@@ -80,7 +96,7 @@ export const ECDSA_TYPE = 1;
 /**
  * The Stakedrop is a program to incentivize the operation of nodes and providing bonding capacity.
  */
-export function getOrCreateStakedropInterval(event: ethereum.Event, type: number): StakedropInterval|null {
+export function getOrCreateStakedropInterval(event: ethereum.Event, type: number): StakedropInterval | null {
   let idx = intervalOf(event.block.timestamp, type);
   if (idx == -1) {
     return null;
@@ -95,28 +111,37 @@ export function getOrCreateStakedropInterval(event: ethereum.Event, type: number
     interval.keepCount = 0;
     interval.number = idx + 1;
     interval.beaconIntervalStart = beaconFirstIntervalStart.plus(termLength.times(BigInt.fromI32(idx)))
-    interval.beaconIntervalEnd = beaconFirstIntervalStart.plus(termLength.times(BigInt.fromI32(idx+1)))
+    interval.beaconIntervalEnd = beaconFirstIntervalStart.plus(termLength.times(BigInt.fromI32(idx + 1)))
     interval.ecdsaIntervalStart = ecdsaFirstIntervalStart.plus(termLength.times(BigInt.fromI32(idx)))
-    interval.ecdsaIntervalEnd = ecdsaFirstIntervalStart.plus(termLength.times(BigInt.fromI32(idx+1)))
+    interval.ecdsaIntervalEnd = ecdsaFirstIntervalStart.plus(termLength.times(BigInt.fromI32(idx + 1)))
   }
 
   // Initialize the allocation for this type/interval the first time it occurs.
   // TODO: This is not quite right, because we can only calculate this once we know the final keepCount.
   // So for now, assume that it will be reached.
   if (type == BEACON_TYPE && !interval.allocationBeacon) {
-    let status = getStatus();
-    let remainingAllocationBeacon = status.remainingStakedropBeaconAllocation;
-    interval.allocationBeacon = adjustedAllocation(idx, 2, remainingAllocationBeacon, BEACON_TYPE)
-    interval.save();
-    status.remainingStakedropBeaconAllocation = remainingAllocationBeacon.minus(interval.allocationBeacon!);
+    if (idx <= 1) {
+      let status = getStatus();
+      let remainingAllocationBeacon = status.remainingStakedropBeaconAllocation;
+      interval.allocationBeacon = adjustedAllocation(idx, 2, remainingAllocationBeacon, BEACON_TYPE)
+      interval.save();
+      status.remainingStakedropBeaconAllocation = remainingAllocationBeacon.minus(interval.allocationBeacon!);
+    } else {
+      interval.allocationBeacon = BIGINT_ZERO;
+      interval.save();
+    }
   }
   if (type == ECDSA_TYPE && !interval.allocationECDSA) {
-    let status = getStatus();
-    let remainingAllocationECDSA = status.remainingStakedropECDSAAllocation;
-    interval.allocationECDSA = adjustedAllocation(idx, 1000, remainingAllocationECDSA, ECDSA_TYPE)
-    interval.save();
-    status.remainingStakedropECDSAAllocation = remainingAllocationECDSA.minus(interval.allocationECDSA!);
-
+    if (idx <= 2) {
+      let status = getStatus();
+      let remainingAllocationECDSA = status.remainingStakedropECDSAAllocation;
+      interval.allocationECDSA = adjustedAllocation(idx, 1000, remainingAllocationECDSA, ECDSA_TYPE)
+      interval.save();
+      status.remainingStakedropECDSAAllocation = remainingAllocationECDSA.minus(interval.allocationECDSA!)
+    } else {
+      interval.allocationECDSA = BigInt.fromI32(ecdsaRewards[idx]);
+      interval.save();
+    }
   }
 
   return interval;
